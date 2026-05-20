@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StoreLink — Create Your Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* [KEEP ALL YOUR EXISTING STYLES - they remain unchanged] */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --g:#00e27a; --gm:#00c96b; --gd:#00a358; --gdim:rgba(0,226,122,.10); --gglow:rgba(0,226,122,.22);
+  --bg:#06070a; --s1:#0e1014; --s2:#14161b; --s3:#1a1d24;
+  --bd:#22252e; --bd2:#2d3140;
+  --tx:#eceef2; --t2:#9499a8; --t3:#4a4e5f;
+  --red:#ff4d6d; --rdim:rgba(255,77,109,.10);
+  --yellow:#ffd166;
+  --fh:'Syne',sans-serif;
+  --fb:'Outfit',sans-serif;
+  --r:12px;
+}
+html,body{height:100%;}
+body{font-family:var(--fb);background:var(--bg);color:var(--tx);display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.3;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--gglow)}50%{box-shadow:0 0 0 6px transparent}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.page-wrap{display:flex;min-height:100vh;}
+.left-panel{display:none;flex:1;background:var(--s1);border-right:1px solid var(--bd);flex-direction:column;justify-content:center;align-items:center;padding:48px;position:relative;overflow:hidden;}
+.left-panel::before{content:'';position:absolute;top:-100px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(0,226,122,.09) 0%,transparent 65%);pointer-events:none;}
+.lp-logo{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--g);position:absolute;top:28px;left:32px;}
+.lp-back{position:absolute;top:28px;right:32px;background:transparent;border:1px solid var(--bd);color:var(--t2);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fb);transition:all .2s;}
+.lp-back:hover{border-color:var(--g);color:var(--g);}
+.lp-content{text-align:center;max-width:360px;}
+.lp-title{font-family:var(--fh);font-size:28px;font-weight:800;line-height:1.1;margin-bottom:14px;}
+.lp-title em{font-style:normal;background:linear-gradient(135deg,var(--g),#a8ffce);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lp-sub{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:32px;}
+.lp-perks{display:flex;flex-direction:column;gap:12px;text-align:left;}
+.lp-perk{display:flex;align-items:flex-start;gap:11px;font-size:13px;color:var(--t2);line-height:1.5;}
+.lp-perk-ic{width:28px;height:28px;border-radius:8px;background:var(--gdim);border:1px solid rgba(0,226,122,.2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.lp-perk strong{color:var(--tx);}
+.lp-stores{margin-top:36px;display:flex;align-items:center;gap:12px;justify-content:center;}
+.lp-avs{display:flex;align-items:center;}
+.lp-av{width:28px;height:28px;border-radius:50%;border:2px solid var(--s1);background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:12px;margin-left:-8px;}
+.lp-av:first-child{margin-left:0;}
+.lp-stores-txt{font-size:12px;color:var(--t2);}
+.lp-stores-txt strong{color:var(--tx);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:pulse 2s infinite;flex-shrink:0;display:inline-block;}
+.right-panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;position:relative;min-height:100vh;}
+.rp-top-logo{font-family:var(--fh);font-size:20px;font-weight:800;color:var(--g);position:absolute;top:22px;left:22px;}
+.rp-top-back{position:absolute;top:18px;right:18px;background:transparent;border:1px solid var(--bd);color:var(--t2);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fb);transition:all .2s;}
+.rp-top-back:hover{border-color:var(--g);color:var(--g);}
+.auth-box{width:100%;max-width:420px;animation:fadeUp .4s ease both;}
+.auth-tabs{display:flex;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:3px;gap:2px;margin-bottom:26px;}
+.tab-btn{flex:1;padding:9px;border-radius:8px;border:none;background:transparent;font-family:var(--fb);font-size:13px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .18s;}
+.tab-btn.active{background:var(--s3);color:var(--tx);}
+.auth-header{margin-bottom:22px;}
+.auth-title{font-family:var(--fh);font-size:22px;font-weight:800;margin-bottom:5px;}
+.auth-sub{font-size:13px;color:var(--t2);line-height:1.5;}
+.form-section{display:none;}
+.form-section.active{display:block;}
+.fg{margin-bottom:14px;position:relative;}
+.fl{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t2);margin-bottom:6px;}
+.fi{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:11px 14px;color:var(--tx);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.fi:focus{border-color:var(--g);}
+.fi.error{border-color:var(--red);animation:shake .35s ease;}
+.fi::placeholder{color:var(--t3);}
+.fi-prefix{display:flex;align-items:center;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:border-color .2s;}
+.fi-prefix:focus-within{border-color:var(--g);}
+.fi-prefix-label{padding:0 12px;font-size:12px;font-weight:700;color:var(--t2);background:var(--s3);border-right:1px solid var(--bd);white-space:nowrap;display:flex;align-items:center;height:100%;min-height:43px;}
+.fi-prefix input{flex:1;background:transparent;border:none;padding:11px 12px;color:var(--tx);font-family:var(--fb);font-size:14px;outline:none;}
+.fi-prefix input::placeholder{color:var(--t3);}
+.field-hint{font-size:11px;color:var(--t3);margin-top:4px;line-height:1.4;}
+.field-hint.success{color:var(--g);}
+.field-hint.err{color:var(--red);}
+.pw-wrap{position:relative;}
+.pw-wrap .fi{padding-right:44px;}
+.pw-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--t2);cursor:pointer;font-size:16px;line-height:1;}
+.pw-eye:hover{color:var(--tx);}
+.strength-wrap{margin-top:6px;}
+.strength-bars{display:flex;gap:4px;margin-bottom:4px;}
+.sbar{flex:1;height:3px;border-radius:2px;background:var(--bd2);transition:background .3s;}
+.strength-label{font-size:10px;color:var(--t3);}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.emoji-pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.ep-opt{width:34px;height:34px;border-radius:7px;border:1.5px solid var(--bd);background:var(--s2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;flex-shrink:0;}
+.ep-opt:hover,.ep-opt.sel{border-color:var(--g);background:var(--gdim);}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
+.divider-line{flex:1;height:1px;background:var(--bd);}
+.divider-txt{font-size:11px;color:var(--t3);font-weight:600;}
+.btn-submit{width:100%;padding:14px;border-radius:25px;border:none;background:var(--g);color:#000;font-family:var(--fb);font-size:15px;font-weight:800;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 0 30px rgba(0,226,122,.18);}
+.btn-submit:hover{background:var(--gm);transform:translateY(-1px);}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.btn-submit.loading .btn-spinner{display:inline-block;}
+.btn-submit.loading .btn-label{display:none;}
+.btn-spinner{display:none;width:18px;height:18px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;}
+.steps-ind{display:flex;align-items:center;gap:8px;margin-bottom:22px;}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;transition:all .25s;flex-shrink:0;}
+.step-dot.done{background:var(--g);color:#000;}
+.step-dot.active{background:var(--gdim);color:var(--g);border:1.5px solid rgba(0,226,122,.4);}
+.step-dot.todo{background:var(--s3);color:var(--t3);border:1.5px solid var(--bd);}
+.step-line{flex:1;height:2px;background:var(--bd);border-radius:1px;transition:background .25s;}
+.step-line.done{background:var(--g);}
+.step-label-row{display:flex;justify-content:space-between;margin-bottom:22px;}
+.step-lbl{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);text-align:center;flex:1;}
+.step-lbl.active{color:var(--g);}
+.terms-row{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:16px;}
+.terms-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--bd);background:var(--s2);flex-shrink:0;cursor:pointer;appearance:none;margin-top:1px;transition:all .15s;}
+.terms-check:checked{background:var(--g);border-color:var(--g);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath stroke='%23000' stroke-width='2' fill='none' d='M2 6l3 3 5-5'/%3E%3C/svg%3E");background-size:10px;background-repeat:no-repeat;background-position:center;}
+.terms-row a{color:var(--g);text-decoration:none;}
+.auth-switch{font-size:13px;color:var(--t2);text-align:center;margin-top:18px;}
+.auth-switch button{background:none;border:none;color:var(--g);font-weight:700;cursor:pointer;font-family:var(--fb);font-size:13px;transition:opacity .2s;}
+.auth-switch button:hover{opacity:.8;}
+.err-banner{background:var(--rdim);border:1px solid rgba(255,77,109,.25);border-radius:9px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;align-items:center;gap:8px;}
+.err-banner.show{display:flex;}
+.success-state{text-align:center;animation:fadeUp .4s ease both;}
+.success-ic{width:64px;height:64px;border-radius:50%;background:var(--gdim);border:2px solid rgba(0,226,122,.3);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px;}
+.success-title{font-family:var(--fh);font-size:22px;font-weight:800;margin-bottom:8px;}
+.success-sub{font-size:14px;color:var(--t2);line-height:1.65;margin-bottom:24px;}
+.btn-go-dash{width:100%;padding:14px;border-radius:25px;border:none;background:var(--g);color:#000;font-family:var(--fb);font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;box-shadow:0 0 30px var(--gglow);}
+.btn-go-dash:hover{background:var(--gm);}
+@media(min-width:768px){
+  .left-panel{display:flex;}
+  .right-panel{padding:48px 40px;}
+  .rp-top-logo,.rp-top-back{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="lp-logo">StoreLink</div>
+    <button class="lp-back" onclick="window.location.href='index.html'">← Back to home</button>
+    <div class="lp-content">
+      <div class="lp-title">Build your WhatsApp store <em>in minutes.</em></div>
+      <p class="lp-sub">No website needed. No coding. Just a link that turns your WhatsApp into a real store.</p>
+      <div class="lp-perks">
+        <div class="lp-perk"><div class="lp-perk-ic">🏪</div><div><strong>Your own store link</strong> — share it anywhere and start getting orders immediately</div></div>
+        <div class="lp-perk"><div class="lp-perk-ic">⚡</div><div><strong>Zero-friction ordering</strong> — customers tap Order, you get a WhatsApp message. Done.</div></div>
+        <div class="lp-perk"><div class="lp-perk-ic">📊</div><div><strong>Smart dashboard</strong> — track visits, orders, and top products from your phone</div></div>
+        <div class="lp-perk"><div class="lp-perk-ic">🎁</div><div><strong>Sign up and start for free</strong> — upgrade when you're ready, downgrade anytime</div></div>
+      </div>
+      <div class="lp-stores">
+        <div class="lp-avs"><div class="lp-av">👩🏾</div><div class="lp-av">👨🏿</div><div class="lp-av">👩🏻</div><div class="lp-av">👨🏽</div></div>
+        <div class="lp-stores-txt"><span class="live-dot"></span> <strong id="leftPanelCount">3,247</strong>+ stores live</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="rp-top-logo">StoreLink</div>
+    <button class="rp-top-back" onclick="window.location.href='index.html'">← Home</button>
+
+    <div class="auth-box">
+
+      <!-- TABS -->
+      <div class="auth-tabs">
+        <button class="tab-btn active" id="tabSignup" onclick="switchTab('signup')">Create account</button>
+        <button class="tab-btn" id="tabLogin" onclick="switchTab('login')">Log in</button>
+      </div>
+
+      <!-- SIGN UP FLOW -->
+      <div class="form-section active" id="sectionSignup">
+
+        <div class="steps-ind">
+          <div class="step-dot active" id="sd1">1</div>
+          <div class="step-line" id="sl1"></div>
+          <div class="step-dot todo" id="sd2">2</div>
+          <div class="step-line" id="sl2"></div>
+          <div class="step-dot todo" id="sd3">3</div>
+        </div>
+        <div class="step-label-row">
+          <span class="step-lbl active" id="slbl1">Account</span>
+          <span class="step-lbl" id="slbl2">Store</span>
+          <span class="step-lbl" id="slbl3">Done</span>
+        </div>
+
+        <div class="err-banner" id="signupErr"><span>⚠️</span><span id="signupErrMsg">Something went wrong.</span></div>
+
+        <!-- STEP 1 -->
+        <div id="step1">
+          <div class="auth-header">
+            <div class="auth-title">Create your account</div>
+            <div class="auth-sub">You'll set up your store next. No credit card required.</div>
+          </div>
+
+          <div class="fg-row">
+            <div class="fg"><label class="fl">First Name</label><input class="fi" id="suFirstName" placeholder="Tunde"/></div>
+            <div class="fg"><label class="fl">Last Name</label><input class="fi" id="suLastName" placeholder="Adewale"/></div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">Email Address</label>
+            <input class="fi" id="suEmail" type="email" placeholder="tunde@gmail.com" oninput="validateEmailField()"/>
+            <div class="field-hint" id="emailHint"></div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">WhatsApp Number</label>
+            <div class="fi-prefix"><span class="fi-prefix-label">🇳🇬 +234</span><input type="tel" id="suWA" placeholder="8038947947" maxlength="10"/></div>
+            <div class="field-hint">Orders and notifications will come to this number</div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">Password</label>
+            <div class="pw-wrap">
+              <input class="fi" id="suPass" type="password" placeholder="Min. 8 characters" oninput="checkStrength()"/>
+              <button class="pw-eye" type="button" onclick="togglePw('suPass',this)">👁</button>
+            </div>
+            <div class="strength-wrap">
+              <div class="strength-bars"><div class="sbar" id="sb1"></div><div class="sbar" id="sb2"></div><div class="sbar" id="sb3"></div><div class="sbar" id="sb4"></div></div>
+              <div class="strength-label" id="strengthLbl">Enter a password</div>
+            </div>
+          </div>
+
+          <button class="btn-submit" onclick="goStep2()"><span class="btn-label">Continue →</span><span class="btn-spinner"></span></button>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step2" style="display:none">
+          <div class="auth-header">
+            <div class="auth-title">Set up your store</div>
+            <div class="auth-sub">This takes 30 seconds. You can change everything later.</div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">Store Name</label>
+            <input class="fi" id="suStoreName" placeholder="e.g. Tunde Gadgets" oninput="previewSlug()"/>
+            <div class="field-hint" id="slugHint">Your link: storelink.ng/your-store</div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">Store Icon</label>
+            <div class="emoji-pick" id="emojiPick"></div>
+            <input type="hidden" id="suEmoji" value="🛍️"/>
+          </div>
+
+          <div class="fg">
+            <label class="fl">Store Type</label>
+            <select class="fi" id="suStoreType">
+              <option value="ecommerce">📦 E-Commerce (Physical products)</option>
+              <option value="fashion">👗 Fashion & Clothing</option>
+              <option value="food">🍔 Food & Beverages</option>
+              <option value="electronics">📱 Electronics & Gadgets</option>
+              <option value="beauty">💄 Beauty & Cosmetics</option>
+              <option value="services">🛠️ Services</option>
+              <option value="digital">💻 Digital Products</option>
+              <option value="other">🏷️ Other</option>
+            </select>
+          </div>
+
+          <div class="fg">
+            <label class="fl">City / Delivery Area</label>
+            <input class="fi" id="suCity" placeholder="e.g. Lagos"/>
+          </div>
+
+          <div class="terms-row">
+            <input type="checkbox" class="terms-check" id="suTerms"/>
+            <label for="suTerms">I agree to StoreLink's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+          </div>
+
+          <div style="display:flex;gap:10px">
+            <button class="btn-submit" style="flex:0 0 auto;width:44px;border-radius:10px;padding:0" onclick="goStep1()">←</button>
+            <button class="btn-submit" style="flex:1" id="btnCreateStore" onclick="createAccount()"><span class="btn-label">🚀 Create My Store</span><span class="btn-spinner"></span></button>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step3" style="display:none">
+          <div class="success-state">
+            <div class="success-ic">🎉</div>
+            <div class="success-title">Your store is live!</div>
+            <div class="success-sub" id="successMsg">Your store link is ready. Head to your dashboard to add products and start sharing.</div>
+            <button class="btn-go-dash" onclick="goToDashboard()">Go to my dashboard →</button>
+            <p style="font-size:12px;color:var(--t3);margin-top:14px">You can upgrade to Pro or Business at any time from your dashboard</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- LOGIN -->
+      <div class="form-section" id="sectionLogin">
+        <div class="auth-header">
+          <div class="auth-title">Welcome back</div>
+          <div class="auth-sub">Log in to your StoreLink dashboard</div>
+        </div>
+
+        <div class="err-banner" id="loginErr"><span>⚠️</span><span id="loginErrMsg">Invalid email or password.</span></div>
+
+        <div class="fg">
+          <label class="fl">Email Address</label>
+          <input class="fi" id="liEmail" type="email" placeholder="tunde@gmail.com"/>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Password</label>
+          <div class="pw-wrap">
+            <input class="fi" id="liPass" type="password" placeholder="Your password"/>
+            <button class="pw-eye" type="button" onclick="togglePw('liPass',this)">👁</button>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+          <button style="background:none;border:none;color:var(--g);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fb)" onclick="forgotPassword()">Forgot password?</button>
+        </div>
+
+        <button class="btn-submit" id="btnLogin" onclick="loginUser()"><span class="btn-label">Log in</span><span class="btn-spinner"></span></button>
+
+        <div class="divider"><div class="divider-line"></div><div class="divider-txt">or</div><div class="divider-line"></div></div>
+
+        <div class="auth-switch">Don't have a store yet? <button onclick="switchTab('signup')">Create one free →</button></div>
+      </div>
+
+      <div class="auth-switch" id="signupSwitch">Already have a store? <button onclick="switchTab('login')">Log in</button></div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// API CONFIGURATION - SET YOUR BACKEND URL HERE
+const API_BASE_URL = 'https://bmilink-1.onrender.com/api';// Change to your backend URL
+
+// Helper functions
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+function slugify(s) { return s.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,''); }
+
+function setLoading(btnId, on) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = on;
+  btn.classList.toggle('loading', on);
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  document.getElementById(id + 'Msg').textContent = msg;
+  el.classList.add('show');
+}
+
+function hideErr(id) { 
+  const el = document.getElementById(id);
+  if(el) el.classList.remove('show'); 
+}
+
+function markError(id) { 
+  const el = document.getElementById(id); 
+  if(el) {
+    el.classList.add('error'); 
+    setTimeout(()=>el.classList.remove('error'),800);
+  }
+}
+
+// Tabs
+function switchTab(tab) {
+  const isSignup = tab === 'signup';
+  document.getElementById('tabSignup').classList.toggle('active', isSignup);
+  document.getElementById('tabLogin').classList.toggle('active', !isSignup);
+  document.getElementById('sectionSignup').classList.toggle('active', isSignup);
+  document.getElementById('sectionLogin').classList.toggle('active', !isSignup);
+  document.getElementById('signupSwitch').style.display = isSignup ? '' : 'none';
+  hideErr('signupErr'); 
+  hideErr('loginErr');
+}
+
+// Password
+function togglePw(id, btn) {
+  const el = document.getElementById(id);
+  const show = el.type === 'password';
+  el.type = show ? 'text' : 'password';
+  btn.textContent = show ? '🙈' : '👁';
+}
+
+function checkStrength() {
+  const v = document.getElementById('suPass').value;
+  const bars = ['sb1','sb2','sb3','sb4'].map(id => document.getElementById(id));
+  const lbl = document.getElementById('strengthLbl');
+  let score = 0;
+  if (v.length >= 8) score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^a-zA-Z0-9]/.test(v)) score++;
+  const colors = ['var(--red)','var(--yellow)','#7cd67c','var(--g)'];
+  const labels = ['Too short','Weak','Good','Strong 💪'];
+  bars.forEach((b, i) => { if(b) b.style.background = i < score ? colors[score-1] : 'var(--bd2)'; });
+  if(lbl) lbl.textContent = v.length === 0 ? 'Enter a password' : (labels[score-1] || 'Too short');
+}
+
+function validateEmailField() {
+  const v = document.getElementById('suEmail').value;
+  const hint = document.getElementById('emailHint');
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  if (!v) { if(hint) hint.textContent = ''; return; }
+  if(hint) {
+    hint.textContent = valid ? '✓ Looks good' : 'Enter a valid email address';
+    hint.className = 'field-hint ' + (valid ? 'success' : 'err');
+  }
+}
+
+function previewSlug() {
+  const v = document.getElementById('suStoreName').value;
+  const hint = document.getElementById('slugHint');
+  const slug = slugify(v) || 'your-store';
+  if(hint) hint.textContent = `Your link: storelink.ng/${slug}`;
+}
+
+// Emoji picker
+const EMOJIS = ['🛍️','📱','👗','🍔','💄','💻','⌚','🎧','🏠','🌿','💎','📚','🎮','🧴','✈️','🐾','🌸','🍕','☕','🔧','⚡','🔋','🎵','📦','🎁','🏋️','🌾','🧣','🥬','💊'];
+function buildEmojiPicker() {
+  const grid = document.getElementById('emojiPick');
+  if(grid) grid.innerHTML = EMOJIS.map(e => `<div class="ep-opt ${e==='🛍️'?'sel':''}" onclick="pickEmoji('${e}',this)">${e}</div>`).join('');
+}
+function pickEmoji(e, el) {
+  document.querySelectorAll('.ep-opt').forEach(x => x.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('suEmoji').value = e;
+}
+
+// Step navigation
+function updateStepUI(step) {
+  const dots = ['sd1','sd2','sd3'].map(id => document.getElementById(id));
+  const lines = ['sl1','sl2'].map(id => document.getElementById(id));
+  const labels = ['slbl1','slbl2','slbl3'].map(id => document.getElementById(id));
+  dots.forEach((d, i) => {
+    if(d) {
+      d.className = 'step-dot ' + (i+1 < step ? 'done' : i+1 === step ? 'active' : 'todo');
+      d.textContent = i+1 < step ? '✓' : i+1;
+    }
+  });
+  lines.forEach((l, i) => { if(l) l.classList.toggle('done', i+1 < step); });
+  labels.forEach((l, i) => { if(l) l.classList.toggle('active', i+1 === step); });
+}
+
+function goStep2() {
+  const first = document.getElementById('suFirstName').value.trim();
+  const last = document.getElementById('suLastName').value.trim();
+  const email = document.getElementById('suEmail').value.trim();
+  const wa = document.getElementById('suWA').value.trim();
+  const pass = document.getElementById('suPass').value;
+
+  if (!first) { markError('suFirstName'); return; }
+  if (!last) { markError('suLastName'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { markError('suEmail'); showErr('signupErr','Please enter a valid email address.'); return; }
+  if (!wa || wa.length < 9) { markError('suWA'); showErr('signupErr','Enter a valid WhatsApp number.'); return; }
+  if (pass.length < 8) { markError('suPass'); showErr('signupErr','Password must be at least 8 characters.'); return; }
+
+  hideErr('signupErr');
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = '';
+  updateStepUI(2);
+}
+
+function goStep1() {
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step1').style.display = '';
+  updateStepUI(1);
+}
+
+// CREATE ACCOUNT - Works with your backend
+async function createAccount() {
+  const storeName = document.getElementById('suStoreName').value.trim();
+  if (!storeName) { markError('suStoreName'); return; }
+  if (!document.getElementById('suTerms').checked) {
+    showErr('signupErr','Please accept the Terms of Service to continue.');
+    return;
+  }
+  hideErr('signupErr');
+  setLoading('btnCreateStore', true);
+
+  // Format payload to match your backend's expected format
+  const payload = {
+    name: document.getElementById('suFirstName').value.trim() + ' ' + document.getElementById('suLastName').value.trim(),
+    email: document.getElementById('suEmail').value.trim(),
+    password: document.getElementById('suPass').value,
+    waNumber: '234' + document.getElementById('suWA').value.trim(),
+    city: document.getElementById('suCity').value.trim(),
+    storeName: storeName,
+    storeEmoji: document.getElementById('suEmoji').value,
+    storeType: document.getElementById('suStoreType').value,
+    plan: 'free'
+  };
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    setLoading('btnCreateStore', false);
+
+    if (!response.ok || result.error) {
+      showErr('signupErr', result.error || 'Registration failed. Please try again.');
+      return;
+    }
+
+    if (result.success) {
+      // Store user info (token is in HTTP-only cookie, can't read from JS)
+      try {
+        localStorage.setItem('sl_user', JSON.stringify(result.user));
+        localStorage.setItem('sl_store', JSON.stringify(result.store));
+      } catch(e) {}
+
+      // Show success
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('step3').style.display = '';
+      updateStepUI(3);
+      const firstName = result.user.name.split(' ')[0];
+      document.getElementById('successMsg').textContent = 
+        `Welcome, ${firstName}! 🎉 Your store "${result.store.name}" is live at storelink.ng/${result.store.slug}. Head to your dashboard to add products.`;
+      document.getElementById('signupSwitch').style.display = 'none';
+    } else {
+      showErr('signupErr', result.error || 'Something went wrong');
+    }
+  } catch (err) {
+    setLoading('btnCreateStore', false);
+    showErr('signupErr', 'Network error. Please check your connection.');
+    console.error('Signup error:', err);
+  }
+}
+
+// LOGIN - Works with your backend
+async function loginUser() {
+  const email = document.getElementById('liEmail').value.trim();
+  const pass = document.getElementById('liPass').value;
+  if (!email) { markError('liEmail'); return; }
+  if (!pass) { markError('liPass'); return; }
+  hideErr('loginErr');
+  setLoading('btnLogin', true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+
+    const result = await response.json();
+    setLoading('btnLogin', false);
+
+    if (!response.ok || result.error) {
+      showErr('loginErr', result.error || 'Invalid email or password');
+      return;
+    }
+
+    if (result.success) {
+      try {
+        localStorage.setItem('sl_user', JSON.stringify(result.user));
+      } catch(e) {}
+      window.location.href = 'storelink-dashboard.html';
+    } else {
+      showErr('loginErr', result.error || 'Login failed');
+    }
+  } catch (err) {
+    setLoading('btnLogin', false);
+    showErr('loginErr', 'Network error. Please check your connection.');
+    console.error('Login error:', err);
+  }
+}
+
+// FORGOT PASSWORD - Works with your backend
+async function forgotPassword() {
+  const email = document.getElementById('liEmail').value.trim();
+  if (!email) {
+    document.getElementById('liEmail').focus();
+    showErr('loginErr', 'Enter your email address first, then tap "Forgot password?"');
+    return;
+  }
+
+  setLoading('btnLogin', true);
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const result = await response.json();
+    setLoading('btnLogin', false);
+
+    if (response.ok && result.success) {
+      alert(`✅ If "${email}" is registered, a reset link has been sent. Check your inbox.`);
+    } else {
+      alert(`⚠️ ${result.error || 'Could not send reset link. Please try again.'}`);
+    }
+  } catch (err) {
+    setLoading('btnLogin', false);
+    alert('Network error. Please try again.');
+    console.error('Forgot password error:', err);
+  }
+}
+
+// LOAD STATS - Works with your backend
+async function loadStats() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/public/stats`);
+    if (response.ok) {
+      const stats = await response.json();
+      const count = (stats.totalUsers || 3247).toLocaleString();
+      const el = document.getElementById('leftPanelCount');
+      if (el) el.textContent = count;
+    }
+  } catch(e) {
+    console.warn('Stats endpoint not available yet');
+  }
+}
+
+function goToDashboard() {
+  window.location.href = 'storelink-dashboard.html';
+}
+
+// Enter key support
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const signup = document.getElementById('sectionSignup').classList.contains('active');
+  const login = document.getElementById('sectionLogin').classList.contains('active');
+  if (signup && document.getElementById('step1').style.display !== 'none') goStep2();
+  else if (signup && document.getElementById('step2').style.display !== 'none') createAccount();
+  else if (login) loginUser();
+});
+
+// INIT
+buildEmojiPicker();
+loadStats();
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('tab') === 'login') switchTab('login');
+</script>
+</body>
+</html>

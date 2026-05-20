@@ -1,0 +1,2376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StoreLink Admin — Platform Control</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --g:#00e27a;--gd:#00b85e;--gdim:rgba(0,226,122,.1);
+  --red:#ff4560;--rdim:rgba(255,69,96,.12);
+  --yellow:#f5c842;--ydim:rgba(245,200,66,.12);
+  --blue:#3d9cff;--bdim:rgba(61,156,255,.12);
+  --purple:#a855f7;--pdim:rgba(168,85,247,.12);
+  --orange:#f97316;--odim:rgba(249,115,22,.12);
+  --teal:#14b8a6;--tdim:rgba(20,184,166,.12);
+  --bg:#06070a;--s1:#0d0f12;--s2:#131519;--s3:#191c21;--s4:#1e2128;
+  --bd:#22262e;--bd2:#2c3040;
+  --tx:#eceef4;--t2:#9499a8;--t3:#555b70;
+  --fh:'Bricolage Grotesque',sans-serif;
+  --fb:'DM Sans',sans-serif;
+  --fm:'DM Mono',monospace;
+  --sb:238px;--tb:56px;
+}
+body{font-family:var(--fb);background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px;}
+
+.tb{position:fixed;top:0;left:0;right:0;height:var(--tb);background:rgba(13,15,18,.96);backdrop-filter:blur(18px);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:500;}
+.tb-logo{font-family:var(--fh);font-size:16px;font-weight:800;color:var(--g);letter-spacing:-.3px;display:flex;align-items:center;gap:7px;}
+.tb-logo-admin{background:var(--rdim);color:var(--red);font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:.07em;text-transform:uppercase;border:1px solid rgba(255,69,96,.22);}
+.tb-sep{width:1px;height:22px;background:var(--bd);}
+.tb-env{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:var(--ydim);color:var(--yellow);border:1px solid rgba(245,200,66,.2);}
+.tb-search{flex:1;max-width:320px;position:relative;}
+.tb-search input{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:7px 12px 7px 34px;color:var(--tx);font-family:var(--fb);font-size:12px;outline:none;transition:border-color .2s;}
+.tb-search input:focus{border-color:var(--g);}
+.tb-search input::placeholder{color:var(--t3);}
+.tb-search-ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--t3);pointer-events:none;}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.tb-notif-btn{position:relative;width:32px;height:32px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:border-color .2s;}
+.tb-notif-btn:hover{border-color:var(--g);}
+.tb-notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--red);border:1.5px solid var(--s1);}
+.tb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;border:2px solid var(--bd2);}
+.tb-uname{font-family:var(--fh);font-size:12px;font-weight:700;display:none;}
+@media(min-width:640px){.tb-uname{display:block;}}
+.hb{width:32px;height:32px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;flex-shrink:0;transition:border-color .2s;}
+.hb:hover{border-color:var(--g);}
+.hb span{display:block;width:14px;height:1.5px;background:var(--tx);border-radius:2px;transition:all .22s;}
+.hb.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg);}
+.hb.open span:nth-child(2){opacity:0;}
+.hb.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg);}
+
+.sb-bd{display:none;position:fixed;inset:0;top:var(--tb);z-index:390;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);}
+.sb-bd.show{display:block;}
+.sb{position:fixed;top:var(--tb);left:0;bottom:0;width:var(--sb);background:var(--s1);border-right:1px solid var(--bd);z-index:400;display:flex;flex-direction:column;overflow-y:auto;transform:translateX(-110%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.sb.open{transform:translateX(0);}
+.sb-inner{padding:8px;}
+.sb-grp{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);padding:12px 8px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--t2);transition:all .14s;margin-bottom:1px;border:1px solid transparent;position:relative;}
+.sb-item:hover{background:var(--s2);color:var(--tx);}
+.sb-item.active{background:var(--gdim);color:var(--g);border-color:rgba(0,226,122,.12);}
+.sb-ic{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.sb-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;}
+.sb-badge.r{background:var(--rdim);color:var(--red);border:1px solid rgba(255,69,96,.2);}
+.sb-badge.g{background:var(--gdim);color:var(--g);}
+.sb-badge.y{background:var(--ydim);color:var(--yellow);}
+.sb-footer{padding:12px;border-top:1px solid var(--bd);margin-top:auto;flex-shrink:0;}
+.sb-health{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:11px 12px;}
+.sb-health-lbl{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:7px;}
+.sb-health-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.sb-health-k{font-size:11px;color:var(--t2);}
+.sb-health-v{font-size:11px;font-weight:700;}
+.sb-health-v.g{color:var(--g);}
+
+.main{margin-top:var(--tb);padding:20px 16px 60px;transition:margin-left .28s;}
+@media(min-width:768px){
+  .sb{transform:translateX(0);}
+  .sb-bd{display:none!important;}
+  .main{margin-left:var(--sb);padding:22px 24px 60px;}
+  .hb{display:none!important;}
+}
+
+.page{display:none;}
+.page.active{display:block;animation:pgIn .22s ease both;}
+@keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
+.ph-title{font-family:var(--fh);font-size:22px;font-weight:800;letter-spacing:-.3px;}
+.ph-sub{font-size:12px;color:var(--t2);margin-top:3px;}
+.ph-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;cursor:pointer;font-family:var(--fb);font-weight:700;border:none;transition:all .16s;white-space:nowrap;}
+.btn-sm{padding:7px 13px;font-size:11px;}
+.btn-md{padding:9px 16px;font-size:12px;}
+.btn-lg{padding:11px 20px;font-size:13px;}
+.btn-g{background:var(--g);color:#000;}
+.btn-g:hover{background:var(--gd);}
+.btn-ghost{background:var(--s2);color:var(--tx);border:1px solid var(--bd);}
+.btn-ghost:hover{border-color:var(--g);color:var(--g);}
+.btn-red{background:var(--rdim);color:var(--red);border:1px solid rgba(255,69,96,.3);}
+.btn-red:hover{background:var(--red);color:#fff;}
+.btn-yellow{background:var(--ydim);color:var(--yellow);border:1px solid rgba(245,200,66,.3);}
+.btn-blue{background:var(--bdim);color:var(--blue);border:1px solid rgba(61,156,255,.3);}
+.btn-blue:hover{background:var(--blue);color:#fff;}
+.btn-purple{background:var(--pdim);color:var(--purple);border:1px solid rgba(168,85,247,.3);}
+
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:14px;}
+.ch{padding:13px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.ct{font-family:var(--fh);font-size:13px;font-weight:700;}
+.cs{font-size:11px;color:var(--t2);margin-top:2px;}
+.cb{padding:14px 16px;}
+
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;gap:4px;}
+.bg{background:var(--gdim);color:var(--g);}
+.br{background:var(--rdim);color:var(--red);}
+.by{background:var(--ydim);color:var(--yellow);}
+.bb{background:var(--bdim);color:var(--blue);}
+.bp{background:var(--pdim);color:var(--purple);}
+.bo{background:var(--odim);color:var(--orange);}
+.bt{background:var(--tdim);color:var(--teal);}
+.bm{background:var(--s3);color:var(--t2);}
+
+.fg{margin-bottom:12px;}
+.fl{display:block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t2);margin-bottom:5px;}
+.fi,.fs,.ft{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:8px;padding:9px 12px;color:var(--tx);font-family:var(--fb);font-size:13px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--g);}
+.fs option{background:var(--s2);}
+.ft{resize:vertical;min-height:72px;line-height:1.5;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.fhint{font-size:10px;color:var(--t3);margin-top:4px;line-height:1.4;}
+
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+@media(min-width:640px){.sg{grid-template-columns:repeat(4,1fr);}}
+.sc{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px;position:relative;overflow:hidden;transition:border-color .2s;}
+.sc:hover{border-color:var(--bd2);}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--g));}
+.sib{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px;}
+.sv{font-family:var(--fh);font-size:22px;font-weight:800;line-height:1;margin-bottom:3px;}
+.sl{font-size:10px;color:var(--t2);font-weight:600;}
+.schg{position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;}
+.cup{background:var(--gdim);color:var(--g);}
+.cdn{background:var(--rdim);color:var(--red);}
+
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t2);padding:10px 12px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap;}
+td{padding:11px 12px;font-size:12px;border-bottom:1px solid var(--bd);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.015);}
+.td-main{font-weight:700;font-size:13px;}
+.td-sub{font-size:10px;color:var(--t2);margin-top:2px;}
+.tbl-acts{display:flex;gap:5px;}
+.ia{width:26px;height:26px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .14s;}
+.ia:hover{border-color:var(--g);color:var(--g);}
+.ia.del:hover{border-color:var(--red);color:var(--red);}
+.ia.warn:hover{border-color:var(--yellow);color:var(--yellow);}
+
+/* PAGINATION */
+.pgn{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--bd);flex-wrap:wrap;gap:8px;}
+.pgn-info{font-size:11px;color:var(--t2);}
+.pgn-btns{display:flex;align-items:center;gap:4px;}
+.pgn-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .14s;font-family:var(--fb);}
+.pgn-btn:hover{border-color:var(--g);color:var(--g);}
+.pgn-btn.active{background:var(--g);color:#000;border-color:var(--g);}
+.pgn-btn:disabled{opacity:.3;cursor:default;}
+.pgn-select{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:4px 8px;color:var(--tx);font-family:var(--fb);font-size:11px;outline:none;}
+
+.bar-chart{display:flex;align-items:flex-end;gap:4px;height:80px;}
+.bc-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.bc-bar{width:100%;border-radius:3px 3px 0 0;min-height:2px;cursor:pointer;transition:opacity .2s;}
+.bc-bar:hover{opacity:.7;}
+.bc-lbl{font-size:8px;color:var(--t3);}
+
+.prog-bg{height:4px;background:var(--bd);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:700;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(7px);}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal-sh{background:var(--s1);border:1px solid var(--bd);border-radius:20px 20px 0 0;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;transform:translateY(40px);opacity:0;transition:all .26s cubic-bezier(.4,0,.2,1);}
+.modal-bg.open .modal-sh{transform:translateY(0);opacity:1;}
+.modal-sh::-webkit-scrollbar{width:3px;}
+.modal-sh::-webkit-scrollbar-thumb{background:var(--bd2);}
+.mhdl{width:32px;height:3px;background:var(--bd2);border-radius:2px;margin:11px auto 0;}
+.mhd{padding:14px 18px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
+.mht{font-family:var(--fh);font-size:16px;font-weight:800;}
+.mx{width:28px;height:28px;border-radius:50%;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--t2);cursor:pointer;}
+.mb{padding:16px 18px;}
+.mft{padding:12px 18px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--s1);}
+
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);}
+.tog-row:last-child{border-bottom:none;}
+.tog-lbl{font-size:12px;font-weight:600;}
+.tog-sub{font-size:10px;color:var(--t2);margin-top:2px;}
+.tog{position:relative;width:38px;height:21px;cursor:pointer;flex-shrink:0;}
+.tog input{display:none;}
+.tog-tr{width:100%;height:100%;background:var(--bd2);border-radius:20px;transition:background .2s;display:flex;align-items:center;padding:0 3px;}
+.tog input:checked+.tog-tr{background:var(--g);}
+.tog-th{width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .2s;}
+.tog input:checked+.tog-tr .tog-th{transform:translateX(17px);}
+
+.seg{display:flex;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:3px;gap:2px;}
+.seg-btn{flex:1;padding:6px 10px;border-radius:6px;border:none;background:transparent;font-family:var(--fb);font-size:11px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .14s;white-space:nowrap;}
+.seg-btn.active{background:var(--s3);color:var(--tx);}
+
+.info{border-radius:8px;padding:10px 13px;display:flex;gap:9px;align-items:flex-start;margin-bottom:12px;}
+.info.y{background:var(--ydim);border:1px solid rgba(245,200,66,.2);}
+.info.g{background:var(--gdim);border:1px solid rgba(0,226,122,.2);}
+.info.r{background:var(--rdim);border:1px solid rgba(255,69,96,.2);}
+.info.b{background:var(--bdim);border:1px solid rgba(61,156,255,.2);}
+.info.p{background:var(--pdim);border:1px solid rgba(168,85,247,.2);}
+.info-txt{font-size:11px;color:var(--t2);line-height:1.6;}
+
+.heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px;}
+.hm-cell{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:opacity .15s;}
+.hm-cell:hover{opacity:.7;}
+
+.promo-prev{background:linear-gradient(135deg,#1a1814,#2d2921);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;}
+.promo-prev::before{content:'';position:absolute;right:-20px;top:-20px;width:100px;height:100px;background:var(--g);opacity:.06;border-radius:50%;}
+.promo-prev-ic{font-size:24px;flex-shrink:0;}
+.promo-prev-text{flex:1;}
+.promo-prev-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:3px;}
+.promo-prev-title{font-family:var(--fh);font-size:14px;font-weight:800;color:#f5f3ef;line-height:1.2;}
+.promo-prev-sub{font-size:10px;color:rgba(245,243,239,.5);margin-top:2px;}
+.promo-prev-cta{background:var(--g);color:#000;border:none;border-radius:20px;padding:6px 12px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fb);flex-shrink:0;}
+
+.plan-editor-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:12px;}
+.ticket-item{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .18s;}
+.ticket-item:hover{border-color:var(--bd2);}
+.ticket-item.t-open{border-left:3px solid var(--yellow);}
+.ticket-item.t-escalated{border-left:3px solid var(--red);}
+.ticket-item.t-resolved{border-left:3px solid var(--g);}
+
+.verif-item{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:10px;}
+.verif-item.v-pending{border-left:3px solid var(--yellow);}
+.verif-item.v-approved{border-left:3px solid var(--g);}
+.verif-item.v-rejected{border-left:3px solid var(--red);}
+
+.ck-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t2);margin-bottom:5px;}
+.ck-ic{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;}
+
+.flag-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd);}
+.flag-row:last-child{border-bottom:none;}
+.flag-ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.flag-info{flex:1;}
+.flag-name{font-size:12px;font-weight:700;}
+.flag-desc{font-size:10px;color:var(--t2);margin-top:2px;}
+
+.empty{text-align:center;padding:40px 16px;color:var(--t2);}
+.empty-ic{font-size:36px;margin-bottom:10px;}
+.empty-tt{font-family:var(--fh);font-size:14px;color:var(--tx);margin-bottom:4px;}
+.empty-sub{font-size:12px;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--s1);border:1px solid var(--bd2);padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:900;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.7);display:flex;align-items:center;gap:7px;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.store-section{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:12px;}
+.store-section-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t2);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.mono{font-family:var(--fm);font-size:11px;color:var(--t2);}
+
+/* COUPON SPECIFIC */
+.coupon-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:10px;position:relative;overflow:hidden;}
+.coupon-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--g));}
+.coupon-code{font-family:var(--fm);font-size:15px;font-weight:700;letter-spacing:.1em;color:var(--g);background:var(--gdim);padding:4px 10px;border-radius:6px;border:1px dashed rgba(0,226,122,.3);}
+.coupon-stat{text-align:center;padding:10px;background:var(--s3);border-radius:8px;}
+.coupon-stat-val{font-family:var(--fh);font-size:18px;font-weight:800;}
+.coupon-stat-lbl{font-size:9px;color:var(--t2);font-weight:600;margin-top:2px;}
+
+/* Password field with toggle */
+.pw-wrap{position:relative;}
+.pw-wrap .fi{padding-right:40px;}
+.pw-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--t2);font-size:14px;background:none;border:none;padding:4px;}
+.pw-eye:hover{color:var(--tx);}
+
+@media(min-width:640px){.fr3{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:768px){
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+}
+</style>
+</head>
+<body>
+
+<header class="tb">
+  <button class="hb" id="HB" onclick="toggleSB()"><span></span><span></span><span></span></button>
+  <div class="tb-logo">StoreLink <span class="tb-logo-admin">ADMIN</span></div>
+  <div class="tb-sep"></div>
+  <div class="tb-env">⚡ Production</div>
+  <div class="tb-search">
+    <span class="tb-search-ic">🔍</span>
+    <input type="text" id="globalSearch" placeholder="Search users, stores, tickets…" oninput="doGlobalSearch()"/>
+  </div>
+  <div class="tb-r">
+    <div class="tb-notif-btn" onclick="showPage('support')" title="Open tickets">🔔<div class="tb-notif-dot"></div></div>
+    <div class="tb-av" title="Super Admin">SA</div>
+    
+    <button class="btn btn-ghost btn-sm" onclick="doAdminLogout()" title="Sign out" style="font-size:11px">⏻ Logout</button>
+  </div>
+</header>
+
+<div class="sb-bd" id="SBBd" onclick="closeSB()"></div>
+
+<aside class="sb" id="SB">
+  <div class="sb-inner">
+    <div class="sb-grp">Platform</div>
+    <div class="sb-item active" data-p="overview" onclick="showPage('overview',this)"><span class="sb-ic">📊</span>Overview</div>
+    <div class="sb-item" data-p="revenue" onclick="showPage('revenue',this)"><span class="sb-ic">💰</span>Revenue<span class="sb-badge g" id="mrrBadge">₦0</span></div>
+    <div class="sb-grp">Users</div>
+    <div class="sb-item" data-p="users" onclick="showPage('users',this)"><span class="sb-ic">👥</span>All Users<span class="sb-badge g" id="userBadge">0</span></div>
+    <div class="sb-item" data-p="verification" onclick="showPage('verification',this)"><span class="sb-ic">✅</span>Verification<span class="sb-badge y" id="verifBadge">0</span></div>
+    <div class="sb-item" data-p="stores" onclick="showPage('stores',this)"><span class="sb-ic">🏪</span>Stores</div>
+    <div class="sb-grp">Commerce</div>
+    <div class="sb-item" data-p="plans" onclick="showPage('plans',this)"><span class="sb-ic">💎</span>Plans &amp; Pricing</div>
+    <div class="sb-item" data-p="subscriptions" onclick="showPage('subscriptions',this)"><span class="sb-ic">🔄</span>Subscriptions</div>
+    <div class="sb-item" data-p="coupons" onclick="showPage('coupons',this)"><span class="sb-ic">🏷️</span>Coupons</div>
+    <div class="sb-grp">Engagement</div>
+    <div class="sb-item" data-p="promo" onclick="showPage('promo',this)"><span class="sb-ic">🎯</span>Promo Banners</div>
+    <div class="sb-item" data-p="announcements" onclick="showPage('announcements',this)"><span class="sb-ic">📣</span>Announcements</div>
+    <div class="sb-grp">Operations</div>
+    <div class="sb-item" data-p="support" onclick="showPage('support',this)"><span class="sb-ic">💬</span>Support<span class="sb-badge r" id="ticketBadge">0</span></div>
+    <div class="sb-item" data-p="analytics" onclick="showPage('analytics',this)"><span class="sb-ic">📈</span>Analytics</div>
+    <div class="sb-grp">System</div>
+    <div class="sb-item" data-p="settings" onclick="showPage('settings',this)"><span class="sb-ic">⚙️</span>Platform Settings</div>
+    <div class="sb-item" data-p="logs" onclick="showPage('logs',this)"><span class="sb-ic">📋</span>Audit Logs</div>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-health">
+      <div class="sb-health-lbl">Platform Health</div>
+      <div class="sb-health-row"><span class="sb-health-k">Uptime</span><span class="sb-health-v g">99.97%</span></div>
+      <div class="sb-health-row"><span class="sb-health-k">API Latency</span><span class="sb-health-v">142ms</span></div>
+      <div class="sb-health-row"><span class="sb-health-k">Live Stores</span><span class="sb-health-v g" id="liveStoresSB">0</span></div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- OVERVIEW -->
+<div class="page active" id="page-overview"></div>
+<!-- REVENUE -->
+<div class="page" id="page-revenue"></div>
+
+<!-- USERS -->
+<div class="page" id="page-users">
+  <div class="ph">
+    <div><div class="ph-title">All Users</div><div class="ph-sub" id="userPageSub">Loading…</div></div>
+    <div class="ph-acts">
+      <input class="fi" style="width:160px;font-size:12px" id="userSearchBox" placeholder="🔍 Name / email" oninput="userPg=1;renderUsersTable()"/>
+      <select class="fs" style="width:110px;font-size:12px" id="userPlanFilter" onchange="userPg=1;renderUsersTable()">
+        <option value="all">All plans</option>
+        <option value="free">Free</option>
+        <option value="pro">Pro</option>
+        <option value="business">Business</option>
+      </select>
+      <select class="fs" style="width:100px;font-size:12px" id="userLimitSel" onchange="userPg=1;renderUsersTable()">
+        <option value="20">20/page</option>
+        <option value="50">50/page</option>
+        <option value="100">100/page</option>
+      </select>
+      <button class="btn btn-g btn-sm" onclick="openAddUserModal()">+ Add User</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap"><table><thead id="usersThead"></thead><tbody id="usersBody"></tbody></table></div>
+    <div class="pgn" id="userPgn"></div>
+  </div>
+</div>
+
+<!-- VERIFICATION -->
+<div class="page" id="page-verification">
+  <div class="ph">
+    <div><div class="ph-title">Store Verification</div><div class="ph-sub">Review seller verification requests</div></div>
+    <div class="ph-acts">
+      <div class="seg">
+        <button class="seg-btn active" onclick="setVerifFilter('pending',this)">Pending</button>
+        <button class="seg-btn" onclick="setVerifFilter('approved',this)">Approved</button>
+        <button class="seg-btn" onclick="setVerifFilter('rejected',this)">Rejected</button>
+      </div>
+      <select class="fs" style="width:100px;font-size:12px" id="verifLimitSel" onchange="verifPg=1;renderVerification()">
+        <option value="10">10/page</option>
+        <option value="25">25/page</option>
+        <option value="50">50/page</option>
+      </select>
+    </div>
+  </div>
+  <div class="info b"><span>ℹ️</span><div class="info-txt">Verified stores get a <strong style="color:var(--tx)">blue tick badge</strong>. Requirements: valid WhatsApp, at least 3 products, description filled in.</div></div>
+  <div id="verifList"></div>
+  <div id="verifPgn"></div>
+</div>
+
+<!-- STORES -->
+<div class="page" id="page-stores">
+  <div class="ph">
+    <div><div class="ph-title">All Stores</div><div class="ph-sub" id="storePageSub">Loading…</div></div>
+    <div class="ph-acts">
+      <input class="fi" style="width:160px;font-size:12px" id="storeSearchBox" placeholder="🔍 Store / owner" oninput="storePg=1;renderStoresTable()"/>
+      <select class="fs" style="width:110px;font-size:12px" id="storeStatusFilter" onchange="storePg=1;renderStoresTable()">
+        <option value="all">All status</option>
+        <option value="live">Live</option>
+        <option value="suspended">Suspended</option>
+        <option value="draft">Draft</option>
+      </select>
+      <select class="fs" style="width:100px;font-size:12px" id="storeLimitSel" onchange="storePg=1;renderStoresTable()">
+        <option value="20">20/page</option>
+        <option value="50">50/page</option>
+        <option value="100">100/page</option>
+      </select>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap"><table><thead id="storesThead"></thead><tbody id="storesBody"></tbody></table></div>
+    <div class="pgn" id="storePgn"></div>
+  </div>
+</div>
+
+<!-- PLANS -->
+<div class="page" id="page-plans">
+  <div class="ph">
+    <div><div class="ph-title">Plans &amp; Pricing</div><div class="ph-sub">Edit plan details, limits and features</div></div>
+    <button class="btn btn-g btn-sm" onclick="saveAllPlans()">💾 Save All Plans</button>
+  </div>
+  <div class="info y"><span>⚠️</span><div class="info-txt">Changes apply immediately to the live landing page and seller dashboards.</div></div>
+  <div id="plansEditor"></div>
+</div>
+
+<!-- SUBSCRIPTIONS -->
+<div class="page" id="page-subscriptions">
+  <div class="ph">
+    <div><div class="ph-title">Subscriptions</div><div class="ph-sub">Active, overdue and churned plans</div></div>
+    <div class="ph-acts">
+      <select class="fs" style="width:100px;font-size:12px" id="subLimitSel" onchange="subPg=1;renderSubscriptions()">
+        <option value="20">20/page</option>
+        <option value="50">50/page</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" onclick="exportSubscriptions()">⬇ Export CSV</button>
+    </div>
+  </div>
+  <div class="sg" id="subKpis"></div>
+  <div class="card">
+    <div class="ch">
+      <div class="ct">All Subscriptions</div>
+      <div class="seg">
+        <button class="seg-btn active" onclick="setSubFilter('all',this)">All</button>
+        <button class="seg-btn" onclick="setSubFilter('active',this)">Active</button>
+        <button class="seg-btn" onclick="setSubFilter('overdue',this)">Overdue</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table><thead id="subsThead"></thead><tbody id="subsBody"></tbody></table></div>
+    <div class="pgn" id="subPgn"></div>
+  </div>
+</div>
+
+<!-- COUPONS -->
+<div class="page" id="page-coupons">
+  <div class="ph">
+    <div><div class="ph-title">Coupons</div><div class="ph-sub">Create and manage discount codes</div></div>
+    <button class="btn btn-g btn-sm" onclick="openCouponModal()">+ Create Coupon</button>
+  </div>
+  <div class="sg" id="couponKpis"></div>
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div class="ch">
+          <div class="ct">All Coupons</div>
+          <div class="seg">
+            <button class="seg-btn active" onclick="setCouponFilter('all',this)">All</button>
+            <button class="seg-btn" onclick="setCouponFilter('active',this)">Active</button>
+            <button class="seg-btn" onclick="setCouponFilter('expired',this)">Expired</button>
+          </div>
+        </div>
+        <div id="couponList" style="padding:8px 0"></div>
+        <div class="pgn" id="couponPgn"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Top Used Coupons</div></div>
+        <div class="cb" id="couponTop"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Usage Tips</div></div>
+        <div class="cb">
+          <div class="info g"><span>💡</span><div class="info-txt">Use <strong style="color:var(--tx)">plan-restricted</strong> coupons to drive upgrades — e.g. a Pro coupon only redeemable by free users.</div></div>
+          <div class="info b"><span>📌</span><div class="info-txt">Set a <strong style="color:var(--tx)">max uses</strong> to create scarcity. Leave blank for unlimited.</div></div>
+          <div class="info y"><span>⚠️</span><div class="info-txt">Expired coupons are automatically deactivated at midnight on their expiry date.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROMO BANNERS -->
+<div class="page" id="page-promo">
+  <div class="ph"><div><div class="ph-title">Promo Banner Control</div><div class="ph-sub">Push custom banners to stores &amp; dashboards</div></div></div>
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Design Promo Banner</div></div>
+        <div class="cb">
+          <div style="margin-bottom:14px">
+            <div class="fl" style="margin-bottom:7px">Live Preview</div>
+            <div class="promo-prev" id="promoPrevBox">
+              <div class="promo-prev-ic" id="ppIc">🔥</div>
+              <div class="promo-prev-text">
+                <div class="promo-prev-label" id="ppLabel">Limited Offer</div>
+                <div class="promo-prev-title" id="ppTitle">Up to 15% off iPhones this week</div>
+                <div class="promo-prev-sub" id="ppSub">Sealed · verified · warranty included</div>
+              </div>
+              <button class="promo-prev-cta" id="ppCta">Shop now</button>
+            </div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Icon</label><input class="fi" id="pBannerIc" value="🔥" maxlength="4" oninput="livePromoPreview()"/></div>
+            <div class="fg"><label class="fl">Label</label><input class="fi" id="pBannerLabel" value="Limited Offer" oninput="livePromoPreview()"/></div>
+          </div>
+          <div class="fg"><label class="fl">Title</label><input class="fi" id="pBannerTitle" value="Up to 15% off iPhones this week" oninput="livePromoPreview()"/></div>
+          <div class="fg"><label class="fl">Subtitle</label><input class="fi" id="pBannerSub" value="Sealed · verified · warranty included" oninput="livePromoPreview()"/></div>
+          <div class="fg"><label class="fl">CTA Text</label><input class="fi" id="pBannerCta" value="Shop now" oninput="livePromoPreview()"/></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Push Target</div></div>
+        <div class="cb">
+          <div class="fg"><label class="fl">Target Audience</label>
+            <select class="fs" id="pBannerTarget" onchange="handleBannerTargetChange()">
+              <option value="all">🌍 All sellers</option>
+              <option value="free">○ Free plan only</option>
+              <option value="pro">✅ Pro plan only</option>
+              <option value="business">💎 Business plan only</option>
+              <option value="paid">💳 All paid plans</option>
+              <option value="specific_user">👤 Specific user</option>
+              <option value="specific_store">🏪 Specific store</option>
+            </select>
+          </div>
+          <div class="fg" id="specificUserField" style="display:none"><label class="fl">User Email or ID</label><input class="fi" id="pBannerUserId" placeholder="tunde@gmail.com"/></div>
+          <div class="fg" id="specificStoreField" style="display:none"><label class="fl">Store Name or ID</label><input class="fi" id="pBannerStoreId" placeholder="Tunde Gadgets"/></div>
+          <div class="fg"><label class="fl">Display Location</label>
+            <select class="fs" id="pBannerLocation">
+              <option value="store_page">🏪 Store page only</option>
+              <option value="dashboard">📊 Seller dashboard only</option>
+              <option value="both">🔁 Both</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Duration</label>
+            <select class="fs" id="pBannerDuration">
+              <option value="24h">24 hours</option>
+              <option value="3d">3 days</option>
+              <option value="7d">7 days</option>
+              <option value="14d">14 days</option>
+              <option value="30d">30 days</option>
+              <option value="permanent">Permanent</option>
+            </select>
+          </div>
+          <div class="tog-row"><div><div class="tog-lbl">Allow sellers to dismiss</div></div><label class="tog"><input type="checkbox" id="pBannerDismissable" checked/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+          <button class="btn btn-g btn-lg" style="width:100%;justify-content:center;margin-top:16px" onclick="pushPromoBanner()">🚀 Push Banner Now</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Active Banners</div><div class="cs" id="activeBannersCount">0 active</div></div>
+        <div class="cb" id="activeBannersList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENTS -->
+<div class="page" id="page-announcements">
+  <div class="ph"><div><div class="ph-title">Announcements</div><div class="ph-sub">Broadcast messages to sellers</div></div></div>
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Send Announcement</div></div>
+        <div class="cb">
+          <div class="fg"><label class="fl">Title</label><input class="fi" id="annTitle" placeholder="e.g. New Feature: Custom Domain"/></div>
+          <div class="fg"><label class="fl">Message</label><textarea class="ft" id="annMsg" style="min-height:90px" placeholder="Write your announcement…"></textarea></div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Type</label>
+              <select class="fs" id="annType">
+                <option value="info">ℹ️ Info</option>
+                <option value="feature">🚀 New Feature</option>
+                <option value="maintenance">🔧 Maintenance</option>
+                <option value="promo">🎁 Promo</option>
+                <option value="urgent">🚨 Urgent</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Target Audience</label>
+              <select class="fs" id="annTarget">
+                <option value="all">All sellers</option>
+                <option value="pro">Pro plan only</option>
+                <option value="business">Business plan only</option>
+                <option value="free">Free plan only</option>
+              </select>
+            </div>
+          </div>
+          <div class="tog-row"><div><div class="tog-lbl">Send via WhatsApp</div></div><label class="tog"><input type="checkbox" id="annWA"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+          <div class="tog-row"><div><div class="tog-lbl">Show as dashboard banner</div></div><label class="tog"><input type="checkbox" id="annBanner" checked/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+          <button class="btn btn-g btn-lg" style="width:100%;justify-content:center;margin-top:14px" onclick="sendAnnouncement()">📣 Send Announcement</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Sent Announcements</div></div>
+        <div class="cb" id="annHistory"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPORT -->
+<div class="page" id="page-support">
+  <div class="ph">
+    <div><div class="ph-title">Customer Support</div><div class="ph-sub" id="supportSub">Loading…</div></div>
+    <div class="ph-acts">
+      <div class="seg">
+        <button class="seg-btn active" onclick="setTicketFilter('open',this)">Open</button>
+        <button class="seg-btn" onclick="setTicketFilter('escalated',this)">Escalated</button>
+        <button class="seg-btn" onclick="setTicketFilter('resolved',this)">Resolved</button>
+        <button class="seg-btn" onclick="setTicketFilter('all',this)">All</button>
+      </div>
+      <select class="fs" style="width:100px;font-size:12px" id="ticketLimitSel" onchange="ticketPg=1;renderTicketList()">
+        <option value="10">10/page</option>
+        <option value="25">25/page</option>
+        <option value="50">50/page</option>
+      </select>
+    </div>
+  </div>
+  <div class="sg">
+    <div class="sc" style="--c:var(--yellow)"><div class="sib" style="background:var(--ydim)">📬</div><div class="sv" id="tkOpen">0</div><div class="sl">Open</div></div>
+    <div class="sc" style="--c:var(--red)"><div class="sib" style="background:var(--rdim)">🔴</div><div class="sv" id="tkEsc">0</div><div class="sl">Escalated</div></div>
+    <div class="sc" style="--c:var(--g)"><div class="sib" style="background:var(--gdim)">✅</div><div class="sv" id="tkRes">0</div><div class="sl">Resolved</div></div>
+    <div class="sc" style="--c:var(--blue)"><div class="sib" style="background:var(--bdim)">⏱️</div><div class="sv">4h 12m</div><div class="sl">Avg Response</div></div>
+  </div>
+  <div id="ticketList"></div>
+  <div id="ticketPgn"></div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="page" id="page-analytics"></div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="ph"><div><div class="ph-title">Platform Settings</div></div><button class="btn btn-g btn-sm" onclick="savePlatformSettings()">💾 Save Settings</button></div>
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Platform Info</div></div>
+        <div class="cb">
+          <div class="fg"><label class="fl">Platform Name</label><input class="fi" id="platName" value="StoreLink"/></div>
+          <div class="fg"><label class="fl">Support WhatsApp</label><input class="fi" id="platSupportWA" value="+2349012345678"/></div>
+          <div class="fg"><label class="fl">Support Email</label><input class="fi" id="platEmail" value="support@storelink.ng"/></div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Trial Duration (days)</label><input class="fi" id="platTrial" type="number" value="90"/></div>
+            <div class="fg"><label class="fl">Max Free Products</label><input class="fi" id="platFreeProds" type="number" value="10"/></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Maintenance Mode</div></div>
+        <div class="cb">
+          <div class="tog-row"><div><div class="tog-lbl" style="color:var(--red)">🔧 Maintenance Mode</div><div class="tog-sub">Blocks all store pages</div></div><label class="tog"><input type="checkbox" id="maintenanceToggle"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+          <div class="fg" style="margin-top:10px"><label class="fl">Maintenance Message</label><textarea class="ft" id="maintenanceMsg" rows="2">We're upgrading the platform. Back in 30 minutes.</textarea></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Feature Flags</div></div>
+        <div class="cb" id="featureFlagsUI"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Verification Requirements</div></div>
+        <div class="cb">
+          <div class="tog-row"><div><div class="tog-lbl">Valid WhatsApp number</div></div><label class="tog"><input type="checkbox" checked id="vreqWA"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+          <div class="tog-row"><div><div class="tog-lbl">Minimum 3 active products</div></div><label class="tog"><input type="checkbox" checked id="vreqProds"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+          <div class="tog-row"><div><div class="tog-lbl">Store description filled in</div></div><label class="tog"><input type="checkbox" checked id="vreqDesc"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+          <div class="tog-row"><div><div class="tog-lbl">Minimum 30 store visits</div></div><label class="tog"><input type="checkbox" id="vreqVisits"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+          <div class="tog-row"><div><div class="tog-lbl">Manual review by admin</div></div><label class="tog"><input type="checkbox" checked id="vreqManual"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUDIT LOGS -->
+<div class="page" id="page-logs">
+  <div class="ph">
+    <div><div class="ph-title">Audit Logs</div></div>
+    <div class="ph-acts">
+      <select class="fs" style="width:100px;font-size:12px" id="logLimitSel" onchange="logPg=1;renderLogs()">
+        <option value="25">25/page</option>
+        <option value="50">50/page</option>
+        <option value="100">100/page</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" onclick="exportLogs()">⬇ Export</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap"><table><thead id="logsThead"></thead><tbody id="logsBody"></tbody></table></div>
+    <div class="pgn" id="logPgn"></div>
+  </div>
+</div>
+
+</main>
+
+<!-- ════ MODALS ════ -->
+
+<!-- ADD / EDIT USER -->
+<div class="modal-bg" id="modalUser">
+<div class="modal-sh">
+  <div class="mhdl"></div>
+  <div class="mhd"><div class="mht" id="modalUserTitle">Add User</div><button class="mx" onclick="closeModal('modalUser')">✕</button></div>
+  <div class="mb">
+    <div class="fr">
+      <div class="fg"><label class="fl">Full Name</label><input class="fi" id="uName" placeholder="e.g. Tunde Adewale"/></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="uEmail" type="email" placeholder="tunde@gmail.com"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">WhatsApp</label><input class="fi" id="uWA" placeholder="+2347038947947"/></div>
+      <div class="fg"><label class="fl">City</label><input class="fi" id="uCity" placeholder="Lagos"/></div>
+    </div>
+    <div class="fg" id="uPasswordGroup">
+      <label class="fl">Password <span style="color:var(--red)">*</span></label>
+      <div class="pw-wrap">
+        <input class="fi" id="uPassword" type="password" placeholder="Set account password…"/>
+        <button class="pw-eye" type="button" onclick="togglePwEye('uPassword',this)">👁</button>
+      </div>
+      <div class="fhint">Required for new accounts. Min 8 characters.</div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Plan</label>
+        <select class="fs" id="uPlan">
+          <option value="free">Free</option>
+          <option value="pro">Pro</option>
+          <option value="business">Business</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Role</label>
+        <select class="fs" id="uRole">
+          <option value="seller">Seller</option>
+          <option value="moderator">Moderator</option>
+          <option value="editor">Editor</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Status</label>
+      <select class="fs" id="uStatus">
+        <option value="active">Active</option>
+        <option value="suspended">Suspended</option>
+        <option value="banned">Banned</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Plan Expiry Date</label><input class="fi" id="uPlanExpiry" type="date"/><div class="fhint">Leave blank for default billing cycle.</div></div>
+    <div class="fg"><label class="fl">Internal Notes</label><textarea class="ft" id="uNotes" rows="2" placeholder="Admin notes…"></textarea></div>
+  </div>
+  <div class="mft">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modalUser')">Cancel</button>
+    <button class="btn btn-g btn-sm" onclick="saveUser()">Save User</button>
+  </div>
+</div>
+</div>
+
+<!-- STORE EDITOR -->
+<div class="modal-bg" id="modalStore">
+<div class="modal-sh" style="max-width:600px">
+  <div class="mhdl"></div>
+  <div class="mhd"><div class="mht" id="modalStoreTitle">Edit Store</div><button class="mx" onclick="closeModal('modalStore')">✕</button></div>
+  <div class="mb">
+    <div class="info y"><span>⚠️</span><div class="info-txt">Admin override — changes push directly to the store.</div></div>
+    <div class="store-section">
+      <div class="store-section-title">🏪 Store Identity</div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Store Name</label><input class="fi" id="stName"/></div>
+        <div class="fg"><label class="fl">Emoji</label><input class="fi" id="stEmoji" maxlength="4"/></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Store Type</label>
+          <select class="fs" id="stType">
+            <option value="ecommerce">🛍️ E-Commerce</option>
+            <option value="services">🛠️ Services</option>
+            <option value="health">🏥 Health</option>
+            <option value="coach">🎯 Coach</option>
+            <option value="food">🍽️ Food</option>
+            <option value="fashion">👗 Fashion</option>
+            <option value="beauty">💄 Beauty</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">City</label><input class="fi" id="stCity"/></div>
+      </div>
+      <div class="fg"><label class="fl">WhatsApp Number</label><input class="fi" id="stWA"/></div>
+    </div>
+    <div class="store-section">
+      <div class="store-section-title">🎨 Store Page Content</div>
+      <div class="fg"><label class="fl">Hero Title</label><input class="fi" id="stHeroTitle"/></div>
+      <div class="fg"><label class="fl">Hero Subtitle</label><textarea class="ft" id="stHeroSub" rows="2"></textarea></div>
+    </div>
+    <div class="store-section">
+      <div class="store-section-title">⚙️ Preferences</div>
+      <div class="tog-row"><div><div class="tog-lbl">Store is live</div></div><label class="tog"><input type="checkbox" id="stLive"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+      <div class="tog-row"><div><div class="tog-lbl">Show prices publicly</div></div><label class="tog"><input type="checkbox" id="stPrices"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+      <div class="tog-row"><div><div class="tog-lbl">Enable buyer cart</div></div><label class="tog"><input type="checkbox" id="stCart"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+    </div>
+    <div class="store-section">
+      <div class="store-section-title">📊 Admin Override</div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Override Plan</label>
+          <select class="fs" id="stPlanOverride">
+            <option value="">— None —</option>
+            <option value="free">Force Free</option>
+            <option value="pro">Force Pro</option>
+            <option value="business">Force Business</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Verified Badge</label>
+          <select class="fs" id="stVerified">
+            <option value="false">Not verified</option>
+            <option value="true">✓ Verified</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mft">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modalStore')">Cancel</button>
+    <button class="btn btn-g btn-sm" onclick="saveStoreEdit()">💾 Save Store</button>
+  </div>
+</div>
+</div>
+
+<!-- CHANGE PLAN -->
+<div class="modal-bg" id="modalPlan">
+<div class="modal-sh" style="max-width:400px">
+  <div class="mhdl"></div>
+  <div class="mhd"><div class="mht">Change Plan</div><button class="mx" onclick="closeModal('modalPlan')">✕</button></div>
+  <div class="mb">
+    <div class="fg"><div class="fl" style="margin-bottom:8px">Changing plan for:</div><div style="font-size:14px;font-weight:700" id="planChangeUserName">—</div></div>
+    <div class="fg"><label class="fl">New Plan</label>
+      <select class="fs" id="newPlanSel">
+        <option value="free">Free — ₦0/mo</option>
+        <option value="pro">Pro — ₦5,000/mo</option>
+        <option value="business">Business — ₦12,000/mo</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Reason (internal)</label><input class="fi" id="planChangeReason" placeholder="e.g. Paid via bank transfer"/></div>
+    <div class="fg"><label class="fl">New Expiry Date</label><input class="fi" id="newPlanExpiry" type="date"/></div>
+    <div class="tog-row"><div><div class="tog-lbl">Send WhatsApp notification</div></div><label class="tog"><input type="checkbox" id="planChangeNotify" checked/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+  </div>
+  <div class="mft">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modalPlan')">Cancel</button>
+    <button class="btn btn-g btn-sm" onclick="confirmPlanChange()">Confirm</button>
+  </div>
+</div>
+</div>
+
+<!-- SUSPEND USER -->
+<div class="modal-bg" id="modalSuspend">
+<div class="modal-sh" style="max-width:400px">
+  <div class="mhdl"></div>
+  <div class="mhd"><div class="mht" id="suspendTitle">Suspend User</div><button class="mx" onclick="closeModal('modalSuspend')">✕</button></div>
+  <div class="mb">
+    <div class="info r"><span>⚠️</span><div class="info-txt">This will restrict access and take their store(s) offline.</div></div>
+    <div class="fg"><label class="fl">Reason</label>
+      <select class="fs" id="suspendReason">
+        <option>Violation of Terms of Service</option>
+        <option>Fraudulent activity detected</option>
+        <option>Unpaid subscription</option>
+        <option>Spam / fake products</option>
+        <option>User requested suspension</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Internal Note</label><textarea class="ft" id="suspendNote" rows="2" placeholder="Admin note…"></textarea></div>
+  </div>
+  <div class="mft">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modalSuspend')">Cancel</button>
+    <button class="btn btn-red btn-sm" onclick="confirmSuspend()">Confirm</button>
+  </div>
+</div>
+</div>
+
+<!-- TICKET REPLY -->
+<div class="modal-bg" id="modalTicket">
+<div class="modal-sh" style="max-width:560px">
+  <div class="mhdl"></div>
+  <div class="mhd"><div class="mht" id="ticketModalTitle">Ticket</div><button class="mx" onclick="closeModal('modalTicket')">✕</button></div>
+  <div class="mb">
+    <div class="card" style="background:var(--s2);margin-bottom:12px"><div class="cb" id="ticketDetailBody"></div></div>
+    <div class="fg"><label class="fl">Reply</label><textarea class="ft" id="ticketReply" style="min-height:80px" placeholder="Write your reply…"></textarea></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Status</label>
+        <select class="fs" id="ticketStatusSel">
+          <option value="open">Open</option>
+          <option value="escalated">Escalated</option>
+          <option value="resolved">Resolved ✓</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Priority</label>
+        <select class="fs" id="ticketPriority">
+          <option value="normal">Normal</option>
+          <option value="high">High</option>
+          <option value="urgent">Urgent 🚨</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="mft">
+    <button class="btn btn-red btn-sm" onclick="escalateTicket()">🚨 Escalate</button>
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modalTicket')">Cancel</button>
+    <button class="btn btn-g btn-sm" onclick="replyTicket()">Send Reply</button>
+  </div>
+</div>
+</div>
+
+<!-- VERIF REVIEW -->
+<div class="modal-bg" id="modalVerif">
+<div class="modal-sh" style="max-width:480px">
+  <div class="mhdl"></div>
+  <div class="mhd"><div class="mht">Review Verification</div><button class="mx" onclick="closeModal('modalVerif')">✕</button></div>
+  <div class="mb" id="verifModalBody"></div>
+  <div class="mft">
+    <button class="btn btn-red btn-sm" onclick="rejectVerif()">✕ Reject</button>
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modalVerif')">Cancel</button>
+    <button class="btn btn-g btn-sm" onclick="approveVerif()">✓ Approve</button>
+  </div>
+</div>
+</div>
+
+<!-- COUPON MODAL -->
+<div class="modal-bg" id="modalCoupon">
+<div class="modal-sh" style="max-width:520px">
+  <div class="mhdl"></div>
+  <div class="mhd"><div class="mht" id="couponModalTitle">Create Coupon</div><button class="mx" onclick="closeModal('modalCoupon')">✕</button></div>
+  <div class="mb">
+    <div class="fr">
+      <div class="fg"><label class="fl">Coupon Code <span style="color:var(--red)">*</span></label><input class="fi" id="cpCode" placeholder="e.g. SAVE30" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/></div>
+      <div class="fg" style="display:flex;flex-direction:column;justify-content:flex-end">
+        <button class="btn btn-ghost btn-sm" style="height:40px" onclick="generateCouponCode()">⚡ Auto-generate</button>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Discount Type</label>
+        <select class="fs" id="cpType" onchange="updateCpPlaceholder()">
+          <option value="percent">Percentage (%)</option>
+          <option value="fixed">Fixed Amount (₦)</option>
+          <option value="months">Free Months</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Discount Value <span style="color:var(--red)">*</span></label><input class="fi" id="cpValue" type="number" min="1" placeholder="e.g. 30"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Applicable Plan</label>
+        <select class="fs" id="cpPlan">
+          <option value="all">All plans</option>
+          <option value="pro">Pro only</option>
+          <option value="business">Business only</option>
+          <option value="pro,business">Pro + Business</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Eligible Users</label>
+        <select class="fs" id="cpEligible">
+          <option value="all">Everyone</option>
+          <option value="free">Free plan users</option>
+          <option value="pro">Pro users</option>
+          <option value="new">New signups only</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Max Uses</label><input class="fi" id="cpMaxUses" type="number" min="1" placeholder="Leave blank = unlimited"/></div>
+      <div class="fg"><label class="fl">Per User Limit</label>
+        <select class="fs" id="cpPerUser">
+          <option value="1">1 use per user</option>
+          <option value="3">3 uses per user</option>
+          <option value="unlimited">Unlimited</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Start Date</label><input class="fi" id="cpStart" type="date"/></div>
+      <div class="fg"><label class="fl">Expiry Date</label><input class="fi" id="cpExpiry" type="date"/><div class="fhint">Leave blank = no expiry</div></div>
+    </div>
+    <div class="fg"><label class="fl">Description (internal)</label><input class="fi" id="cpDesc" placeholder="e.g. Ramadan promo — pro plan 30% off"/></div>
+    <div class="tog-row"><div><div class="tog-lbl">Active immediately</div><div class="tog-sub">Disable to save as draft</div></div><label class="tog"><input type="checkbox" id="cpActive" checked/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+    <div class="tog-row"><div><div class="tog-lbl">First-time users only</div><div class="tog-sub">Reject if user has any prior subscription</div></div><label class="tog"><input type="checkbox" id="cpFirstTime"/><div class="tog-tr"><div class="tog-th"></div></div></label></div>
+  </div>
+  <div class="mft">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('modalCoupon')">Cancel</button>
+    <button class="btn btn-g btn-sm" onclick="saveCoupon()">💾 Save Coupon</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toastEl"><span id="toastIc"></span><span id="toastMsg"></span></div>
+
+<script>
+/* ════════════════════════════════════════════
+   API LAYER — all calls go to backend
+════════════════════════════════════════════ */
+const API = {
+  BASE_URL: '/api/admin',
+
+  async req(method, path, body) {
+    try {
+      const r = await fetch(this.BASE_URL + path, {
+        method,
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      if (r.status === 401) { showLoginPage(); return null; }
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.message || data.error || r.status);
+      return data;
+    } catch (e) {
+      console.error('API error', method, path, e.message);
+      toast(e.message || 'Server error', '❌');
+      return null;
+    }
+  },
+
+  get:  (p)    => API.req('GET',    p),
+  post: (p, b) => API.req('POST',   p, b),
+  put:  (p, b) => API.req('PUT',    p, b),
+  del:  (p)    => API.req('DELETE', p),
+
+  async getPaged(path, params) {
+    const qs = new URLSearchParams(
+      Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '' && v !== null && v !== undefined))
+    ).toString();
+    return this.get(`${path}?${qs}`);
+  }
+};
+
+/* ════ CONSTANTS ════ */
+const PLAN_PRICES  = { free: 0, pro: 5000, business: 12000 };
+const PLAN_COLORS  = { free: 'var(--t2)', pro: 'var(--g)', business: 'var(--yellow)' };
+const PLAN_BADGE   = { free: 'bm', pro: 'bg', business: 'by' };
+const ROLE_BADGE   = { seller: 'bm', moderator: 'bb', editor: 'bp', admin: 'bg', super_admin: 'br' };
+const STATUS_BADGE = { active: 'bg', suspended: 'by', banned: 'br' };
+
+/* ════ STATE ════ */
+let userPg = 1, storePg = 1, verifPg = 1, ticketPg = 1, subPg = 1, logPg = 1, couponPg = 1;
+let verifFilter = 'pending', ticketFilter = 'open', subFilter = 'all', couponFilter = 'all';
+let editingUserId = null, editingStoreId = null, planChangeUid = null, suspendingUid = null;
+let activeTicketId = null, reviewingVerifId = null, editingCouponId = null;
+
+/* ════ HELPERS ════ */
+function fmtNum(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'm';
+  if (n >= 1e3) return Math.round(n / 1e3) + 'k';
+  return (n || 0).toLocaleString();
+}
+function initials(name) {
+  return (name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+function badge(cls, txt) { return `<span class="badge ${cls}">${txt}</span>`; }
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function fmtDateTime(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('en-NG', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+/* ════ SIDEBAR BADGE UPDATER ════ */
+async function updateSideBadges() {
+  const data = await API.get('/dashboard');
+  if (!data?.success) return;
+  const s = data.summary;
+  document.getElementById('mrrBadge').textContent     = '₦' + fmtNum(s.mrr || 0);
+  document.getElementById('userBadge').textContent    = s.totalUsers || 0;
+  document.getElementById('verifBadge').textContent   = s.pendingVerifications || 0;
+  document.getElementById('ticketBadge').textContent  = s.openTickets || 0;
+  document.getElementById('liveStoresSB').textContent = s.liveStores || 0;
+}
+
+/* ════ NAV ════ */
+function toggleSB() {
+  const sb = document.getElementById('SB'), bd = document.getElementById('SBBd'), hb = document.getElementById('HB');
+  const o = sb.classList.toggle('open');
+  bd.classList.toggle('show', o);
+  hb.classList.toggle('open', o);
+}
+function closeSB() {
+  document.getElementById('SB').classList.remove('open');
+  document.getElementById('SBBd').classList.remove('show');
+  document.getElementById('HB').classList.remove('open');
+}
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll(`[data-p="${id}"]`).forEach(n => n.classList.add('active'));
+  closeSB();
+  const renders = {
+    overview: renderOverview, revenue: renderRevenue, users: renderUsersPage,
+    verification: renderVerification, stores: renderStoresPage, plans: renderPlansEditor,
+    subscriptions: renderSubscriptions, coupons: renderCoupons, promo: renderPromoPage,
+    announcements: renderAnnouncements, support: renderSupport, analytics: renderAnalytics,
+    settings: renderSettings, logs: renderLogs
+  };
+  if (renders[id]) renders[id]();
+}
+
+function doGlobalSearch() {
+  const q = document.getElementById('globalSearch').value.toLowerCase();
+  if (q.length > 1) {
+    document.getElementById('userSearchBox').value = q;
+    userPg = 1;
+    showPage('users');
+  }
+}
+
+/* ════ PAGINATION HELPER ════ */
+function buildPagination(containerId, currentPage, totalItems, perPage, onPageChange) {
+  const totalPages = Math.ceil(totalItems / perPage);
+  if (totalPages <= 1) { document.getElementById(containerId).innerHTML = ''; return; }
+  const start = (currentPage - 1) * perPage + 1;
+  const end = Math.min(currentPage * perPage, totalItems);
+  let pages = [];
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    pages.push(1);
+    if (currentPage > 3) pages.push('…');
+    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i);
+    if (currentPage < totalPages - 2) pages.push('…');
+    pages.push(totalPages);
+  }
+  const btns = pages.map(p => p === '…'
+    ? `<span style="padding:0 4px;color:var(--t3);line-height:30px">…</span>`
+    : `<button class="pgn-btn ${p === currentPage ? 'active' : ''}" onclick="(${onPageChange})(${p})">${p}</button>`
+  ).join('');
+  document.getElementById(containerId).innerHTML = `
+    <span class="pgn-info">Showing ${start}–${end} of ${totalItems}</span>
+    <div class="pgn-btns">
+      <button class="pgn-btn" onclick="(${onPageChange})(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>
+      ${btns}
+      <button class="pgn-btn" onclick="(${onPageChange})(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>
+    </div>`;
+}
+
+/* ════ BAR CHART ════ */
+function buildBarChart(data, color, labels) {
+  if (!data || !data.length) return '<div style="color:var(--t3);font-size:11px">No data</div>';
+  const mx = Math.max(...data) || 1;
+  return data.map((v, i) => `
+    <div class="bc-col">
+      <div class="bc-bar" style="height:${Math.round(v / mx * 100)}%;background:${color};opacity:${i === data.length - 1 ? 1 : .4}" title="${v}"></div>
+      ${labels ? `<div class="bc-lbl">${labels[i] || ''}</div>` : ''}
+    </div>`).join('');
+}
+
+/* ════ OVERVIEW ════ */
+async function renderOverview() {
+  const container = document.getElementById('page-overview');
+  container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--t2)">Loading…</div>`;
+  const data = await API.get('/dashboard');
+  if (!data?.success) { container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--red)">Failed to load dashboard</div>`; return; }
+  const s = data.summary;
+  const mrr = s.mrr || 0;
+
+  container.innerHTML = `
+    <div class="ph">
+      <div><div class="ph-title">Platform Overview</div><div class="ph-sub">${new Date().toLocaleDateString('en-NG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div></div>
+      <div class="ph-acts">
+        <button class="btn btn-ghost btn-sm" onclick="showPage('announcements')">📣 Announce</button>
+        <button class="btn btn-g btn-sm" onclick="openAddUserModal()">+ Add User</button>
+      </div>
+    </div>
+    <div class="sg">
+      <div class="sc" style="--c:var(--g)"><div class="sib" style="background:var(--gdim)">💰</div><div class="sv">₦${fmtNum(mrr)}</div><div class="sl">Current MRR</div></div>
+      <div class="sc" style="--c:var(--blue)"><div class="sib" style="background:var(--bdim)">👥</div><div class="sv">${s.totalUsers || 0}</div><div class="sl">Total Users</div></div>
+      <div class="sc" style="--c:var(--purple)"><div class="sib" style="background:var(--pdim)">🏪</div><div class="sv">${s.liveStores || 0}</div><div class="sl">Live Stores</div></div>
+      <div class="sc" style="--c:var(--yellow)"><div class="sib" style="background:var(--ydim)">✅</div><div class="sv">${s.pendingVerifications || 0}</div><div class="sl">Pending Verif</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="card">
+        <div class="ch"><div class="ct">Latest Signups</div></div>
+        <div class="cb" id="latestSignupsCard">
+          ${(data.users || []).map(u => `
+            <div style="display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--bd)">
+              <div style="width:28px;height:28px;border-radius:50%;background:${PLAN_COLORS[u.plan] || 'var(--t2)'}22;color:${PLAN_COLORS[u.plan] || 'var(--t2)'};font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials(u.name)}</div>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700">${u.name}</div><div style="font-size:10px;color:var(--t2)">${u.city || ''}</div></div>
+              ${badge(PLAN_BADGE[u.plan] || 'bm', u.plan)}
+            </div>`).join('') || '<div style="color:var(--t3);font-size:12px">No users yet</div>'}
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Open Tickets</div><div class="cs">Needs attention</div></div>
+        <div class="cb">
+          ${(data.tickets || []).filter(t => t.status !== 'resolved').slice(0, 5).map(t => `
+            <div style="padding:7px 0;border-bottom:1px solid var(--bd)">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+                <div style="font-size:12px;font-weight:700">${t.subject || 'No subject'}</div>
+                ${badge(t.status === 'escalated' ? 'br' : 'by', t.status)}
+              </div>
+              <div style="font-size:10px;color:var(--t2)">${t.userName || ''} · ${t.category || ''}</div>
+            </div>`).join('') || '<div style="color:var(--t3);font-size:12px">No open tickets</div>'}
+        </div>
+      </div>
+    </div>
+    ${s.pendingVerifications > 0 ? `
+      <div class="info y"><span>⚠️</span><div class="info-txt">
+        <strong>${s.pendingVerifications} verification request${s.pendingVerifications !== 1 ? 's' : ''}</strong> waiting for review.
+        <button class="btn btn-yellow btn-sm" style="margin-left:8px" onclick="showPage('verification')">Review Now →</button>
+      </div></div>` : ''}`;
+}
+
+/* ════ REVENUE ════ */
+async function renderRevenue() {
+  document.getElementById('page-revenue').innerHTML = `<div style="padding:40px;text-align:center;color:var(--t2)">Loading…</div>`;
+  const [dashboard, analytics] = await Promise.all([
+    API.get('/dashboard'),
+    API.get('/analytics')
+  ]);
+  const s = dashboard?.summary || {};
+  const mrr = s.mrr || 0;
+  const arr = mrr * 12;
+const paidCount = (analytics?.summary?.activePro || 0) + (analytics?.summary?.activeBusiness || 0);
+  const arpu = paidCount > 0 ? Math.round(mrr / paidCount) : 0;
+  const monthlyData = (analytics?.monthlySignups || []).map(m => (m.activePro || 0) * 5000 + (m.activeBusiness || 0) * 12000);
+  const monthLabels = (analytics?.monthlySignups || []).map(m => m._id?.slice(5) || '');
+  const couponsData = await API.get('/coupons?limit=100');
+  const coupons = couponsData?.data || [];
+  const totalDiscount = coupons.reduce((s, c) => s + (c.used || 0) * (c.type === 'fixed' ? c.value : c.type === 'percent' ? Math.round(5000 * c.value / 100) : 0), 0);
+
+  document.getElementById('page-revenue').innerHTML = `
+    <div class="ph">
+      <div><div class="ph-title">Revenue</div><div class="ph-sub">Subscription income, MRR, churn</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="exportRevenue()">⬇ Export</button>
+    </div>
+    <div class="sg">
+      <div class="sc" style="--c:var(--g)"><div class="sib" style="background:var(--gdim)">💰</div><div class="sv">₦${fmtNum(mrr)}</div><div class="sl">MRR</div></div>
+      <div class="sc" style="--c:var(--blue)"><div class="sib" style="background:var(--bdim)">📅</div><div class="sv">₦${fmtNum(arr)}</div><div class="sl">ARR (projected)</div></div>
+      <div class="sc" style="--c:var(--red)"><div class="sib" style="background:var(--rdim)">📉</div><div class="sv">${analytics?.summary?.growthRate || 0}%</div><div class="sl">MRR Growth</div></div>
+      <div class="sc" style="--c:var(--purple)"><div class="sib" style="background:var(--pdim)">👤</div><div class="sv">₦${fmtNum(arpu)}</div><div class="sl">ARPU</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="card">
+        <div class="ch"><div class="ct">MRR Trend</div><div class="cs">Monthly</div></div>
+        <div class="cb"><div class="bar-chart">${buildBarChart(monthlyData, 'var(--g)', monthLabels)}</div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Coupon Impact</div></div>
+        <div class="cb">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            <div class="coupon-stat"><div class="coupon-stat-val" style="color:var(--g)">${coupons.filter(c => c.computedStatus === 'active').length}</div><div class="coupon-stat-lbl">Active Coupons</div></div>
+            <div class="coupon-stat"><div class="coupon-stat-val" style="color:var(--blue)">${coupons.reduce((s, c) => s + (c.used || 0), 0)}</div><div class="coupon-stat-lbl">Total Redemptions</div></div>
+            <div class="coupon-stat"><div class="coupon-stat-val" style="color:var(--yellow)">₦${fmtNum(totalDiscount)}</div><div class="coupon-stat-lbl">Discount Given</div></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ════ USERS PAGE ════ */
+async function renderUsersPage() {
+  document.getElementById('usersThead').innerHTML = `<tr><th>User</th><th>Email</th><th>Plan</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr>`;
+  await renderUsersTable();
+}
+
+async function renderUsersTable() {
+  document.getElementById('usersBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--t2)">Loading…</td></tr>`;
+  const q    = (document.getElementById('userSearchBox')?.value || '').toLowerCase();
+  const plan = document.getElementById('userPlanFilter')?.value || 'all';
+  const limit = parseInt(document.getElementById('userLimitSel')?.value || 20);
+
+  const data = await API.getPaged('/users', { page: userPg, limit, search: q, plan: plan === 'all' ? '' : plan });
+  if (!data?.success) { document.getElementById('usersBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--red)">Failed to load users</td></tr>`; return; }
+
+  document.getElementById('userPageSub').textContent = `${data.total} users`;
+  document.getElementById('usersBody').innerHTML = (data.users || []).map(u => `
+    <tr>
+      <td><div class="td-main">${u.name}</div><div class="td-sub">${u.waNumber || u.wa || ''} · ${u.city || ''}</div></td>
+      <td class="mono">${u.email || '—'}</td>
+      <td>${badge(PLAN_BADGE[u.plan] || 'bm', u.plan)}</td>
+      <td>${badge(ROLE_BADGE[u.role] || 'bm', u.role || 'seller')}</td>
+      <td>${badge(STATUS_BADGE[u.status] || 'bm', u.status)}</td>
+      <td style="font-size:11px;color:var(--t2);white-space:nowrap">${fmtDate(u.createdAt)}</td>
+      <td><div class="tbl-acts">
+        <button class="ia" onclick="openEditUser('${u.id}')" title="Edit">✏️</button>
+        <button class="ia" onclick="openChangePlan('${u.id}')" title="Change plan">💎</button>
+        <button class="ia warn" onclick="openSuspend('${u.id}')" title="${u.status === 'active' ? 'Suspend' : 'Unsuspend'}">⛔</button>
+        <button class="ia" onclick="msgUser('${u.id}','${(u.waNumber || u.wa || '').replace(/\D/g, '')}','${u.name.replace(/'/g, '\\\'')}')" title="WhatsApp">💬</button>
+      </div></td>
+    </tr>`).join('') || `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--t3)">No users found</td></tr>`;
+
+  buildPagination('userPgn', userPg, data.total, limit, `function(p){userPg=p;renderUsersTable();}`);
+}
+
+/* ════ USER MODALS ════ */
+function openAddUserModal() {
+  editingUserId = null;
+  document.getElementById('modalUserTitle').textContent = 'Add User';
+  document.getElementById('uPasswordGroup').style.display = '';
+  ['uName', 'uEmail', 'uWA', 'uCity', 'uNotes', 'uPassword'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('uPlan').value   = 'free';
+  document.getElementById('uRole').value   = 'seller';
+  document.getElementById('uStatus').value = 'active';
+  document.getElementById('uPlanExpiry').value = '';
+  openModal('modalUser');
+}
+
+async function openEditUser(id) {
+  editingUserId = id;
+  document.getElementById('modalUserTitle').textContent = 'Edit User';
+  document.getElementById('uPasswordGroup').style.display = 'none';
+  document.getElementById('uName').value  = '';
+  document.getElementById('uEmail').value = '';
+  openModal('modalUser');
+
+  const data = await API.get(`/users/${id}`);
+  if (!data?.success) { toast('Failed to load user', '❌'); closeModal('modalUser'); return; }
+  const u = data.data;
+  document.getElementById('uName').value        = u.name || '';
+  document.getElementById('uEmail').value       = u.email || '';
+  document.getElementById('uWA').value          = u.waNumber || u.wa || '';
+  document.getElementById('uCity').value        = u.city || '';
+  document.getElementById('uPlan').value        = u.plan || 'free';
+  document.getElementById('uRole').value        = u.role || 'seller';
+  document.getElementById('uStatus').value      = u.status || 'active';
+  document.getElementById('uPlanExpiry').value  = u.planExpiresAt ? new Date(u.planExpiresAt).toISOString().split('T')[0] : '';
+  document.getElementById('uNotes').value       = u.notes || '';
+}
+
+async function saveUser() {
+  const name     = document.getElementById('uName').value.trim();
+  const email    = document.getElementById('uEmail').value.trim();
+  const password = document.getElementById('uPassword')?.value?.trim();
+  if (!name) { toast('Name required', '⚠️'); return; }
+  if (!editingUserId && !password) { toast('Password required', '⚠️'); return; }
+  if (!editingUserId && password.length < 8) { toast('Password must be 8+ characters', '⚠️'); return; }
+
+  const obj = {
+    name, email,
+    wa:          document.getElementById('uWA').value.trim(),
+    plan:        document.getElementById('uPlan').value,
+    role:        document.getElementById('uRole').value,
+    status:      document.getElementById('uStatus').value,
+    city:        document.getElementById('uCity').value.trim(),
+    planExpiry:  document.getElementById('uPlanExpiry').value || null,
+    notes:       document.getElementById('uNotes').value.trim(),
+  };
+
+  let res;
+  if (!editingUserId) {
+    res = await API.post('/users', { ...obj, password });
+    if (res?.success) { toast('User added', '✅'); }
+  } else {
+    res = await API.put(`/users/${editingUserId}`, obj);
+    if (res?.success) { toast('User updated', '✅'); }
+  }
+  if (!res?.success) return;
+  closeModal('modalUser');
+  renderUsersTable();
+  updateSideBadges();
+}
+
+function togglePwEye(inputId, btn) {
+  const el = document.getElementById(inputId);
+  el.type = el.type === 'password' ? 'text' : 'password';
+  btn.textContent = el.type === 'password' ? '👁' : '🙈';
+}
+
+async function openChangePlan(id) {
+  planChangeUid = id;
+  const data = await API.get(`/users/${id}`);
+  if (!data?.success) { toast('Failed to load user', '❌'); return; }
+  const u = data.data;
+  document.getElementById('planChangeUserName').textContent = `${u.name} (current: ${u.plan})`;
+  document.getElementById('newPlanSel').value   = u.plan;
+  document.getElementById('planChangeReason').value = '';
+  document.getElementById('newPlanExpiry').value    = '';
+  openModal('modalPlan');
+}
+
+async function confirmPlanChange() {
+  const newPlan = document.getElementById('newPlanSel').value;
+  const reason  = document.getElementById('planChangeReason').value.trim();
+  const expiry  = document.getElementById('newPlanExpiry').value;
+
+  const res = await API.put(`/users/${planChangeUid}/plan`, { plan: newPlan, planExpiry: expiry || null });
+  if (!res?.success) return;
+
+  closeModal('modalPlan');
+  renderUsersTable();
+  updateSideBadges();
+  toast(`Plan changed to ${newPlan}`, '💎');
+
+  if (document.getElementById('planChangeNotify').checked) {
+    const userRes = await API.get(`/users/${planChangeUid}`);
+    const wa = (userRes?.data?.waNumber || userRes?.data?.wa || '').replace(/\D/g, '');
+    if (wa) {
+      const msg = `Hi ${userRes.data.name}! Your StoreLink plan has been updated to ${newPlan}. — StoreLink Team`;
+      window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(msg), '_blank');
+    }
+  }
+}
+
+async function openSuspend(id) {
+  suspendingUid = id;
+  const data = await API.get(`/users/${id}`);
+  if (!data?.success) { toast('Failed to load user', '❌'); return; }
+  const u = data.data;
+  document.getElementById('suspendTitle').textContent = u.status === 'active' ? 'Suspend User' : 'Reactivate User';
+  document.getElementById('suspendNote').value = '';
+  openModal('modalSuspend');
+}
+
+async function confirmSuspend() {
+  const res = await API.put(`/users/${suspendingUid}/suspend`, { reason: document.getElementById('suspendNote').value || '' });
+  if (!res?.success) return;
+  closeModal('modalSuspend');
+  renderUsersTable();
+  updateSideBadges();
+  toast('User status updated', '✅');
+}
+
+function msgUser(id, wa, name) {
+  if (wa) window.open(`https://wa.me/${wa}?text=${encodeURIComponent('Hi ' + name + '! This is StoreLink Support 👋')}`, '_blank');
+  else toast('No WhatsApp number on record', '⚠️');
+}
+
+/* ════ VERIFICATION ════ */
+function setVerifFilter(f, btn) {
+  verifFilter = f; verifPg = 1;
+  document.querySelectorAll('#page-verification .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVerification();
+}
+
+async function renderVerification() {
+  const limit = parseInt(document.getElementById('verifLimitSel')?.value || 10);
+  const el = document.getElementById('verifList');
+  el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--t2)">Loading…</div>';
+
+  const data = await API.getPaged('/verifications', { status: verifFilter, page: verifPg, limit });
+  if (!data?.success) { el.innerHTML = `<div class="empty"><div class="empty-ic">❌</div><div class="empty-tt">Failed to load</div></div>`; return; }
+
+  const list = data.data || [];
+  if (!list.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-ic">📬</div><div class="empty-tt">No ${verifFilter} requests</div></div>`;
+    document.getElementById('verifPgn').innerHTML = '';
+    return;
+  }
+
+  el.innerHTML = list.map(v => {
+    const checks = [
+      { label: 'WhatsApp provided',       ok: !!v.wa },
+      { label: '3+ active products',      ok: (v.products || 0) >= 3 },
+      { label: 'Store description filled', ok: !!v.desc && v.desc.length > 10 },
+      { label: '30+ store visits',        ok: (v.visits || 0) >= 30 },
+    ];
+    const passed = checks.filter(c => c.ok).length;
+    return `
+      <div class="verif-item v-${v.status}">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+          <div style="font-size:28px;flex-shrink:0">${v.storeEmoji || '🏪'}</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:700">${v.storeName}</div>
+            <div style="font-size:11px;color:var(--t2)">${v.ownerName} · ${v.ownerEmail || ''}</div>
+            <div style="font-size:10px;color:var(--t3);margin-top:2px">Submitted: ${fmtDate(v.createdAt)}</div>
+          </div>
+          ${badge(v.status === 'pending' ? 'by' : v.status === 'approved' ? 'bg' : 'br', v.status === 'approved' ? '✓ Verified' : v.status === 'rejected' ? '✕ Rejected' : '⏳ Pending')}
+        </div>
+        ${v.desc ? `<div style="font-size:11px;color:var(--t2);font-style:italic;margin-bottom:8px">"${v.desc}"</div>` : ''}
+        <div style="margin-bottom:8px">${checks.map(c => `<div class="ck-row"><div class="ck-ic" style="background:${c.ok ? 'var(--gdim)' : 'var(--rdim)'};color:${c.ok ? 'var(--g)' : 'var(--red)'}">${c.ok ? '✓' : '✕'}</div>${c.label}</div>`).join('')}</div>
+        <div style="font-size:11px;color:var(--t2)">✅ ${passed}/4 met · Products: ${v.products || 0} · Visits: ${v.visits || 0}</div>
+        ${v.status === 'rejected' && v.reason ? `<div style="font-size:11px;color:var(--red);background:var(--rdim);border-radius:6px;padding:6px 9px;margin-top:8px">Rejected: ${v.reason}</div>` : ''}
+        ${v.status === 'pending' ? `
+          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn btn-red btn-sm" onclick="openVerifDetail('${v.id}')">✕ Reject</button>
+            <button class="btn btn-ghost btn-sm" onclick="openVerifDetail('${v.id}')">👁 Review</button>
+            <button class="btn btn-g btn-sm" onclick="quickApproveVerif('${v.id}')" ${passed < 3 ? 'disabled style="opacity:.5" title="Requirements not met"' : ''}>✓ Approve</button>
+          </div>` :
+          v.status === 'approved' ?
+          `<div style="margin-top:10px"><button class="btn btn-red btn-sm" onclick="revokeVerif('${v.id}')">Revoke Badge</button></div>` :
+          `<div style="margin-top:10px"><button class="btn btn-ghost btn-sm" onclick="openVerifDetail('${v.id}')">View Details</button></div>`}
+      </div>`;
+  }).join('');
+
+  buildPagination('verifPgn', verifPg, data.total, limit, `function(p){verifPg=p;renderVerification();}`);
+}
+
+function openVerifDetail(id) {
+  reviewingVerifId = id;
+  // Find in already-rendered data; if not available, fetch
+  document.getElementById('verifModalBody').innerHTML = `
+    <div style="padding:20px;text-align:center;color:var(--t2)">Loading…</div>`;
+  openModal('modalVerif');
+  // Fetch fresh detail
+ API.get(`/verifications/${id}`).then(data => {
+    const v = data?.data;
+    if (!v) { document.getElementById('verifModalBody').innerHTML = '<div style="color:var(--red)">Not found</div>'; return; }
+    document.getElementById('verifModalBody').innerHTML = `
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px">${v.storeEmoji || '🏪'} ${v.storeName}</div>
+      <div style="font-size:11px;color:var(--t2);margin-bottom:12px">${v.ownerName} · ${v.ownerEmail || ''} · WA: ${v.wa || '—'}</div>
+      <div style="font-size:12px;margin-bottom:10px">Products: <strong>${v.products || 0}</strong> · Visits: <strong>${v.visits || 0}</strong></div>
+      ${v.desc ? `<div class="fg"><label class="fl">Store Description</label><div style="background:var(--s2);border-radius:8px;padding:10px;font-size:12px;color:var(--t2)">${v.desc}</div></div>` : ''}
+      <div class="fg"><label class="fl">Rejection Reason (if rejecting)</label><textarea class="ft" id="verifReason" rows="2" placeholder="Explain why this store doesn't qualify…"></textarea></div>`;
+  });
+}
+
+async function approveVerif() {
+  const res = await API.put(`/verifications/${reviewingVerifId}`, { status: 'approved' });
+  if (!res?.success) return;
+  closeModal('modalVerif');
+  renderVerification();
+  updateSideBadges();
+  toast('Store verified ✓', '✅');
+}
+
+async function rejectVerif() {
+  const reason = (document.getElementById('verifReason')?.value || '').trim() || 'Did not meet requirements';
+  const res = await API.put(`/verifications/${reviewingVerifId}`, { status: 'rejected', reason });
+  if (!res?.success) return;
+  closeModal('modalVerif');
+  renderVerification();
+  updateSideBadges();
+  toast('Verification rejected', '⛔');
+}
+
+async function quickApproveVerif(id) {
+  reviewingVerifId = id;
+  const res = await API.put(`/verifications/${id}`, { status: 'approved' });
+  if (!res?.success) return;
+  renderVerification();
+  updateSideBadges();
+  toast('Store verified ✓', '✅');
+}
+
+async function revokeVerif(id) {
+  if (!confirm('Revoke verified badge?')) return;
+  const res = await API.put(`/verifications/${id}/revoke`, {});
+  if (!res?.success) return;
+  renderVerification();
+  updateSideBadges();
+  toast('Badge revoked', '⛔');
+}
+
+/* ════ STORES ════ */
+async function renderStoresPage() {
+  document.getElementById('storesThead').innerHTML = `<tr><th>Store</th><th>Owner</th><th>Plan</th><th>Products</th><th>Visits</th><th>Status</th><th>Actions</th></tr>`;
+  await renderStoresTable();
+}
+
+async function renderStoresTable() {
+  document.getElementById('storesBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--t2)">Loading…</td></tr>`;
+  const q     = (document.getElementById('storeSearchBox')?.value || '').toLowerCase();
+  const st    = document.getElementById('storeStatusFilter')?.value || 'all';
+  const limit = parseInt(document.getElementById('storeLimitSel')?.value || 20);
+
+  const data = await API.getPaged('/stores', { page: storePg, limit, search: q, status: st === 'all' ? '' : st });
+  if (!data?.success) { document.getElementById('storesBody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--red)">Failed to load</td></tr>`; return; }
+
+  document.getElementById('storePageSub').textContent = `${data.total} stores`;
+  document.getElementById('storesBody').innerHTML = (data.stores || []).map(s => `
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:22px">${s.emoji || '🏪'}</div>
+        <div><div class="td-main">${s.name} ${s.verified ? badge('bt', '✓') : ''}</div><div class="td-sub">${s.city || ''} · ${s.type || ''}</div></div>
+      </div></td>
+      <td style="font-size:12px">${s.ownerName || '—'}</td>
+      <td>${badge(PLAN_BADGE[s.plan] || 'bm', s.plan || 'free')}</td>
+      <td style="font-weight:700">${s.products || 0}</td>
+      <td style="font-weight:700;color:var(--g)">${fmtNum(s.visits || 0)}</td>
+      <td>${badge(s.status === 'live' ? 'bg' : 'by', s.status || 'live')}</td>
+      <td><div class="tbl-acts">
+        <button class="ia" onclick="openStoreEdit('${s.id}')" title="Edit">✏️</button>
+        <button class="ia" onclick="toggleStoreStatus('${s.id}')" title="${s.status === 'live' ? 'Suspend' : 'Activate'}">${s.status === 'live' ? '⛔' : '✅'}</button>
+      </div></td>
+    </tr>`).join('') || `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--t3)">No stores found</td></tr>`;
+
+  buildPagination('storePgn', storePg, data.total, limit, `function(p){storePg=p;renderStoresTable();}`);
+}
+
+async function openStoreEdit(id) {
+  editingStoreId = id;
+  openModal('modalStore');
+  document.getElementById('modalStoreTitle').textContent = 'Loading…';
+
+  const data = await API.get(`/stores/${id}`);
+  const s = data?.data;
+  if (!s) { toast('Store not found', '❌'); closeModal('modalStore'); return; }
+
+  document.getElementById('modalStoreTitle').textContent = 'Edit Store — ' + s.name;
+  document.getElementById('stName').value        = s.name || '';
+  document.getElementById('stEmoji').value       = s.emoji || '🏪';
+  document.getElementById('stType').value        = s.type || 'ecommerce';
+  document.getElementById('stCity').value        = s.city || '';
+  document.getElementById('stWA').value          = s.waNumber || '';
+  document.getElementById('stHeroTitle').value   = s.heroTitle || '';
+  document.getElementById('stHeroSub').value     = s.heroSub || '';
+  document.getElementById('stLive').checked      = s.isLive !== false;
+  document.getElementById('stPrices').checked    = s.prefPrices !== false;
+  document.getElementById('stCart').checked      = s.prefCart !== false;
+  document.getElementById('stPlanOverride').value = s.planOverride || '';
+  document.getElementById('stVerified').value    = s.verified ? 'true' : 'false';
+}
+
+async function saveStoreEdit() {
+  const obj = {
+    name:         document.getElementById('stName').value.trim(),
+    emoji:        document.getElementById('stEmoji').value.trim() || '🏪',
+    type:         document.getElementById('stType').value,
+    city:         document.getElementById('stCity').value.trim(),
+    waNumber:     document.getElementById('stWA').value.trim(),
+    heroTitle:    document.getElementById('stHeroTitle').value.trim(),
+    heroSub:      document.getElementById('stHeroSub').value.trim(),
+    isLive:       document.getElementById('stLive').checked,
+    prefPrices:   document.getElementById('stPrices').checked,
+    prefCart:     document.getElementById('stCart').checked,
+    planOverride: document.getElementById('stPlanOverride').value,
+    verified:     document.getElementById('stVerified').value === 'true',
+    status:       document.getElementById('stLive').checked ? 'live' : 'suspended',
+  };
+  const res = await API.put(`/stores/${editingStoreId}`, obj);
+  if (!res?.success) return;
+  closeModal('modalStore');
+  renderStoresTable();
+  toast('Store updated', '💾');
+}
+
+async function toggleStoreStatus(id) {
+  const res = await API.put(`/stores/${id}/status`, {});
+  if (!res?.success) return;
+  renderStoresTable();
+  toast('Store status updated', '✅');
+}
+
+/* ════ PLANS ════ */
+async function renderPlansEditor() {
+  document.getElementById('plansEditor').innerHTML = '<div style="padding:24px;text-align:center;color:var(--t2)">Loading…</div>';
+  const data = await API.get('/plans');
+  if (!data?.success || !data.data?.length) {
+    document.getElementById('plansEditor').innerHTML = '<div style="color:var(--red)">Failed to load plans</div>';
+    return;
+  }
+  const plans = data.data;
+  document.getElementById('plansEditor').innerHTML = plans.map(p => `
+    <div class="plan-editor-card" style="border-left:3px solid ${p.color || '#555'}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-family:var(--fh);font-size:16px;font-weight:800;color:${p.color || '#555'}">${p.name} Plan</div>
+        ${badge(PLAN_BADGE[p.id] || 'bm', '₦' + fmtNum(p.price || 0) + '/mo')}
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Monthly Price (₦)</label><input class="fi" id="pp_${p.id}" value="${p.price || 0}" type="number" min="0"/></div>
+        <div class="fg"><label class="fl">Description</label><input class="fi" id="pd_${p.id}" value="${p.desc || ''}"/></div>
+      </div>
+      <div class="fr3">
+        <div class="fg"><label class="fl">Max Stores</label><input class="fi" id="pls_${p.id}" value="${p.limits?.stores || 1}" type="number"/></div>
+        <div class="fg"><label class="fl">Max Products</label><input class="fi" id="plp_${p.id}" value="${p.limits?.products || 10}" type="number"/></div>
+        <div class="fg"><label class="fl">Max Categories</label><input class="fi" id="plc_${p.id}" value="${p.limits?.categories || 1}" type="number"/></div>
+      </div>
+      <div class="fg"><label class="fl">Features (one per line)</label><textarea class="ft" id="pf_${p.id}" style="min-height:90px">${(p.feats || []).join('\n')}</textarea></div>
+      <div class="fg"><label class="fl">Locked features (shown with ✕)</label><textarea class="ft" id="pn_${p.id}" style="min-height:60px">${(p.no || []).join('\n')}</textarea></div>
+    </div>`).join('');
+
+  // Store plan ids for save
+  document.getElementById('plansEditor').dataset.ids = plans.map(p => p.id).join(',');
+}
+
+async function saveAllPlans() {
+  const ids = document.getElementById('plansEditor').dataset.ids?.split(',') || [];
+  const plans = ids.map(id => ({
+    id,
+    price:    parseInt(document.getElementById(`pp_${id}`)?.value) || 0,
+    desc:     document.getElementById(`pd_${id}`)?.value || '',
+    limits: {
+      stores:     parseInt(document.getElementById(`pls_${id}`)?.value) || 1,
+      products:   parseInt(document.getElementById(`plp_${id}`)?.value) || 10,
+      categories: parseInt(document.getElementById(`plc_${id}`)?.value) || 1,
+    },
+    feats: (document.getElementById(`pf_${id}`)?.value || '').split('\n').map(f => f.trim()).filter(Boolean),
+    no:    (document.getElementById(`pn_${id}`)?.value || '').split('\n').map(f => f.trim()).filter(Boolean),
+  }));
+  const res = await API.put('/plans', plans);
+  if (res?.success) toast('Plans saved!', '💎');
+}
+
+/* ════ SUBSCRIPTIONS ════ */
+async function renderSubscriptions() {
+  const limit = parseInt(document.getElementById('subLimitSel')?.value || 20);
+  document.getElementById('subsBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--t2)">Loading…</td></tr>`;
+
+  const data = await API.getPaged('/subscriptions', { page: subPg, limit, status: subFilter === 'all' ? '' : subFilter });
+  if (!data?.success) { document.getElementById('subsBody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--red)">Failed to load</td></tr>`; return; }
+
+  const subs = data.data || [];
+  const totalMRR = subs.reduce((s, u) => s + (PLAN_PRICES[u.plan] || 0), 0);
+
+  document.getElementById('subKpis').innerHTML = `
+    <div class="sc" style="--c:var(--g)"><div class="sib" style="background:var(--gdim)">💰</div><div class="sv">₦${fmtNum(totalMRR)}</div><div class="sl">Monthly Revenue</div></div>
+    <div class="sc" style="--c:var(--blue)"><div class="sib" style="background:var(--bdim)">🔄</div><div class="sv">${data.total}</div><div class="sl">Paid Subscriptions</div></div>
+    <div class="sc" style="--c:var(--red)"><div class="sib" style="background:var(--rdim)">⚠️</div><div class="sv">${subs.filter(u => u.status === 'suspended').length}</div><div class="sl">Suspended</div></div>
+    <div class="sc" style="--c:var(--yellow)"><div class="sib" style="background:var(--ydim)">🔢</div><div class="sv">${subs.filter(u => u.plan === 'pro').length}</div><div class="sl">Pro Plan</div></div>`;
+
+  document.getElementById('subsThead').innerHTML = `<tr><th>User</th><th>Plan</th><th>Amount</th><th>Expiry</th><th>Status</th><th>Actions</th></tr>`;
+  document.getElementById('subsBody').innerHTML = subs.map(s => `
+    <tr>
+      <td><div class="td-main">${s.name}</div><div class="td-sub">${s.email || ''}</div></td>
+      <td>${badge(PLAN_BADGE[s.plan] || 'bm', s.plan)}</td>
+      <td style="font-family:var(--fm);font-size:12px;font-weight:700;color:var(--g)">₦${fmtNum(PLAN_PRICES[s.plan] || 0)}</td>
+      <td style="font-size:11px;color:var(--t2)">${s.planExpiresAt ? fmtDate(s.planExpiresAt) : 'Auto-renew'}</td>
+      <td>${badge(s.status === 'active' ? 'bg' : 'br', s.status)}</td>
+      <td><div class="tbl-acts">
+        <button class="ia" onclick="openChangePlan('${s.id}')" title="Change plan">💎</button>
+      </div></td>
+    </tr>`).join('') || `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--t3)">No subscriptions</td></tr>`;
+
+  buildPagination('subPgn', subPg, data.total, limit, `function(p){subPg=p;renderSubscriptions();}`);
+}
+
+function setSubFilter(f, btn) {
+  subFilter = f; subPg = 1;
+  document.querySelectorAll('#page-subscriptions .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSubscriptions();
+}
+
+async function exportSubscriptions() {
+  const data = await API.getPaged('/subscriptions', { page: 1, limit: 10000 });
+  const rows = [['Name', 'Email', 'Plan', 'Amount', 'Status', 'Expiry'],
+    ...(data?.data || []).map(u => [u.name, u.email, u.plan, PLAN_PRICES[u.plan] || 0, u.status, fmtDate(u.planExpiresAt)])];
+  downloadCSV(rows, 'subscriptions.csv');
+  toast('Exported', '⬇');
+}
+
+/* ════ COUPONS ════ */
+function setCouponFilter(f, btn) {
+  couponFilter = f; couponPg = 1;
+  document.querySelectorAll('#page-coupons .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCoupons();
+}
+
+async function renderCoupons() {
+  const limit = 10;
+  document.getElementById('couponList').innerHTML = '<div style="padding:24px;text-align:center;color:var(--t2)">Loading…</div>';
+
+  const data = await API.getPaged('/coupons', { page: couponPg, limit, status: couponFilter === 'all' ? '' : couponFilter });
+  if (!data?.success) { document.getElementById('couponList').innerHTML = '<div style="color:var(--red)">Failed to load</div>'; return; }
+
+  const coupons = data.data || [];
+  const totalUsed = coupons.reduce((s, c) => s + (c.used || 0), 0);
+  const totalDiscount = coupons.reduce((s, c) => s + (c.used || 0) * (c.type === 'fixed' ? c.value : c.type === 'percent' ? Math.round(5000 * c.value / 100) : 0), 0);
+  const active = coupons.filter(c => c.computedStatus === 'active').length;
+
+  document.getElementById('couponKpis').innerHTML = `
+    <div class="sc" style="--c:var(--g)"><div class="sib" style="background:var(--gdim)">🏷️</div><div class="sv">${active}</div><div class="sl">Active Coupons</div></div>
+    <div class="sc" style="--c:var(--blue)"><div class="sib" style="background:var(--bdim)">🔢</div><div class="sv">${totalUsed}</div><div class="sl">Total Redemptions</div></div>
+    <div class="sc" style="--c:var(--red)"><div class="sib" style="background:var(--rdim)">💸</div><div class="sv">₦${fmtNum(totalDiscount)}</div><div class="sl">Discount Given</div></div>
+    <div class="sc" style="--c:var(--purple)"><div class="sib" style="background:var(--pdim)">📊</div><div class="sv">${data.total}</div><div class="sl">Total Coupons</div></div>`;
+
+  document.getElementById('couponList').innerHTML = coupons.length ? coupons.map(c => {
+    const isActive = c.computedStatus === 'active';
+    const usePct = c.maxUses ? Math.min(100, Math.round((c.used || 0) / c.maxUses * 100)) : null;
+    const typeLabel = { percent: '% off', fixed: '₦ off', months: 'free mo' };
+    return `
+      <div class="coupon-card" style="--c:${isActive ? 'var(--g)' : 'var(--t3)'}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <div class="coupon-code">${c.code}</div>
+              ${badge(isActive ? 'bg' : 'bm', isActive ? 'Active' : 'Expired')}
+              ${badge(c.type === 'percent' ? 'bg' : c.type === 'fixed' ? 'bb' : 'bp', c.value + (typeLabel[c.type] || ''))}
+            </div>
+            <div style="font-size:11px;color:var(--t2)">${c.desc || '—'}</div>
+            <div style="font-size:10px;color:var(--t3);margin-top:3px">Plan: ${c.plan} · Eligible: ${c.eligible} · Per user: ${c.perUser}</div>
+            <div style="font-size:10px;color:var(--t3);margin-top:2px">Start: ${c.start ? fmtDate(c.start) : '—'} · Expiry: ${c.expiry ? fmtDate(c.expiry) : 'No expiry'}</div>
+          </div>
+          <div style="display:flex;gap:5px;flex-shrink:0">
+            <button class="ia" onclick="openEditCoupon('${c.id}')" title="Edit">✏️</button>
+            <button class="ia warn" onclick="toggleCoupon('${c.id}')" title="${c.active ? 'Disable' : 'Enable'}">${c.active ? '⏸' : '▶'}</button>
+            <button class="ia del" onclick="deleteCoupon('${c.id}')" title="Delete">🗑️</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="flex:1"><div class="prog-bg"><div class="prog-fill" style="width:${usePct !== null ? usePct : 100}%;background:${isActive ? 'var(--g)' : 'var(--t3)'}"></div></div></div>
+          <div style="font-size:11px;font-weight:700;white-space:nowrap">${c.used || 0}${c.maxUses ? ' / ' + c.maxUses : ' uses'}</div>
+        </div>
+      </div>`;
+  }).join('') : `<div class="empty"><div class="empty-ic">🏷️</div><div class="empty-tt">No ${couponFilter} coupons</div></div>`;
+
+  buildPagination('couponPgn', couponPg, data.total, limit, `function(p){couponPg=p;renderCoupons();}`);
+
+  // Top used — sort from current page data
+  const top = [...coupons].sort((a, b) => (b.used || 0) - (a.used || 0)).slice(0, 4);
+  document.getElementById('couponTop').innerHTML = top.map((c, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)">
+      <div style="font-family:var(--fh);font-size:13px;font-weight:800;color:var(--t3);width:16px">${i + 1}</div>
+      <div style="font-family:var(--fm);font-size:12px;font-weight:700;color:var(--g)">${c.code}</div>
+      <div style="flex:1;font-size:11px;color:var(--t2)">${c.desc || ''}</div>
+      <div style="font-size:12px;font-weight:700">${c.used || 0} uses</div>
+    </div>`).join('');
+}
+
+function openCouponModal() {
+  editingCouponId = null;
+  document.getElementById('couponModalTitle').textContent = 'Create Coupon';
+  ['cpCode', 'cpValue', 'cpMaxUses', 'cpDesc'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('cpType').value     = 'percent';
+  document.getElementById('cpPlan').value     = 'all';
+  document.getElementById('cpEligible').value = 'all';
+  document.getElementById('cpPerUser').value  = '1';
+  document.getElementById('cpActive').checked = true;
+  document.getElementById('cpFirstTime').checked = false;
+  document.getElementById('cpStart').value  = new Date().toISOString().split('T')[0];
+  document.getElementById('cpExpiry').value = '';
+  openModal('modalCoupon');
+}
+
+async function openEditCoupon(id) {
+  editingCouponId = id;
+  document.getElementById('couponModalTitle').textContent = 'Edit Coupon';
+  openModal('modalCoupon');
+
+  const data = await API.get(`/coupons/${id}`);
+  const c = data?.data;
+  if (!c) { toast('Coupon not found', '❌'); closeModal('modalCoupon'); return; }
+
+  document.getElementById('cpCode').value     = c.code;
+  document.getElementById('cpType').value     = c.type;
+  document.getElementById('cpValue').value    = c.value;
+  document.getElementById('cpPlan').value     = c.plan;
+  document.getElementById('cpEligible').value = c.eligible;
+  document.getElementById('cpMaxUses').value  = c.maxUses || '';
+  document.getElementById('cpPerUser').value  = c.perUser || '1';
+  document.getElementById('cpStart').value    = c.start ? new Date(c.start).toISOString().split('T')[0] : '';
+  document.getElementById('cpExpiry').value   = c.expiry ? new Date(c.expiry).toISOString().split('T')[0] : '';
+  document.getElementById('cpDesc').value     = c.desc || '';
+  document.getElementById('cpActive').checked = c.active;
+  document.getElementById('cpFirstTime').checked = c.firstTime || false;
+}
+
+async function saveCoupon() {
+  const code  = document.getElementById('cpCode').value.trim().toUpperCase();
+  const value = parseFloat(document.getElementById('cpValue').value);
+  if (!code)          { toast('Enter a coupon code', '⚠️'); return; }
+  if (!value || value <= 0) { toast('Enter a valid discount value', '⚠️'); return; }
+
+  const obj = {
+    code, type: document.getElementById('cpType').value, value,
+    plan:      document.getElementById('cpPlan').value,
+    eligible:  document.getElementById('cpEligible').value,
+    maxUses:   parseInt(document.getElementById('cpMaxUses').value) || null,
+    perUser:   document.getElementById('cpPerUser').value,
+    start:     document.getElementById('cpStart').value || null,
+    expiry:    document.getElementById('cpExpiry').value || null,
+    desc:      document.getElementById('cpDesc').value.trim(),
+    active:    document.getElementById('cpActive').checked,
+    firstTime: document.getElementById('cpFirstTime').checked,
+  };
+
+  let res;
+  if (editingCouponId) {
+    res = await API.put(`/coupons/${editingCouponId}`, obj);
+    if (res?.success) toast('Coupon updated', '✅');
+  } else {
+    res = await API.post('/coupons', obj);
+    if (res?.success) toast('Coupon created: ' + code, '🏷️');
+  }
+  if (!res?.success) return;
+  closeModal('modalCoupon');
+  renderCoupons();
+}
+
+async function toggleCoupon(id) {
+  const res = await API.post(`/coupons/${id}/toggle`, {});
+  if (!res?.success) return;
+  renderCoupons();
+  toast('Coupon toggled', res.data?.active ? '✅' : '⏸');
+}
+
+async function deleteCoupon(id) {
+  if (!confirm('Delete this coupon?')) return;
+  const res = await API.del(`/coupons/${id}`);
+  if (!res?.success) return;
+  renderCoupons();
+  toast('Coupon deleted', '🗑️');
+}
+
+function generateCouponCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('cpCode').value = code;
+}
+
+function updateCpPlaceholder() {
+  const type = document.getElementById('cpType').value;
+  const el   = document.getElementById('cpValue');
+  el.placeholder = type === 'percent' ? 'e.g. 30 (= 30%)' : type === 'fixed' ? 'e.g. 2500 (= ₦2,500)' : 'e.g. 1 (= 1 free month)';
+}
+
+/* ════ PROMO BANNERS ════ */
+function handleBannerTargetChange() {
+  const v = document.getElementById('pBannerTarget').value;
+  document.getElementById('specificUserField').style.display  = v === 'specific_user'  ? '' : 'none';
+  document.getElementById('specificStoreField').style.display = v === 'specific_store' ? '' : 'none';
+}
+
+async function renderPromoPage() {
+  livePromoPreview();
+  await renderActiveBanners();
+}
+
+function livePromoPreview() {
+  const ic    = document.getElementById('pBannerIc')?.value    || '🔥';
+  const label = document.getElementById('pBannerLabel')?.value || 'Limited Offer';
+  const title = document.getElementById('pBannerTitle')?.value || 'Your promo title';
+  const sub   = document.getElementById('pBannerSub')?.value   || 'Subtitle here';
+  const cta   = document.getElementById('pBannerCta')?.value   || 'Shop now';
+  const map   = { ppIc: ic, ppLabel: label, ppTitle: title, ppSub: sub, ppCta: cta };
+  Object.entries(map).forEach(([id, v]) => { const el = document.getElementById(id); if (el) el.textContent = v; });
+}
+
+async function pushPromoBanner() {
+  const title = document.getElementById('pBannerTitle').value.trim();
+  if (!title) { toast('Enter a banner title', '⚠️'); return; }
+  const banner = {
+    ic:          document.getElementById('pBannerIc').value.trim() || '🔥',
+    label:       document.getElementById('pBannerLabel').value.trim(),
+    title,
+    sub:         document.getElementById('pBannerSub').value.trim(),
+    cta:         document.getElementById('pBannerCta').value.trim() || 'Shop now',
+    target:      document.getElementById('pBannerTarget').value,
+    location:    document.getElementById('pBannerLocation').value,
+    duration:    document.getElementById('pBannerDuration').value,
+    dismissable: document.getElementById('pBannerDismissable').checked,
+  };
+  const res = await API.post('/promo-banners', banner);
+  if (!res?.success) return;
+  await renderActiveBanners();
+  toast('Banner pushed', '🎯');
+}
+
+async function renderActiveBanners() {
+  const el = document.getElementById('activeBannersList');
+  if (!el) return;
+  const data = await API.get('/promo-banners');
+  const active = (data?.data || []).filter(b => b.status === 'active');
+  const cnt = document.getElementById('activeBannersCount');
+  if (cnt) cnt.textContent = active.length + ' active';
+  if (!active.length) { el.innerHTML = '<div class="empty"><div class="empty-ic">🎯</div><div class="empty-tt">No active banners</div></div>'; return; }
+  el.innerHTML = active.map(b => `
+    <div style="background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:11px;margin-bottom:8px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px;flex:1">
+          <span style="font-size:18px">${b.ic || '🔥'}</span>
+          <div>
+            <div style="font-size:12px;font-weight:700">${b.title}</div>
+            <div style="font-size:10px;color:var(--t2);margin-top:2px">Target: ${b.target} · ${b.location} · ${b.duration}</div>
+          </div>
+        </div>
+        <button class="ia del" onclick="removeBanner('${b.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+async function removeBanner(id) {
+  const res = await API.del(`/promo-banners/${id}`);
+  if (!res?.success) return;
+  await renderActiveBanners();
+  toast('Banner removed', '🗑️');
+}
+
+/* ════ ANNOUNCEMENTS ════ */
+async function renderAnnouncements() {
+  document.getElementById('annHistory').innerHTML = '<div style="padding:24px;text-align:center;color:var(--t2)">Loading…</div>';
+  const data = await API.get('/announcements');
+  const TYPE_IC = { info: 'ℹ️', feature: '🚀', maintenance: '🔧', promo: '🎁', urgent: '🚨' };
+  const list = data?.data || [];
+  document.getElementById('annHistory').innerHTML = list.length
+    ? list.map(a => `
+    <div style="padding:12px 0;border-bottom:1px solid var(--bd)">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">
+        <div style="font-size:13px;font-weight:700">${TYPE_IC[a.type] || '📢'} ${a.title}</div>
+        ${badge(a.type === 'urgent' ? 'br' : 'bg', a.type)}
+      </div>
+      <div style="font-size:10px;color:var(--t2)">${fmtDate(a.createdAt)} · Target: ${a.target} · ${fmtNum(a.reach || 0)} reached</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:4px">${a.msg || ''}</div>
+      <div style="margin-top:6px"><button class="btn btn-red btn-sm" onclick="deleteAnnouncement('${a.id}')">🗑 Delete</button></div>
+    </div>`).join('')
+    : '<div class="empty"><div class="empty-ic">📣</div><div class="empty-tt">No announcements yet</div></div>';
+}
+
+async function deleteAnnouncement(id) {
+  if (!confirm('Delete this announcement?')) return;
+  const res = await API.del('/announcements/' + id);
+  if (!res?.success) return;
+  renderAnnouncements();
+  toast('Announcement deleted', '🗑️');
+}
+
+async function sendAnnouncement() {
+  const title = document.getElementById('annTitle').value.trim();
+  const msg   = document.getElementById('annMsg').value.trim();
+  if (!title || !msg) { toast('Fill in title and message', '⚠️'); return; }
+  const res = await API.post('/announcements', {
+    title, msg,
+    type:       document.getElementById('annType').value,
+    target:     document.getElementById('annTarget').value,
+    sendWA:     document.getElementById('annWA').checked,
+    showBanner: document.getElementById('annBanner').checked,
+  });
+  if (!res?.success) return;
+  renderAnnouncements();
+  toast('Sent to ' + fmtNum(res.data?.reach || 0) + ' users', '📣');
+  document.getElementById('annTitle').value = '';
+  document.getElementById('annMsg').value   = '';
+}
+
+/* ════ SUPPORT ════ */
+function setTicketFilter(f, btn) {
+  ticketFilter = f; ticketPg = 1;
+  document.querySelectorAll('#page-support .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTicketList();
+}
+
+async function renderSupport() {
+  const [openData, escData, resData] = await Promise.all([
+    API.getPaged('/tickets', { page: 1, limit: 1, status: 'open' }),
+    API.getPaged('/tickets', { page: 1, limit: 1, status: 'escalated' }),
+    API.getPaged('/tickets', { page: 1, limit: 1, status: 'resolved' }),
+  ]);
+  const open = openData?.total || 0;
+  const esc  = escData?.total  || 0;
+  const res  = resData?.total  || 0;
+  document.getElementById('supportSub').textContent = `${open} open · ${esc} escalated · ${res} resolved`;
+  document.getElementById('tkOpen').textContent = open;
+  document.getElementById('tkEsc').textContent  = esc;
+  document.getElementById('tkRes').textContent  = res;
+  renderTicketList();
+}
+
+async function renderTicketList() {
+  const limit  = parseInt(document.getElementById('ticketLimitSel')?.value || 10);
+  const el     = document.getElementById('ticketList');
+  el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--t2)">Loading…</div>';
+
+  const data = await API.getPaged('/tickets', { page: ticketPg, limit, status: ticketFilter === 'all' ? '' : ticketFilter });
+  if (!data?.success) { el.innerHTML = '<div class="empty"><div class="empty-ic">❌</div><div class="empty-tt">Failed to load</div></div>'; return; }
+
+  const list = data.data || [];
+  if (!list.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-ic">📭</div><div class="empty-tt">No tickets</div></div>';
+    document.getElementById('ticketPgn').innerHTML = '';
+    return;
+  }
+
+  el.innerHTML = list.map(t => `
+    <div class="ticket-item t-${t.status}" onclick="openTicket('${t.id}')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
+        <div>
+          <div style="font-size:13px;font-weight:700">${t.subject || 'No subject'}</div>
+          <div style="font-size:10px;color:var(--t2);margin-top:2px">#${t.id} · ${t.userName || ''} · ${t.category || ''} · ${fmtDateTime(t.createdAt)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+          ${badge(t.status === 'escalated' ? 'br' : t.status === 'open' ? 'by' : 'bg', t.status)}
+          ${badge(t.priority === 'urgent' ? 'br' : t.priority === 'high' ? 'by' : 'bm', t.priority || 'normal')}
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--t2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${t.body || ''}</div>
+    </div>`).join('');
+
+  buildPagination('ticketPgn', ticketPg, data.total, limit, `function(p){ticketPg=p;renderTicketList();}`);
+}
+
+// Cache for open ticket
+let _openTicketData = null;
+
+async function openTicket(id) {
+  activeTicketId = id;
+  _openTicketData = null;
+  openModal('modalTicket');
+  document.getElementById('ticketDetailBody').innerHTML = '<div style="padding:20px;text-align:center;color:var(--t2)">Loading…</div>';
+  document.getElementById('ticketModalTitle').textContent = 'Loading…';
+
+  // find the ticket
+const data = await API.get(`/tickets/${id}`);
+  const t = data?.data;
+  if (!t) { document.getElementById('ticketDetailBody').innerHTML = '<div style="color:var(--red)">Ticket not found</div>'; return; }
+  _openTicketData = t;
+
+  document.getElementById('ticketModalTitle').textContent = `Ticket #${t.id}: ${t.subject || ''}`;
+  document.getElementById('ticketDetailBody').innerHTML = `
+    <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px">
+      <div style="width:30px;height:30px;border-radius:50%;background:var(--bdim);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials(t.userName || '?')}</div>
+      <div><div style="font-size:13px;font-weight:700">${t.userName || ''}</div><div style="font-size:10px;color:var(--t2)">${t.userEmail || ''} · ${t.category || ''} · ${fmtDateTime(t.createdAt)}</div></div>
+      ${badge(t.status === 'escalated' ? 'br' : t.status === 'open' ? 'by' : 'bg', t.status)}
+    </div>
+    <div style="font-size:13px;color:var(--tx);line-height:1.65;background:var(--s3);border-radius:8px;padding:10px">${t.body || ''}</div>
+    ${t.reply ? `<div style="font-size:12px;background:var(--gdim);border-radius:8px;padding:10px;margin-top:8px;color:var(--g)"><strong>Last reply:</strong> ${t.reply}</div>` : ''}`;
+
+  document.getElementById('ticketReply').value        = '';
+  document.getElementById('ticketStatusSel').value    = t.status;
+  document.getElementById('ticketPriority').value     = t.priority || 'normal';
+}
+
+async function replyTicket() {
+  const reply  = document.getElementById('ticketReply').value.trim();
+  const status = document.getElementById('ticketStatusSel').value;
+  const priority = document.getElementById('ticketPriority').value;
+  if (!reply) { toast('Write a reply first', '⚠️'); return; }
+
+  const res = await API.put(`/tickets/${activeTicketId}`, { status, priority, reply });
+  if (!res?.success) return;
+  closeModal('modalTicket');
+  renderSupport();
+  updateSideBadges();
+
+  // Open WhatsApp if we have the user's WA
+  const t = _openTicketData;
+  if (t?.userId) {
+    const userRes = await API.get(`/users/${t.userId}`);
+    const wa = (userRes?.data?.waNumber || userRes?.data?.wa || '').replace(/\D/g, '');
+    if (wa) {
+      const msg = `Hi ${userRes.data.name}!\n\n${reply}\n\n— StoreLink Support`;
+      window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(msg), '_blank');
+    }
+  }
+  toast('Reply sent · ' + status, '💬');
+}
+
+async function escalateTicket() {
+  const res = await API.put(`/tickets/${activeTicketId}`, { status: 'escalated', priority: 'urgent' });
+  if (!res?.success) return;
+  closeModal('modalTicket');
+  renderSupport();
+  updateSideBadges();
+  toast('Ticket escalated 🚨', '🚨');
+}
+
+/* ════ ANALYTICS ════ */
+async function renderAnalytics() {
+  document.getElementById('page-analytics').innerHTML = `<div style="padding:40px;text-align:center;color:var(--t2)">Loading…</div>`;
+  const data = await API.get('/analytics');
+  if (!data?.success) {
+    document.getElementById('page-analytics').innerHTML = `<div style="padding:40px;text-align:center;color:var(--red)">Failed to load analytics</div>`;
+    return;
+  }
+  const a = data.summary || {};
+  const signupData = (data.signupData || []).map(d => d.count || 0);
+  const topStores  = data.topStores || [];
+  const heatColors = ['var(--s3)', 'rgba(0,226,122,.15)', 'rgba(0,226,122,.3)', 'rgba(0,226,122,.5)', 'rgba(0,226,122,.7)', 'var(--g)'];
+
+  document.getElementById('page-analytics').innerHTML = `
+    <div class="ph"><div><div class="ph-title">Platform Analytics</div><div class="ph-sub">Aggregate performance across all stores</div></div></div>
+    <div class="sg">
+      <div class="sc" style="--c:var(--blue)"><div class="sib" style="background:var(--bdim)">👁️</div><div class="sv">${fmtNum(a.totalVisits || 0)}</div><div class="sl">Total Store Visits</div></div>
+      <div class="sc" style="--c:var(--g)"><div class="sib" style="background:var(--gdim)">🏪</div><div class="sv">${fmtNum(a.liveStores || 0)}</div><div class="sl">Live Stores</div></div>
+      <div class="sc" style="--c:var(--yellow)"><div class="sib" style="background:var(--ydim)">📈</div><div class="sv">${a.growthRate || 0}%</div><div class="sl">MRR Growth</div></div>
+      <div class="sc" style="--c:var(--purple)"><div class="sib" style="background:var(--pdim)">✅</div><div class="sv">${fmtNum(a.verifiedStores || 0)}</div><div class="sl">Verified Stores</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="card">
+        <div class="ch"><div class="ct">Daily Signups</div><div class="cs">Last 30 days</div></div>
+        <div class="cb"><div class="bar-chart">${buildBarChart(signupData, 'var(--blue)', null)}</div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Top Stores by Visits</div></div>
+        <div class="cb">
+          ${topStores.slice(0, 5).map((s, i) => `
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd)">
+              <div style="font-family:var(--fh);font-size:12px;font-weight:700;color:var(--t2);width:14px">${i + 1}</div>
+              <div style="font-size:18px">${s.emoji || '🏪'}</div>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700">${s.name}</div></div>
+              <div style="font-size:12px;font-weight:700;color:var(--g)">${fmtNum(s.visits || 0)}</div>
+            </div>`).join('') || '<div style="color:var(--t3);font-size:12px">No store data yet</div>'}
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Activity Heatmap</div><div class="cs">Last 4 weeks (sample)</div></div>
+      <div class="cb">
+        <div class="heatmap">${(() => {
+          const map = {};
+          (data.heatmapData || []).forEach(d => { map[d._id] = d.count; });
+          const maxVal = Math.max(1, ...Object.values(map));
+          return Array.from({ length: 28 }, (_, i) => {
+            const date = new Date(Date.now() - (27 - i) * 24 * 60 * 60 * 1000);
+            const key  = date.toISOString().split('T')[0];
+            const val  = map[key] || 0;
+            const tier = Math.min(5, Math.ceil((val / maxVal) * 5));
+            return `<div class="hm-cell" style="background:${heatColors[tier]}" title="${key}: ${val} signups"></div>`;
+          }).join('');
+        })()}</div>
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;font-size:10px;color:var(--t2)">
+          <span>Less</span>${heatColors.map(c => `<div style="width:12px;height:12px;border-radius:2px;background:${c}"></div>`).join('')}<span>More</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ════ SETTINGS ════ */
+async function renderSettings() {
+  // Load platform settings
+  const settingsRes = await API.get('/settings');
+  if (settingsRes?.success && settingsRes.data) {
+    const s = settingsRes.data;
+    if (document.getElementById('platName'))      document.getElementById('platName').value      = s.platformName || '';
+    if (document.getElementById('platSupportWA')) document.getElementById('platSupportWA').value = s.supportWA || '';
+    if (document.getElementById('platEmail'))     document.getElementById('platEmail').value     = s.supportEmail || '';
+  }
+
+  // Load feature flags
+  const flags = settingsRes?.data?.featureFlags || [];
+  document.getElementById('featureFlagsUI').innerHTML = flags.map(f => `
+    <div class="flag-row">
+      <div class="flag-ic" style="background:${f.enabled ? 'var(--gdim)' : 'var(--s3)'}">⚡</div>
+      <div class="flag-info"><div class="flag-name">${f.label || f.id}</div><div class="flag-desc">${f.desc || ''}</div></div>
+      <label class="tog">
+        <input type="checkbox" id="flag_${f.id}" ${f.enabled ? 'checked' : ''} onchange="toggleFlag('${f.id}')"/>
+        <div class="tog-tr"><div class="tog-th"></div></div>
+      </label>
+    </div>`).join('') || '<div style="color:var(--t3);font-size:12px;padding:12px">No feature flags configured</div>';
+}
+
+async function toggleFlag(id) {
+  const el = document.getElementById('flag_' + id);
+  const res = await API.put(`/settings/feature-flag/${id}`, { enabled: el.checked });
+  if (!res?.success) { el.checked = !el.checked; return; } // revert on fail
+  toast(`Flag ${el.checked ? 'enabled' : 'disabled'}`, el.checked ? '✅' : '⛔');
+}
+
+async function savePlatformSettings() {
+  const res = await API.put('/settings', {
+    platformName: document.getElementById('platName')?.value || '',
+    supportWA:    document.getElementById('platSupportWA')?.value || '',
+    supportEmail: document.getElementById('platEmail')?.value || '',
+  });
+  if (res?.success) toast('Settings saved', '💾');
+}
+
+/* ════ AUDIT LOGS ════ */
+async function renderLogs() {
+  const limit = parseInt(document.getElementById('logLimitSel')?.value || 25);
+  document.getElementById('logsBody').innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--t2)">Loading…</td></tr>`;
+
+  const data = await API.getPaged('/audit-logs', { page: logPg, limit });
+  if (!data?.success) { document.getElementById('logsBody').innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--red)">Failed to load</td></tr>`; return; }
+
+  document.getElementById('logsThead').innerHTML = `<tr><th>Time</th><th>Admin</th><th>Action</th><th>Target</th><th>Details</th></tr>`;
+  document.getElementById('logsBody').innerHTML = (data.data || []).map(l => `
+    <tr>
+      <td class="mono" style="white-space:nowrap">${fmtDateTime(l.createdAt || l.time)}</td>
+      <td style="font-size:12px;font-weight:700">${l.adminName || l.admin || 'Admin'}</td>
+      <td>${badge('bm', l.action)}</td>
+      <td style="font-size:12px;font-weight:700">${l.target || ''}</td>
+      <td style="font-size:11px;color:var(--t2)">${l.detail || l.details || ''}</td>
+    </tr>`).join('') || `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--t3)">No logs</td></tr>`;
+
+  buildPagination('logPgn', logPg, data.total, limit, `function(p){logPg=p;renderLogs();}`);
+}
+
+async function exportLogs() {
+  const data = await API.getPaged('/audit-logs', { page: 1, limit: 10000 });
+  downloadCSV(
+    [['Time', 'Admin', 'Action', 'Target', 'Details'],
+     ...(data?.data || []).map(l => [fmtDateTime(l.createdAt || l.time), l.adminName || l.admin || '', l.action, l.target || '', l.detail || l.details || ''])],
+    'audit-logs.csv'
+  );
+  toast('Logs exported', '⬇');
+}
+
+async function exportRevenue() {
+  const data = await API.getPaged('/subscriptions', { page: 1, limit: 10000 });
+  downloadCSV(
+    [['Name', 'Email', 'Plan', 'Amount', 'Status', 'Expiry'],
+     ...(data?.data || []).map(u => [u.name, u.email, u.plan, PLAN_PRICES[u.plan] || 0, u.status, fmtDate(u.planExpiry)])],
+    'revenue.csv'
+  );
+  toast('Revenue exported', '⬇');
+}
+
+/* ════ MODAL + UTILS ════ */
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = filename;
+  a.click();
+}
+
+function toast(msg, icon = '✅') {
+  const el = document.getElementById('toastEl');
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIc').textContent  = icon;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ════ AUTH ════ */
+function showLoginPage() {
+  document.querySelector('.tb').style.display  = 'none';
+  document.getElementById('SB').style.display  = 'none';
+  document.querySelector('.main').innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center">
+      <div style="background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:32px;width:100%;max-width:360px">
+        <div style="font-family:var(--fh);font-size:22px;font-weight:800;color:var(--g);margin-bottom:4px">StoreLink</div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:24px">Admin Panel — sign in to continue</div>
+        <div class="fg"><label class="fl">Email</label><input class="fi" id="loginEmail" type="email" placeholder="admin@storelink.ng"/></div>
+        <div class="fg"><label class="fl">Password</label>
+          <div class="pw-wrap">
+            <input class="fi" id="loginPassword" type="password" placeholder="Password"/>
+            <button class="pw-eye" type="button" onclick="togglePwEye('loginPassword',this)">👁</button>
+          </div>
+        </div>
+        <div id="loginErr" style="font-size:11px;color:var(--red);margin-bottom:10px;display:none"></div>
+        <button class="btn btn-g btn-lg" style="width:100%;justify-content:center" onclick="doAdminLogin()">Sign In</button>
+      </div>
+    </div>`;
+}
+
+async function doAdminLogin() {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl    = document.getElementById('loginErr');
+  errEl.style.display = 'none';
+  if (!email || !password) { errEl.textContent = 'Enter email and password'; errEl.style.display = 'block'; return; }
+  try {
+    const r    = await fetch('/api/admin/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ email, password }) });
+    const data = await r.json();
+    if (!r.ok || !data.success) { errEl.textContent = data.error || data.message || 'Invalid credentials'; errEl.style.display = 'block'; return; }
+    location.reload();
+  } catch (e) {
+    errEl.textContent = 'Network error — try again'; errEl.style.display = 'block';
+  }
+}
+
+async function doAdminLogout() {
+  await fetch('/api/admin/auth/logout', { method: 'POST', credentials: 'include' });
+  location.reload();
+}
+
+/* ════ INIT ════ */
+async function init() {
+  const session = await fetch('/api/admin/auth/me', { credentials: 'include' });
+  if (!session.ok) { showLoginPage(); return; }
+
+  // Restore UI elements in case they were hidden
+  const tb = document.querySelector('.tb');
+  const sb = document.getElementById('SB');
+  if (tb) tb.style.display = '';
+  if (sb) sb.style.display = '';
+
+  await updateSideBadges();
+  renderOverview();
+}
+
+// Promo preview live inputs
+['pBannerIc', 'pBannerLabel', 'pBannerTitle', 'pBannerSub', 'pBannerCta'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', livePromoPreview);
+});
+
+init();
+</script>
+</body>
+</html>

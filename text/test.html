@@ -1,0 +1,13 @@
+router.post('/refresh', async(req, res){
+    try{
+        const token = req.cookies?.token;
+        if(!token)return res.status(401).json({error : no token})
+        conat decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findOne({ id: decoded.id, status : active});
+        if(!user) return res.status(404).json({error : user not found});
+        const newToken = signToken(user.id);
+    }catch{
+
+    }
+
+})

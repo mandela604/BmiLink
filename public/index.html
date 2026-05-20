@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StoreLink — Sell on WhatsApp. Like a pro.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ════════════════════════════════════════
+   TOKENS
+════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --g:#00e27a; --gd:#00b862; --gdim:rgba(0,226,122,.1); --gglow:rgba(0,226,122,.22);
+  --bg:#080a0c; --s1:#0e1114; --s2:#151719; --s3:#1c1f23;
+  --bd:#242729; --bd2:#2e3235;
+  --tx:#f4f4f2; --t2:#8a8e96; --t3:#505560;
+  --yellow:#f5c842; --ydim:rgba(245,200,66,.12);
+  --red:#f04060; --rdim:rgba(240,64,96,.12);
+  --blue:#4fa3f7; --bdim2:rgba(79,163,247,.1);
+  --fh:'Syne',sans-serif;
+  --fi:'Instrument Serif',serif;
+  --fb:'DM Sans',sans-serif;
+  --r:14px; --r-lg:22px; --r-xl:32px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--fb);background:var(--bg);color:var(--tx);overflow-x:hidden;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(0,226,122,.07) 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px;}
+
+/* ════════════════════════════════════════
+   NAV
+════════════════════════════════════════ */
+nav{
+  position:sticky;top:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:62px;
+  background:rgba(8,10,12,.85);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--bd);
+}
+.nav-logo{font-family:var(--fh);font-size:20px;font-weight:800;color:var(--g);letter-spacing:-.3px;text-decoration:none;}
+.nav-logo span{color:var(--tx);}
+.nav-links{display:none;gap:28px;}
+.nav-links a{font-size:13px;font-weight:500;color:var(--t2);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--tx);}
+.nav-r{display:flex;align-items:center;gap:10px;}
+.nav-login{background:transparent;border:1px solid var(--bd);color:var(--t2);padding:8px 16px;border-radius:8px;font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.nav-login:hover{border-color:var(--g);color:var(--g);}
+.nav-cta{background:var(--g);color:#000;border:none;padding:9px 18px;border-radius:8px;font-family:var(--fh);font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:.01em;}
+.nav-cta:hover{background:var(--gd);transform:translateY(-1px);}
+@media(min-width:720px){.nav-links{display:flex;}}
+
+/* ════════════════════════════════════════
+   HERO
+════════════════════════════════════════ */
+.hero{
+  position:relative;
+  padding:88px 24px 72px;
+  text-align:center;
+  overflow:hidden;
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--gdim);border:1px solid rgba(0,226,122,.2);
+  border-radius:30px;padding:6px 16px;
+  font-size:11px;font-weight:700;color:var(--g);
+  letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:28px;
+  animation:fadeUp .6s ease both;
+}
+.hero-pulse{width:6px;height:6px;border-radius:50%;background:var(--g);animation:hpulse 2s infinite;}
+@keyframes hpulse{0%,100%{box-shadow:0 0 0 0 var(--gglow)}50%{box-shadow:0 0 0 6px transparent}}
+
+.hero-h1{
+  font-family:var(--fi);
+  font-size:clamp(40px,8vw,72px);
+  font-weight:400;
+  line-height:1.06;
+  letter-spacing:-.02em;
+  margin-bottom:10px;
+  animation:fadeUp .6s .08s ease both;
+}
+.hero-h1 em{font-style:italic;color:var(--g);}
+.hero-h1-sub{
+  font-family:var(--fi);
+  font-size:clamp(36px,7vw,64px);
+  font-weight:400;
+  font-style:italic;
+  line-height:1.06;
+  color:var(--t2);
+  margin-bottom:28px;
+  animation:fadeUp .6s .14s ease both;
+}
+.hero-desc{
+  font-size:16px;color:var(--t2);line-height:1.7;
+  max-width:460px;margin:0 auto 36px;
+  animation:fadeUp .6s .2s ease both;
+}
+.hero-btns{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  animation:fadeUp .6s .26s ease both;
+}
+.hero-btn-primary{
+  background:var(--g);color:#000;border:none;
+  padding:15px 36px;border-radius:10px;
+  font-family:var(--fh);font-size:15px;font-weight:800;
+  cursor:pointer;transition:all .25s;
+  box-shadow:0 0 40px var(--gglow);
+  display:inline-flex;align-items:center;gap:9px;
+  letter-spacing:.01em;
+}
+.hero-btn-primary:hover{background:var(--gd);transform:translateY(-2px);box-shadow:0 0 60px var(--gglow);}
+.hero-btn-ghost{
+  background:transparent;color:var(--t2);
+  border:1px solid var(--bd);
+  padding:14px 28px;border-radius:10px;
+  font-family:var(--fb);font-size:14px;font-weight:500;
+  cursor:pointer;transition:all .2s;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.hero-btn-ghost:hover{border-color:rgba(0,226,122,.4);color:var(--g);}
+
+/* SOCIAL PROOF STRIP */
+.hero-social{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  margin-top:36px;flex-wrap:wrap;
+  animation:fadeUp .6s .34s ease both;
+}
+.hs-av-row{display:flex;}
+.hs-av{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid var(--bg);
+  font-size:14px;display:flex;align-items:center;justify-content:center;
+  background:var(--s2);margin-left:-6px;
+}
+.hs-av:first-child{margin-left:0;}
+.hs-text{font-size:12px;color:var(--t2);}
+.hs-text strong{color:var(--tx);}
+.hs-sep{width:1px;height:16px;background:var(--bd);}
+.hs-stars{font-size:11px;color:var(--yellow);letter-spacing:1px;}
+
+/* MOCKUP */
+.hero-mockup-wrap{
+  margin:60px auto 0;
+  max-width:740px;
+  position:relative;
+  animation:fadeUp .6s .4s ease both;
+}
+.hm-glow{
+  position:absolute;top:50%;left:50%;
+  width:400px;height:200px;
+  background:radial-gradient(ellipse,var(--gglow) 0%,transparent 70%);
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.hm-browser{
+  background:var(--s1);
+  border:1px solid var(--bd);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  position:relative;z-index:1;
+}
+.hm-browser-bar{
+  background:var(--s2);
+  padding:11px 16px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--bd);
+}
+.hm-dots{display:flex;gap:5px;}
+.hm-dot{width:10px;height:10px;border-radius:50%;}
+.hm-d1{background:#ff5f57;} .hm-d2{background:#ffbd2e;} .hm-d3{background:#28ca42;}
+.hm-url{
+  flex:1;background:var(--s3);border-radius:6px;
+  padding:5px 12px;font-size:11px;color:var(--t3);font-family:var(--fb);
+  display:flex;align-items:center;gap:6px;
+}
+.hm-url-dot{width:6px;height:6px;border-radius:50%;background:var(--g);flex-shrink:0;}
+.hm-screen{
+  display:grid;grid-template-columns:1fr 1fr;
+  min-height:280px;
+}
+.hm-left{
+  padding:24px;border-right:1px solid var(--bd);
+}
+.hm-store-header{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.hm-store-ic{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--g);display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.hm-store-name{font-family:var(--fh);font-size:13px;font-weight:800;}
+.hm-store-live{font-size:9px;color:var(--g);font-weight:700;display:flex;align-items:center;gap:4px;}
+.hm-product-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.hm-prod{
+  background:var(--s2);border:1px solid var(--bd);border-radius:9px;
+  overflow:hidden;
+}
+.hm-prod-img{height:52px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--s3);}
+.hm-prod-body{padding:5px 7px 7px;}
+.hm-prod-name{font-size:9px;font-weight:700;line-height:1.3;margin-bottom:2px;}
+.hm-prod-price{font-size:10px;font-weight:800;color:var(--g);}
+.hm-prod-btn{
+  width:100%;margin-top:4px;background:var(--g);border:none;
+  border-radius:4px;padding:3px 0;font-size:7px;font-weight:700;color:#000;cursor:pointer;
+}
+
+.hm-right{padding:24px;}
+.hm-dash-title{font-family:var(--fh);font-size:11px;font-weight:800;color:var(--t2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;}
+.hm-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;}
+.hm-stat{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px;position:relative;overflow:hidden;}
+.hm-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--g));}
+.hm-stat-val{font-family:var(--fh);font-size:18px;font-weight:800;line-height:1;}
+.hm-stat-lbl{font-size:9px;color:var(--t2);margin-top:3px;}
+.hm-mini-chart{display:flex;align-items:flex-end;gap:3px;height:36px;padding-top:4px;}
+.hm-bar{flex:1;border-radius:2px 2px 0 0;background:var(--g);opacity:.6;min-height:3px;}
+.hm-bar.hi{opacity:1;}
+.hm-order-item{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:10px;}
+.hm-order-item:last-child{border-bottom:none;}
+.hm-order-dot{width:6px;height:6px;border-radius:50%;background:var(--g);flex-shrink:0;}
+
+/* floating badges on mockup */
+.hm-badge{
+  position:absolute;background:var(--g);color:#000;
+  padding:8px 13px;border-radius:10px;
+  font-size:11px;font-weight:800;white-space:nowrap;
+  box-shadow:0 8px 28px var(--gglow);
+  z-index:10;
+}
+.hm-badge-left{left:-28px;top:30%;animation:floatL 4s ease-in-out infinite;}
+.hm-badge-right{right:-28px;bottom:25%;background:var(--s1);color:var(--tx);border:1px solid var(--bd);box-shadow:0 8px 28px rgba(0,0,0,.5);animation:floatR 4s ease-in-out infinite;}
+@keyframes floatL{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes floatR{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* ════════════════════════════════════════
+   LOGOS STRIP
+════════════════════════════════════════ */
+.logos-strip{
+  border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);
+  padding:20px 24px;
+  display:flex;align-items:center;justify-content:center;gap:32px;
+  flex-wrap:wrap;overflow:hidden;
+}
+.logos-label{font-size:11px;color:var(--t3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;}
+.logos-sep{width:1px;height:20px;background:var(--bd);flex-shrink:0;}
+.logo-item{font-size:12px;font-weight:700;color:var(--t3);letter-spacing:-.2px;white-space:nowrap;}
+
+/* ════════════════════════════════════════
+   PLAN GATED BANNER
+════════════════════════════════════════ */
+.plan-banner{
+  margin:0 24px;
+  background:linear-gradient(135deg,rgba(0,226,122,.08) 0%,rgba(0,184,98,.04) 100%);
+  border:1px solid rgba(0,226,122,.18);
+  border-radius:var(--r-lg);
+  padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;
+  margin-top:48px;
+}
+.pb-left{display:flex;align-items:center;gap:12px;}
+.pb-ic{font-size:24px;}
+.pb-text .pb-title{font-family:var(--fh);font-size:14px;font-weight:800;color:var(--g);}
+.pb-text .pb-sub{font-size:12px;color:var(--t2);margin-top:3px;}
+.pb-btn{background:var(--g);color:#000;border:none;padding:9px 18px;border-radius:8px;font-family:var(--fh);font-size:12px;font-weight:800;cursor:pointer;transition:background .2s;white-space:nowrap;}
+.pb-btn:hover{background:var(--gd);}
+
+/* ════════════════════════════════════════
+   SECTION SHARED
+════════════════════════════════════════ */
+.section{padding:88px 24px;}
+.section-tag{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin-bottom:14px;display:block;}
+.section-h{
+  font-family:var(--fi);
+  font-size:clamp(32px,5vw,52px);
+  font-weight:400;line-height:1.1;
+  letter-spacing:-.02em;margin-bottom:14px;
+}
+.section-h em{font-style:italic;color:var(--g);}
+.section-sub{font-size:15px;color:var(--t2);line-height:1.7;max-width:440px;margin-bottom:0;}
+.section-header{margin-bottom:52px;}
+
+/* ════════════════════════════════════════
+   FEATURES GRID
+════════════════════════════════════════ */
+.feat-grid{
+  display:grid;grid-template-columns:1fr;gap:1px;
+  background:var(--bd);
+  border:1px solid var(--bd);
+  border-radius:var(--r-lg);overflow:hidden;
+}
+@media(min-width:640px){.feat-grid{grid-template-columns:1fr 1fr;}}
+@media(min-width:900px){.feat-grid{grid-template-columns:repeat(3,1fr);}}
+.feat-card{
+  background:var(--s1);padding:28px 26px;
+  transition:background .2s;position:relative;overflow:hidden;
+}
+.feat-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--g),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.feat-card:hover{background:var(--s2);}
+.feat-card:hover::after{opacity:1;}
+.feat-ic{
+  width:44px;height:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:16px;
+  background:var(--s3);
+}
+.feat-title{font-family:var(--fi);font-size:15px;font-weight:800;margin-bottom:8px;}
+.feat-desc{font-size:13px;color:var(--t2);line-height:1.65;}
+.feat-plan-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  margin-top:10px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:20px;
+}
+.fpb-pro{background:var(--gdim);color:var(--g);border:1px solid rgba(0,226,122,.15);}
+.fpb-business{background:var(--ydim);color:var(--yellow);border:1px solid rgba(245,200,66,.15);}
+
+/* LOCKED overlay on feature cards */
+.feat-locked{
+  position:relative;
+}
+.feat-locked .feat-lock-overlay{
+  display:flex;
+}
+.feat-lock-overlay{
+  display:none;
+  position:absolute;inset:0;
+  background:rgba(8,10,12,.75);
+  backdrop-filter:blur(3px);
+  align-items:center;justify-content:center;
+  flex-direction:column;gap:6px;
+  cursor:pointer;transition:opacity .2s;
+}
+.feat-lock-overlay:hover{background:rgba(8,10,12,.6);}
+.feat-lock-ic{font-size:22px;}
+.feat-lock-txt{font-size:11px;font-weight:700;color:var(--tx);}
+.feat-lock-cta{font-size:10px;color:var(--g);}
+
+/* ════════════════════════════════════════
+   HOW IT WORKS
+════════════════════════════════════════ */
+.steps-wrap{
+  display:grid;grid-template-columns:1fr;gap:0;
+  position:relative;max-width:560px;
+}
+.steps-wrap::before{
+  content:'';position:absolute;
+  left:20px;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,var(--g),transparent);
+}
+.step-item{
+  display:flex;gap:22px;padding:0 0 40px;
+  opacity:0;animation:fadeUp .5s ease forwards;
+}
+.step-item:nth-child(1){animation-delay:.05s}
+.step-item:nth-child(2){animation-delay:.15s}
+.step-item:nth-child(3){animation-delay:.25s}
+.step-item:nth-child(4){animation-delay:.35s}
+.step-num{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--g);color:#000;
+  font-family:var(--fh);font-size:15px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;z-index:1;
+  box-shadow:0 0 0 6px var(--bg);
+}
+.step-body{padding-top:9px;}
+.step-title{font-family:var(--fh);font-size:16px;font-weight:800;margin-bottom:6px;}
+.step-desc{font-size:13px;color:var(--t2);line-height:1.65;}
+
+/* ════════════════════════════════════════
+   TESTIMONIALS
+════════════════════════════════════════ */
+.reviews-grid{
+  display:grid;grid-template-columns:1fr;gap:14px;
+}
+@media(min-width:720px){.reviews-grid{grid-template-columns:repeat(3,1fr);}}
+.review-card{
+  background:var(--s1);border:1px solid var(--bd);border-radius:var(--r-lg);
+  padding:22px;transition:border-color .2s,transform .2s;
+}
+.review-card:hover{border-color:rgba(0,226,122,.25);transform:translateY(-3px);}
+.rv-stars{color:var(--yellow);font-size:12px;letter-spacing:1px;margin-bottom:12px;}
+.rv-text{font-size:13.5px;color:var(--tx);line-height:1.65;margin-bottom:16px;font-family:var(--fi);font-style:italic;}
+.rv-author{display:flex;align-items:center;gap:10px;}
+.rv-av{width:34px;height:34px;border-radius:50%;background:var(--s3);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.rv-name{font-size:12px;font-weight:700;}
+.rv-loc{font-size:10px;color:var(--t2);margin-top:1px;}
+
+/* ════════════════════════════════════════
+   PRICING
+════════════════════════════════════════ */
+.pricing-note{font-size:13px;color:var(--t2);margin-bottom:44px;}
+.pricing-note strong{color:var(--g);}
+.plans-grid{
+  display:grid;grid-template-columns:1fr;gap:14px;
+}
+@media(min-width:720px){.plans-grid{grid-template-columns:repeat(3,1fr);}}
+.plan-card{
+  background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r-xl);
+  overflow:hidden;position:relative;transition:transform .22s;
+}
+.plan-card:hover{transform:translateY(-4px);}
+.plan-card.popular{border-color:var(--g);box-shadow:0 0 60px rgba(0,226,122,.12);}
+.plan-card.biz-plan{border-color:rgba(245,200,66,.4);box-shadow:0 0 60px rgba(245,200,66,.08);}
+.plan-top-badge{
+  position:absolute;top:18px;right:18px;
+  font-size:9px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;
+}
+.ptb-popular{background:var(--g);color:#000;}
+.ptb-biz{background:var(--yellow);color:#000;}
+.plan-header{padding:28px 24px 22px;border-bottom:1px solid var(--bd);}
+.plan-name{
+  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--t2);margin-bottom:12px;
+}
+.plan-price{
+  font-family:var(--fi);font-size:52px;font-weight:400;line-height:1;margin-bottom:6px;
+  display:flex;align-items:flex-start;gap:4px;
+}
+.plan-price sup{font-family:var(--fb);font-size:18px;font-weight:600;margin-top:10px;}
+.plan-price .period{font-family:var(--fb);font-size:14px;font-weight:400;color:var(--t2);align-self:flex-end;margin-bottom:4px;}
+.plan-desc{font-size:12px;color:var(--t2);line-height:1.55;margin-top:8px;}
+.plan-cta{
+  display:block;width:100%;margin-top:20px;padding:13px;
+  border-radius:10px;font-family:var(--fh);font-size:13px;font-weight:800;
+  cursor:pointer;text-align:center;transition:all .2s;border:none;
+  letter-spacing:.01em;
+}
+.plan-cta-g{background:var(--g);color:#000;}
+.plan-cta-g:hover{background:var(--gd);}
+.plan-cta-ghost{background:transparent;color:var(--tx);border:1.5px solid var(--bd);}
+.plan-cta-ghost:hover{border-color:var(--g);color:var(--g);}
+.plan-cta-y{background:var(--yellow);color:#000;}
+.plan-cta-y:hover{background:#e6b830;}
+.plan-body{padding:22px 24px;}
+.plan-feats-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:14px;}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.plan-feats li{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.5;}
+.pf-ic{
+  width:17px;height:17px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;flex-shrink:0;margin-top:1px;
+}
+.pf-yes{background:var(--gdim);border:1px solid rgba(0,226,122,.2);color:var(--g);}
+.pf-no{background:var(--s3);border:1px solid var(--bd);color:var(--t3);}
+.pf-no+span{color:var(--t3);}
+
+/* ════════════════════════════════════════
+   CUSTOM DOMAIN (Pro/Business only)
+════════════════════════════════════════ */
+.domain-section{
+  padding:80px 24px;
+  background:var(--s1);
+  border-top:1px solid var(--bd);
+  border-bottom:1px solid var(--bd);
+}
+.domain-inner{
+  max-width:700px;margin:0 auto;
+  display:grid;grid-template-columns:1fr;gap:40px;align-items:center;
+}
+@media(min-width:720px){.domain-inner{grid-template-columns:1fr 1fr;}}
+.domain-demo{
+  background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-lg);padding:20px;
+}
+.domain-url-row{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg);border:1px solid var(--bd);border-radius:8px;
+  padding:10px 14px;font-family:monospace;font-size:13px;
+}
+.domain-dot{width:7px;height:7px;border-radius:50%;background:var(--g);flex-shrink:0;animation:hpulse 2s infinite;}
+.domain-slash{color:var(--t3);margin:0 2px;}
+.domain-store{color:var(--g);font-weight:700;}
+.domain-arrow{font-size:18px;color:var(--t3);text-align:center;margin:10px 0;}
+.domain-custom{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--gdim),transparent);
+  border:1px solid rgba(0,226,122,.2);border-radius:8px;
+  padding:10px 14px;font-family:monospace;font-size:13px;
+}
+.domain-badge-wrap{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap;}
+.domain-badge{
+  padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;
+}
+.db-pro{background:var(--gdim);color:var(--g);border:1px solid rgba(0,226,122,.15);}
+.db-biz{background:var(--ydim);color:var(--yellow);border:1px solid rgba(245,200,66,.15);}
+
+/* ════════════════════════════════════════
+   FAQ
+════════════════════════════════════════ */
+.faq-list{display:flex;flex-direction:column;gap:0;max-width:640px;}
+.faq-item{border-bottom:1px solid var(--bd);}
+.faq-q{
+  width:100%;background:none;border:none;text-align:left;
+  color:var(--tx);font-family:var(--fb);font-size:14px;font-weight:600;
+  padding:18px 0;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.faq-arrow{font-size:16px;color:var(--t2);transition:transform .25s;flex-shrink:0;}
+.faq-item.open .faq-arrow{transform:rotate(45deg);color:var(--g);}
+.faq-a{
+  font-size:13.5px;color:var(--t2);line-height:1.68;
+  max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;
+}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:18px;}
+
+/* ════════════════════════════════════════
+   CTA BOTTOM
+════════════════════════════════════════ */
+.cta-section{
+  padding:100px 24px;text-align:center;
+  background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(0,226,122,.07) 0%,transparent 70%);
+  border-top:1px solid var(--bd);
+}
+.cta-h{
+  font-family:var(--fi);font-size:clamp(36px,6vw,60px);
+  font-weight:400;line-height:1.1;letter-spacing:-.02em;margin-bottom:18px;
+}
+.cta-h em{font-style:italic;color:var(--g);}
+.cta-sub{font-size:15px;color:var(--t2);margin-bottom:32px;line-height:1.6;}
+.wa-note{display:flex;align-items:center;justify-content:center;gap:7px;font-size:11px;color:var(--t3);margin-top:16px;}
+.wa-dot{width:8px;height:8px;border-radius:50%;background:#25D366;}
+
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+footer{
+  padding:28px 24px;border-top:1px solid var(--bd);
+  display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;
+}
+.ft-logo{font-family:var(--fh);font-size:17px;font-weight:800;color:var(--g);}
+.ft-links{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;}
+.ft-links a{font-size:12px;color:var(--t2);text-decoration:none;transition:color .2s;}
+.ft-links a:hover{color:var(--tx);}
+.ft-copy{font-size:11px;color:var(--t3);}
+@media(min-width:720px){
+  footer{flex-direction:row;justify-content:space-between;text-align:left;}
+}
+
+/* ════════════════════════════════════════
+   PLAN GATE MODAL
+════════════════════════════════════════ */
+.gate-modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .22s;
+  backdrop-filter:blur(8px);padding:20px;
+}
+.gate-modal-bg.open{opacity:1;pointer-events:all;}
+.gate-modal{
+  background:var(--s1);border:1px solid var(--bd);border-radius:22px;
+  width:100%;max-width:400px;padding:28px;
+  transform:scale(.95) translateY(10px);opacity:0;
+  transition:all .26s cubic-bezier(.34,1.1,.64,1);
+}
+.gate-modal-bg.open .gate-modal{transform:scale(1) translateY(0);opacity:1;}
+.gm-ic{font-size:36px;text-align:center;margin-bottom:12px;}
+.gm-title{font-family:var(--fh);font-size:18px;font-weight:800;text-align:center;margin-bottom:8px;}
+.gm-sub{font-size:13px;color:var(--t2);text-align:center;line-height:1.65;margin-bottom:20px;}
+.gm-plans{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.gm-plan{
+  background:var(--s2);border:1px solid var(--bd);border-radius:10px;
+  padding:13px 14px;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;transition:border-color .2s;
+}
+.gm-plan:hover{border-color:var(--g);}
+.gm-plan-name{font-weight:700;font-size:13px;}
+.gm-plan-price{font-size:12px;color:var(--t2);}
+.gm-plan-badge{padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800;}
+.gm-close{
+  width:100%;padding:12px;border-radius:10px;background:transparent;
+  border:1px solid var(--bd);color:var(--t2);font-family:var(--fb);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.gm-close:hover{border-color:var(--g);color:var(--g);}
+
+/* ════════════════════════════════════════
+   SIMULATED PLAN SWITCHER (dev only)
+════════════════════════════════════════ */
+.dev-switcher{
+  position:fixed;bottom:20px;right:20px;z-index:500;
+  background:var(--s2);border:1px solid var(--bd);border-radius:12px;
+  padding:12px 14px;
+  display:flex;flex-direction:column;gap:6px;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);
+  min-width:160px;
+}
+.dev-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);}
+.dev-btns{display:flex;gap:4px;}
+.dev-btn{
+  flex:1;padding:6px 8px;border-radius:6px;border:1px solid var(--bd);
+  background:transparent;font-family:var(--fb);font-size:10px;font-weight:700;color:var(--t2);
+  cursor:pointer;transition:all .14s;
+}
+.dev-btn:hover,.dev-btn.active{border-color:var(--g);color:var(--g);background:var(--gdim);}
+.dev-btn.active-biz{border-color:var(--yellow)!important;color:var(--yellow)!important;background:var(--ydim)!important;}
+</style>
+</head>
+<body>
+
+<!-- ════ NAV ════ -->
+<nav>
+  <a class="nav-logo" href="#">Store<span>Link</span></a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <div class="nav-r">
+    <button class="nav-login" onclick="goto('auth-user.html')">Log in</button>
+    <button class="nav-cta" onclick="goto('auth-user.html')">Start free →</button>
+  </div>
+</nav>
+
+<!-- ════ HERO ════ -->
+<section class="hero">
+  <div class="hero-tag">
+    <div class="hero-pulse"></div>
+    <span id="liveTagText">Trusted by 3,200+ sellers</span>
+  </div>
+
+  <div class="hero-h1">Sell on WhatsApp.</div>
+  <div class="hero-h1-sub"><em>Like a pro.</em></div>
+
+  <p class="hero-desc">Turn your WhatsApp number into a beautiful, shareable storefront. No coding. No website. Just a link your customers can actually use.</p>
+
+  <div class="hero-btns">
+    <button class="hero-btn-primary" onclick="goto('auth-user.html')">🚀 Create Your Free Store</button>
+    <button class="hero-btn-ghost" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">See plans ↓</button>
+  </div>
+
+  <div class="hero-social">
+    <div class="hs-av-row">
+      <div class="hs-av">👩🏾</div><div class="hs-av">👨🏿</div><div class="hs-av">👩🏻</div><div class="hs-av">👨🏽</div><div class="hs-av">👩🏼</div>
+    </div>
+    <div class="hs-text">Trusted by <strong id="heroUserCount">3,200+</strong> sellers</div>
+    <div class="hs-sep"></div>
+    <div class="hs-stars">★★★★★</div>
+    <div class="hs-text">5.0 rating</div>
+  </div>
+
+  <!-- BROWSER MOCKUP -->
+  <div class="hero-mockup-wrap">
+    <div class="hm-glow"></div>
+    <div class="hm-badge hm-badge-left">📦 Order received!</div>
+    <div class="hm-badge hm-badge-right">👁 474 visits this week</div>
+    <div class="hm-browser">
+      <div class="hm-browser-bar">
+        <div class="hm-dots"><div class="hm-dot hm-d1"></div><div class="hm-dot hm-d2"></div><div class="hm-dot hm-d3"></div></div>
+        <div class="hm-url"><div class="hm-url-dot"></div>storelink.ng/store/<span id="mockupStoreName" style="color:var(--g);font-weight:700">tunde-gadgets</span></div>
+      </div>
+      <div class="hm-screen">
+        <!-- Left: store front -->
+        <div class="hm-left">
+          <div class="hm-store-header">
+            <div class="hm-store-ic" id="mockupStoreIc">🛍️</div>
+            <div>
+              <div class="hm-store-name" id="mockupStoreNameDisp">Tunde Gadgets</div>
+              <div class="hm-store-live"><span style="width:5px;height:5px;border-radius:50%;background:var(--g);display:inline-block"></span> Open now</div>
+            </div>
+          </div>
+          <div class="hm-product-grid">
+            <div class="hm-prod"><div class="hm-prod-img">📱</div><div class="hm-prod-body"><div class="hm-prod-name">iPhone 14 Pro</div><div class="hm-prod-price">₦980k</div><button class="hm-prod-btn">Order on WhatsApp</button></div></div>
+            <div class="hm-prod"><div class="hm-prod-img">🎧</div><div class="hm-prod-body"><div class="hm-prod-name">AirPods Pro 2</div><div class="hm-prod-price">₦195k</div><button class="hm-prod-btn">Order on WhatsApp</button></div></div>
+            <div class="hm-prod"><div class="hm-prod-img">💻</div><div class="hm-prod-body"><div class="hm-prod-name">MacBook Air M2</div><div class="hm-prod-price">₦1.45M</div><button class="hm-prod-btn">Order on WhatsApp</button></div></div>
+            <div class="hm-prod"><div class="hm-prod-img">⌚</div><div class="hm-prod-body"><div class="hm-prod-name">Apple Watch S9</div><div class="hm-prod-price">₦490k</div><button class="hm-prod-btn">Order on WhatsApp</button></div></div>
+          </div>
+        </div>
+        <!-- Right: dashboard preview -->
+        <div class="hm-right">
+          <div class="hm-dash-title">Your Dashboard</div>
+          <div class="hm-stat-row">
+            <div class="hm-stat" style="--c:var(--blue)"><div class="hm-stat-val" id="mockVisits">474</div><div class="hm-stat-lbl">Visits</div></div>
+            <div class="hm-stat" style="--c:var(--g)"><div class="hm-stat-val" id="mockOrders">73</div><div class="hm-stat-lbl">Orders</div></div>
+          </div>
+          <div class="hm-mini-chart">
+            <div class="hm-bar" style="height:40%"></div><div class="hm-bar" style="height:55%"></div><div class="hm-bar" style="height:35%"></div><div class="hm-bar hi" style="height:70%"></div><div class="hm-bar" style="height:85%"></div><div class="hm-bar hi" style="height:100%"></div><div class="hm-bar" style="height:75%"></div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="hm-order-item"><div class="hm-order-dot"></div><div>iPhone 14 Pro × 1</div></div>
+            <div class="hm-order-item"><div class="hm-order-dot"></div><div>AirPods Pro × 2</div></div>
+            <div class="hm-order-item"><div class="hm-order-dot"></div><div>MacBook Air M2 × 1</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGOS STRIP -->
+ <!--
+<div class="logos-strip">
+  <span class="logos-label">Sellers from</span>
+  <div class="logos-sep"></div>
+  <span class="logo-item">Lagos</span>
+  <span class="logo-item">Abuja</span>
+  <span class="logo-item">Port Harcourt</span>
+  <span class="logo-item">Kano</span>
+  <span class="logo-item">Enugu</span>
+  <span class="logo-item">Ibadan</span>
+  <span class="logo-item">Owerri</span>
+  <span class="logo-item">Kaduna</span>
+</div>
+-->
+
+<!-- ════ FEATURES ════ -->
+<section class="section" id="features">
+  <div class="section-header">
+    <span class="section-tag">✦ What you get</span>
+    <div class="section-h">Everything you need.<br><em>Nothing you don't.</em></div>
+    <p class="section-sub">A complete, professional storefront that works inside WhatsApp — no app needed for your customers.</p>
+  </div>
+  <div class="feat-grid" id="featuresGrid"></div>
+</section>
+
+<!-- ════ HOW IT WORKS ════ -->
+<section class="section" id="how" style="background:var(--s1);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)">
+  <div class="section-header">
+    <span class="section-tag">✦ How it works</span>
+    <div class="section-h">Live in under<br><em>5 minutes.</em></div>
+    <p class="section-sub">Seriously. No tech skills required.</p>
+  </div>
+  <div class="steps-wrap">
+    <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">Create your account</div><p class="step-desc">Sign up with your WhatsApp number. Pick your store name, type, and start customising — gadgets, fashion, food, services, anything.</p></div></div>
+    <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">Add your products</div><p class="step-desc">Add product names, prices, descriptions, emoji icons, and images. Takes under 2 minutes per product — straight from your phone.</p></div></div>
+    <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">Share your store link</div><p class="step-desc">Drop your unique link in your WhatsApp status, Instagram bio, Facebook groups, or anywhere your customers already are.</p></div></div>
+    <div class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">Receive orders on WhatsApp</div><p class="step-desc">Customers browse, add to cart, and tap Order. You get a formatted WhatsApp message with everything you need to fulfil it.</p></div></div>
+  </div>
+</section>
+
+<!-- ════ CUSTOM DOMAIN ════ -->
+<div class="domain-section" id="domainSection">
+  <div class="domain-inner">
+    <div>
+      <span class="section-tag">✦ Custom Domain</span>
+      <div class="section-h" style="font-size:clamp(28px,4vw,42px)">Your brand.<br><em>Your domain.</em></div>
+      <p class="section-sub" style="margin-bottom:16px">Pro and Business sellers can connect their own custom domain to their store. No technical setup — just point and go.</p>
+      <div class="domain-badge-wrap">
+        <span class="domain-badge db-pro">✓ Pro Plan</span>
+        <span class="domain-badge db-biz">✓ Business Plan</span>
+      </div>
+      <button class="hero-btn-primary" style="margin-top:20px;font-size:13px;padding:12px 24px" onclick="handlePlanGatedCTA('domain')">Connect Your Domain →</button>
+    </div>
+    <div class="domain-demo">
+      <div class="domain-url-row"><div class="domain-dot"></div>storelink.ng<div class="domain-slash">/</div><span class="domain-store">store/tunde</span></div>
+      <div class="domain-arrow">↓</div>
+      <div class="domain-custom"><div class="domain-dot"></div><span style="color:var(--g);font-weight:700">tundegadgets.com</span></div>
+      <div style="font-size:11px;color:var(--t2);margin-top:12px;line-height:1.6">Same store, your domain. SSL included. No hosting fees.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TESTIMONIALS ════ -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-tag">✦ Real sellers, real results</span>
+    <div class="section-h">They switched.<br><em>They're winning.</em></div>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="rv-stars">★★★★★</div>
+      <p class="rv-text">"Before StoreLink I was sending voice notes to describe my products 😂 Now I just share my link and customers order directly. I made 14 sales my first week."</p>
+      <div class="rv-author"><div class="rv-av">👩🏾</div><div><div class="rv-name">Amaka C.</div><div class="rv-loc">Fashion seller · Lagos</div></div></div>
+    </div>
+    <div class="review-card">
+      <div class="rv-stars">★★★★★</div>
+      <p class="rv-text">"The dashboard shows me which products people click most. I use that to know what to stock more of. My business is actually organised now lol."</p>
+      <div class="rv-author"><div class="rv-av">👨🏿</div><div><div class="rv-name">Emeka T.</div><div class="rv-loc">Phone accessories · Abuja</div></div></div>
+    </div>
+    <div class="review-card">
+      <div class="rv-stars">★★★★★</div>
+      <p class="rv-text">"I run 3 different stores under one account. Business plan is worth every kobo. My customers think I have a full website 😄"</p>
+      <div class="rv-author"><div class="rv-av">👩🏻</div><div><div class="rv-name">Chidera O.</div><div class="rv-loc">Multi-store seller · PH</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ PRICING ════ -->
+<section class="section" id="pricing" style="background:var(--s1);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)">
+  <div class="section-header">
+    <span class="section-tag">✦ Simple pricing</span>
+    <div class="section-h">Start free.<br><em>Scale when ready.</em></div>
+  </div>
+  <p class="pricing-note">No hidden fees. No contracts. <strong>First 3 months Pro free</strong> for new stores.</p>
+  <div class="plans-grid" id="plansGrid"></div>
+</section>
+
+<!-- ════ FAQ ════ -->
+<section class="section" id="faq">
+  <div class="section-header">
+    <span class="section-tag">✦ Questions</span>
+    <div class="section-h">Things people<br><em>always ask.</em></div>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Do my customers need to download anything?<span class="faq-arrow">+</span></button><div class="faq-a">No. Your store opens in any web browser — no app download needed. When they tap "Order", it opens WhatsApp (which they already have). Super simple.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I use StoreLink without a website?<span class="faq-arrow">+</span></button><div class="faq-a">Yes — that's the whole point. StoreLink is a complete alternative to a website. Your store link is all you need to share with customers.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What kind of products can I sell?<span class="faq-arrow">+</span></button><div class="faq-a">Anything you'd normally sell on WhatsApp — phones, clothes, food, beauty products, services, digital products, building materials. StoreLink works for any category.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How do I receive payment from customers?<span class="faq-arrow">+</span></button><div class="faq-a">StoreLink connects you with customers via WhatsApp — you handle payment however you normally do (bank transfer, cash, POS). Built-in payment processing is coming soon.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I upgrade or downgrade my plan anytime?<span class="faq-arrow">+</span></button><div class="faq-a">Yes, any time. If you upgrade, you're charged the difference for the rest of the month. If you downgrade, the change takes effect at the end of your billing period. No drama.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Is the Free plan really free forever?<span class="faq-arrow">+</span></button><div class="faq-a">Yes. The Free plan has no time limit. You only upgrade when you need more listings, analytics, or Pro features. We don't bait-and-switch.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I connect a custom domain?<span class="faq-arrow">+</span></button><div class="faq-a">Yes — custom domains are available on the Pro and Business plans. Just enter your domain in Settings and follow the simple DNS instructions. SSL is included free.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I track where my orders come from?<span class="faq-arrow">+</span></button><div class="faq-a">Pro and Business plans include a full analytics dashboard showing store visits, product clicks, cart sessions, and order tap rates. Business plans can also connect Meta Pixel, TikTok Pixel, and Google Analytics 4.</div></div>
+  </div>
+</section>
+
+<!-- ════ CTA BOTTOM ════ -->
+<section class="cta-section">
+  <div class="cta-h">Your store link<br><em>is waiting for you.</em></div>
+  <p class="cta-sub">Join <strong id="ctaUserCount">3,200+</strong> sellers already making money on WhatsApp. Takes 5 minutes to set up.</p>
+  <button class="hero-btn-primary" style="margin:0 auto" onclick="goto('auth-user.html')">🚀 Create Your Free Store</button>
+  <div class="wa-note"><div class="wa-dot"></div> Works with any WhatsApp number · No credit card required</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-logo">StoreLink</div>
+  <div class="ft-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#">Blog</a>
+    <a href="#">Support</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+  </div>
+  <div class="ft-copy">© 2025 StoreLink. Built for Nigerian sellers 🇳🇬</div>
+</footer>
+
+<!-- PLAN GATE MODAL -->
+<div class="gate-modal-bg" id="gateModalBg" onclick="closeGateModal(event)">
+  <div class="gate-modal">
+    <div class="gm-ic" id="gmIc">🔒</div>
+    <div class="gm-title" id="gmTitle">Upgrade to unlock</div>
+    <div class="gm-sub" id="gmSub">This feature is available on Pro and Business plans.</div>
+    <div class="gm-plans">
+      <div class="gm-plan" onclick="goto('auth-user.html')">
+        <div><div class="gm-plan-name">Pro Plan</div><div class="gm-plan-price">₦5,000 / month</div></div>
+        <span class="gm-plan-badge" style="background:var(--gdim);color:var(--g);border:1px solid rgba(0,226,122,.2)">Get started →</span>
+      </div>
+      <div class="gm-plan" onclick="goto('auth-user.html')">
+        <div><div class="gm-plan-name">Business Plan</div><div class="gm-plan-price">₦12,000 / month</div></div>
+        <span class="gm-plan-badge" style="background:var(--ydim);color:var(--yellow);border:1px solid rgba(245,200,66,.2)">All features →</span>
+      </div>
+    </div>
+    <button class="gm-close" onclick="document.getElementById('gateModalBg').classList.remove('open')">Maybe later</button>
+  </div>
+</div>
+
+<!-- DEV PLAN SWITCHER (remove in production — replace with real auth) -->
+<div class="dev-switcher">
+  <div class="dev-label">Simulate Plan</div>
+  <div class="dev-btns">
+    <button class="dev-btn" id="devFree" onclick="setPlan('free')">Free</button>
+    <button class="dev-btn" id="devPro" onclick="setPlan('pro')">Pro</button>
+    <button class="dev-btn active-biz" id="devBiz" onclick="setPlan('business')">Biz</button>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   API CONFIG
+   → In production: replace BASE_URL and
+     set USE_DEMO = false
+════════════════════════════════════════ */
+const API = {
+  BASE_URL: 'https://bmilink-1.onrender.com/',   // ← swap to production URL
+  USE_DEMO: false,                              // ← set false when backend is ready
+  ENDPOINTS: {
+    stats:     '/platform/public-stats',       // returns {totalUsers, activeStores, totalOrders}
+    plans:     '/plans',                       // returns array of plan objects
+  }
+};
+
+/* ════════════════════════════════════════
+   DEMO DATA (used when API.USE_DEMO = true)
+════════════════════════════════════════ */
+const DEMO = {
+  stats: {
+    totalUsers: 3247,
+    activeStores: 3189,
+    totalOrders: 48320,
+  },
+  plans: [
+    {
+      id: 'free', name: 'Free', price: 0, currency: '₦', period: 'month',
+      desc: 'Perfect for getting started. No card needed.',
+      requiredPlan: null,
+      feats: [
+        {label:'Up to 10 product listings', included:true},
+        {label:'1 product category', included:true},
+        {label:'WhatsApp order button on every product', included:true},
+        {label:'Shareable store link', included:true},
+        {label:'Cart (multi-item WhatsApp orders)', included:true},
+        {label:'Basic visitor counter', included:true},
+        {label:'Analytics dashboard', included:false},
+        {label:'Multiple categories', included:false},
+        {label:'Custom domain', included:false},
+        {label:'Remove StoreLink branding', included:false},
+      ]
+    },
+    {
+      id: 'pro', name: 'Pro', price: 5000, currency: '₦', period: 'month',
+      desc: 'For serious sellers who want more listings and analytics.',
+      popular: true,
+      requiredPlan: 'pro',
+      feats: [
+        {label:'Up to 50 product listings', included:true},
+        {label:'Up to 10 product categories', included:true},
+        {label:'Analytics dashboard', included:true},
+        {label:'Contacts & Broadcast', included:true},
+        {label:'Custom store colours & banner', included:true},
+        {label:'Custom domain', included:true},
+        {label:'Remove StoreLink branding', included:true},
+        {label:'Tracking pixels (Meta, TikTok, GA)', included:true},
+        {label:'Priority support', included:true},
+        {label:'Multiple stores', included:false},
+        {label:'Analytics CSV export', included:false},
+      ]
+    },
+    {
+      id: 'business', name: 'Business', price: 12000, currency: '₦', period: 'month',
+      desc: 'For power sellers managing multiple stores at scale.',
+      business: true,
+      requiredPlan: 'business',
+      feats: [
+        {label:'Unlimited product listings', included:true},
+        {label:'Unlimited categories', included:true},
+        {label:'Up to 5 stores under one account', included:true},
+        {label:'Advanced analytics + CSV export', included:true},
+        {label:'Custom domain on all stores', included:true},
+        {label:'Team access / staff accounts', included:true},
+        {label:'Inventory management & alerts', included:true},
+        {label:'Bulk product import via spreadsheet', included:true},
+        {label:'API access for integrations', included:true},
+        {label:'VIP WhatsApp support (< 2hr)', included:true},
+      ]
+    }
+  ],
+  features: [
+    {ic:'🏪', title:'Your own store link', desc:'Get a URL like storelink.ng/yourname. Share it anywhere — Instagram bio, WhatsApp status, SMS.', plan:null},
+    {ic:'⚡', title:'Instant WhatsApp orders', desc:'Every Order button sends a pre-filled WhatsApp message with the product, price, and qty. Zero friction.', plan:null},
+    {ic:'🛒', title:'Cart & multi-item orders', desc:'Customers add multiple products, then send one combined WhatsApp order. Higher average value.', plan:null},
+    {ic:'📊', title:'Analytics dashboard', desc:'See visits, product clicks, cart sessions, and order tap rates — all anonymous, no customer accounts needed.', plan:'pro'},
+    {ic:'📸', title:'Product image upload', desc:'Upload real product photos or paste image URLs. Multiple images per product with a swipe gallery.', plan:'pro'},
+    {ic:'📣', title:'Contacts & Broadcast', desc:'Build your buyer list from orders. Message everyone at once with a deal or update — straight from your dashboard.', plan:'pro'},
+    {ic:'🌐', title:'Custom domain', desc:'Connect yourstore.com to your StoreLink. SSL included, no hosting fees. Looks completely professional.', plan:'pro'},
+    {ic:'📈', title:'Analytics export', desc:'Download your visits, orders, and revenue data as CSV. Take it into Excel, Google Sheets, or anywhere.', plan:'business'},
+    {ic:'🏗️', title:'Multiple stores', desc:'Run up to 5 completely separate stores under one account. Different brands, different categories, one dashboard.', plan:'business'},
+    {ic:'🔌', title:'Tracking pixels', desc:'Connect Meta Pixel, TikTok Pixel, and Google Analytics 4. Retarget your store visitors with ads on social.', plan:'pro'},
+    {ic:'🏷️', title:'Promo banner editor', desc:"Set a customisable promo banner at the top of your store. 'Up to 20% off iPhones this week' — that kind of thing.", plan:'pro'},
+    {ic:'👥', title:'Team access', desc:'Add staff accounts with different roles. Let your team manage products, log orders, and reply to contacts.', plan:'business'},
+  ]
+};
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let currentPlan = 'business'; // Simulated — start on Business to show everything
+let platformStats = null;
+let plansData = null;
+
+/* ════════════════════════════════════════
+   API CALLS (with demo fallback)
+════════════════════════════════════════ */
+async function fetchStats() {
+  if (API.USE_DEMO) return DEMO.stats;
+  try {
+    const res = await fetch(`${API.BASE_URL}${API.ENDPOINTS.stats}`, {
+      headers: {'Content-Type': 'application/json'}
+    });
+    if (!res.ok) throw new Error('API error');
+    return await res.json();
+  } catch(e) {
+    console.warn('API unavailable, using demo data:', e.message);
+    return DEMO.stats;
+  }
+}
+
+async function fetchPlans() {
+  if (API.USE_DEMO) return DEMO.plans;
+  try {
+    const res = await fetch(`${API.BASE_URL}${API.ENDPOINTS.plans}`, {
+      headers: {'Content-Type': 'application/json'}
+    });
+    if (!res.ok) throw new Error('API error');
+    return await res.json();
+  } catch(e) {
+    console.warn('API unavailable, using demo plans:', e.message);
+    return DEMO.plans;
+  }
+}
+
+/* ════════════════════════════════════════
+   PLAN HELPERS
+════════════════════════════════════════ */
+const PLAN_RANK = {free:0, pro:1, business:2};
+function canAccess(requiredPlan) {
+  if (!requiredPlan) return true;
+  return PLAN_RANK[currentPlan] >= PLAN_RANK[requiredPlan];
+}
+function planLabel(p) {
+  if (!p) return null;
+  return {pro:'Pro+', business:'Business'}[p] || p;
+}
+
+/* ════════════════════════════════════════
+   RENDER USER COUNT
+════════════════════════════════════════ */
+function fmtCount(n) {
+  if (n >= 1000) return Math.floor(n/100)*100/1000 + 'k+';
+  return n.toLocaleString()+'+';
+}
+function updateUserCounts(stats) {
+  const c = fmtCount(stats.totalUsers);
+  const els = ['heroUserCount','ctaUserCount'];
+  els.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = c; });
+  const tag = document.getElementById('liveTagText');
+  if(tag) tag.textContent = `Trusted by ${c} sellers`;
+}
+
+/* ════════════════════════════════════════
+   RENDER FEATURES GRID
+════════════════════════════════════════ */
+function renderFeatures() {
+  const grid = document.getElementById('featuresGrid');
+  if (!grid) return;
+  grid.innerHTML = DEMO.features.map(f => {
+    const locked = !canAccess(f.plan);
+    const lbl = planLabel(f.plan);
+    return `
+      <div class="feat-card ${locked ? 'feat-locked' : ''}">
+        <div class="feat-ic">${f.ic}</div>
+        <div class="feat-title">${f.title}</div>
+        <p class="feat-desc">${f.desc}</p>
+        ${lbl ? `<span class="feat-plan-badge ${f.plan==='business'?'fpb-business':'fpb-pro'}">✦ ${lbl}</span>` : ''}
+        ${locked ? `
+          <div class="feat-lock-overlay" onclick="showGateModal('${f.title}','${f.plan}')">
+            <div class="feat-lock-ic">🔒</div>
+            <div class="feat-lock-txt">${lbl} feature</div>
+            <div class="feat-lock-cta">Upgrade to unlock →</div>
+          </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════
+   RENDER PLANS GRID
+════════════════════════════════════════ */
+function renderPlans() {
+  if (!plansData) return;
+  const grid = document.getElementById('plansGrid');
+  if (!grid) return;
+  grid.innerHTML = plansData.map(p => {
+    const isActive = currentPlan === p.id;
+    let ctaClass, ctaText;
+    if (p.id === 'free') { ctaClass='plan-cta-ghost'; ctaText='Get started free'; }
+    else if (p.id === 'pro') { ctaClass='plan-cta-g'; ctaText='Start Pro — 3 months free'; }
+    else { ctaClass='plan-cta-y'; ctaText='Upgrade to Business'; }
+    return `
+      <div class="plan-card ${p.popular?'popular':''} ${p.business?'biz-plan':''}">
+        ${p.popular?'<div class="plan-top-badge ptb-popular">Most Popular</div>':''}
+        ${p.business?'<div class="plan-top-badge ptb-biz">Full Access</div>':''}
+        <div class="plan-header">
+          <div class="plan-name">${p.name}</div>
+          <div class="plan-price">
+            <sup>${p.currency}</sup>${p.price.toLocaleString()}<span class="period">/ ${p.period}</span>
+          </div>
+          <p class="plan-desc">${p.desc}</p>
+          <button class="plan-cta ${ctaClass}" onclick="goto('auth-user.html')">${ctaText}</button>
+        </div>
+        <div class="plan-body">
+          <div class="plan-feats-label">${p.id==='free'?'What\'s included':'Everything in ${p.id==="pro"?"Free":"Pro"}, plus'}</div>
+          <ul class="plan-feats">
+            ${p.feats.map(f=>`<li><span class="pf-ic ${f.included?'pf-yes':'pf-no'}">${f.included?'✓':'✕'}</span><span>${f.label}</span></li>`).join('')}
+          </ul>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════
+   PLAN GATE MODAL
+════════════════════════════════════════ */
+function showGateModal(featureName, requiredPlan) {
+  const labels = {pro:'Pro Plan',business:'Business Plan'};
+  document.getElementById('gmTitle').textContent = `${labels[requiredPlan]||'Upgrade'} required`;
+  document.getElementById('gmSub').textContent = `"${featureName}" is available on the ${labels[requiredPlan]||requiredPlan} and above.`;
+  document.getElementById('gateModalBg').classList.add('open');
+}
+function closeGateModal(e) {
+  if (e.target === document.getElementById('gateModalBg')) {
+    document.getElementById('gateModalBg').classList.remove('open');
+  }
+}
+function handlePlanGatedCTA(feature) {
+  if (!canAccess('pro')) {
+    showGateModal('Custom Domain','pro');
+  } else {
+    goto('auth-user.html');
+  }
+}
+
+/* ════════════════════════════════════════
+   PLAN SWITCHER (dev simulation)
+   → Remove this function + .dev-switcher
+     element in production
+════════════════════════════════════════ */
+function setPlan(plan) {
+  currentPlan = plan;
+  // update switcher buttons
+  document.querySelectorAll('.dev-btn').forEach(b => {
+    b.classList.remove('active','active-biz');
+  });
+  const btn = document.getElementById('dev'+plan.charAt(0).toUpperCase()+plan.slice(1));
+  if (btn) {
+    if (plan==='business') btn.classList.add('active-biz');
+    else btn.classList.add('active');
+  }
+  renderFeatures();
+  renderPlans();
+}
+
+/* ════════════════════════════════════════
+   MISC
+════════════════════════════════════════ */
+function goto(url) { window.location.href = url; }
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+/* ════════════════════════════════════════
+   INIT — fetch live data then render
+════════════════════════════════════════ */
+async function init() {
+  // Fetch stats (shows real user count from backend, or demo data)
+  platformStats = await fetchStats();
+  updateUserCounts(platformStats);
+
+  // Fetch plans (or use demo)
+  plansData = await fetchPlans();
+
+  // Render plan-dependent sections
+  renderFeatures();
+  renderPlans();
+
+  // Set dev switcher to business (default simulated plan)
+  document.getElementById('devBiz')?.classList.add('active-biz');
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Upgrade Plan — StoreLink</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --g:#00e27a;--gd:#00b85e;--gdim:rgba(0,226,122,.1);--gbright:rgba(0,226,122,.18);
+  --red:#ff4560;--rdim:rgba(255,69,96,.12);
+  --yellow:#f5c842;--ydim:rgba(245,200,66,.12);
+  --blue:#3d9cff;--bdim:rgba(61,156,255,.12);
+  --bg:#06070a;--s1:#0d0f12;--s2:#131519;--s3:#191c21;--s4:#1e2128;
+  --bd:#22262e;--bd2:#2c3040;
+  --tx:#eceef4;--t2:#9499a8;--t3:#555b70;
+  --fh:'Bricolage Grotesque',sans-serif;
+  --fb:'DM Sans',sans-serif;
+  --fm:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--fb);background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px;}
+
+/* ── BG EFFECTS ── */
+.bg-noise{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");}
+.bg-glow{position:fixed;top:-160px;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse at center,rgba(0,226,122,.07) 0%,transparent 70%);pointer-events:none;z-index:0;}
+
+/* ── LAYOUT ── */
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:24px 16px 80px;}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-top:8px;}
+.logo{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--g);}
+.back-link{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--t2);text-decoration:none;border:1px solid var(--bd);border-radius:8px;padding:6px 12px;transition:all .18s;background:var(--s1);}
+.back-link:hover{border-color:var(--g);color:var(--g);}
+
+/* ── PLAN SWITCHER ── */
+.plan-switcher{display:flex;background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:4px;gap:3px;margin-bottom:20px;}
+.ps-btn{flex:1;padding:8px 10px;border-radius:9px;border:none;background:transparent;font-family:var(--fb);font-size:11px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .16s;white-space:nowrap;text-align:center;}
+.ps-btn.active{background:var(--s3);color:var(--tx);box-shadow:0 1px 4px rgba(0,0,0,.4);}
+.ps-btn[data-plan="pro"].active{color:var(--g);}
+.ps-btn[data-plan="business"].active{color:var(--yellow);}
+
+/* ── PLAN SUMMARY CARD ── */
+.plan-card{border-radius:16px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden;border:1.5px solid var(--bd);background:var(--s1);transition:all .3s;}
+.plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;transition:background .3s;}
+.plan-card[data-active="pro"]::before{background:var(--g);}
+.plan-card[data-active="business"]::before{background:var(--yellow);}
+.plan-card[data-active="pro"]{border-color:rgba(0,226,122,.2);}
+.plan-card[data-active="business"]{border-color:rgba(245,200,66,.2);}
+.plan-card-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.plan-icon{font-size:28px;line-height:1;flex-shrink:0;}
+.plan-info{flex:1;}
+.plan-name{font-family:var(--fh);font-size:17px;font-weight:800;margin-bottom:3px;}
+.plan-name[data-plan="pro"]{color:var(--g);}
+.plan-name[data-plan="business"]{color:var(--yellow);}
+.plan-price-block{text-align:right;flex-shrink:0;}
+.plan-price{font-family:var(--fh);font-size:26px;font-weight:800;line-height:1;}
+.plan-price[data-plan="pro"]{color:var(--g);}
+.plan-price[data-plan="business"]{color:var(--yellow);}
+.plan-period{font-size:10px;color:var(--t2);margin-top:2px;}
+.plan-desc{font-size:11px;color:var(--t2);margin-top:6px;line-height:1.55;}
+.plan-feats{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+.plan-feat{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:var(--s3);color:var(--t2);border:1px solid var(--bd);}
+
+/* ── SECTION ── */
+.section{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:14px;}
+.section-hd{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;}
+.section-title{font-family:var(--fh);font-size:13px;font-weight:700;}
+.section-badge{margin-left:auto;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;}
+.bg-pill{background:var(--gdim);color:var(--g);border:1px solid rgba(0,226,122,.2);}
+.section-body{padding:6px 0;}
+
+/* ── DETAIL ROW ── */
+.detail-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--bd);gap:12px;}
+.detail-row:last-child{border-bottom:none;}
+.detail-lbl{font-size:12px;font-weight:600;color:var(--t2);}
+.detail-val{font-family:var(--fm);font-size:13px;font-weight:500;color:var(--tx);display:flex;align-items:center;gap:8px;}
+.detail-val.green{color:var(--g);font-family:var(--fh);font-size:15px;font-weight:800;}
+.copy-btn{display:inline-flex;align-items:center;gap:4px;background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--t2);cursor:pointer;font-family:var(--fb);transition:all .16s;flex-shrink:0;}
+.copy-btn:hover{border-color:var(--g);color:var(--g);}
+.copy-btn.copied{border-color:var(--g);color:var(--g);background:var(--gdim);}
+
+/* ── COUPON ── */
+.coupon-row{padding:13px 16px;}
+.coupon-input-wrap{display:flex;gap:7px;}
+.coupon-input{flex:1;background:var(--s2);border:1.5px solid var(--bd);border-radius:9px;padding:9px 12px;color:var(--tx);font-family:var(--fb);font-size:13px;outline:none;transition:border-color .2s;letter-spacing:.05em;text-transform:uppercase;}
+.coupon-input::placeholder{letter-spacing:0;text-transform:none;font-size:12px;}
+.coupon-input:focus{border-color:var(--g);}
+.coupon-input.valid{border-color:var(--g);background:var(--gdim);}
+.coupon-input.invalid{border-color:var(--red);}
+.apply-btn{background:var(--s2);border:1.5px solid var(--bd);border-radius:9px;padding:9px 16px;font-family:var(--fh);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer;white-space:nowrap;transition:all .18s;}
+.apply-btn:hover{border-color:var(--g);color:var(--g);}
+.coupon-feedback{font-size:11px;margin-top:7px;display:flex;align-items:center;gap:5px;min-height:16px;}
+.coupon-feedback.ok{color:var(--g);}
+.coupon-feedback.err{color:var(--red);}
+
+/* ── ORDER SUMMARY ── */
+.summary-row{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;font-size:12px;}
+.summary-row.total{border-top:1px solid var(--bd);padding-top:14px;margin-top:2px;}
+.summary-row.total .summary-lbl{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--tx);}
+.summary-row.total .summary-val{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--g);}
+.summary-lbl{color:var(--t2);font-weight:600;}
+.summary-val{font-weight:700;color:var(--tx);}
+.summary-val.strike{text-decoration:line-through;color:var(--t3);font-size:11px;}
+.discount-row{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;font-size:11px;}
+.discount-lbl{color:var(--g);font-weight:700;}
+.discount-val{color:var(--g);font-weight:700;}
+
+/* ── STEPS ── */
+.steps{padding:14px 16px;}
+.step{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.step:last-child{margin-bottom:0;}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--gdim);border:1px solid rgba(0,226,122,.25);color:var(--g);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-txt{font-size:12px;color:var(--t2);line-height:1.55;}
+.step-txt strong{color:var(--tx);}
+
+/* ── ACTIONS ── */
+.actions{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+.wa-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;padding:15px 20px;border-radius:12px;border:none;background:linear-gradient(135deg,#075e54,#128c7e);font-family:var(--fh);font-size:14px;font-weight:700;color:#fff;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.wa-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent);pointer-events:none;}
+.wa-btn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(18,140,126,.35);}
+.wa-btn:active{transform:none;}
+.wa-btn-ic{font-size:18px;}
+.wa-sub{font-size:10px;opacity:.75;font-weight:400;margin-top:1px;}
+.ghost-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;border-radius:12px;border:1.5px solid var(--bd);background:transparent;font-family:var(--fb);font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .18s;}
+.ghost-btn:hover{border-color:var(--g);color:var(--g);}
+
+/* ── INFO BOX ── */
+.info-box{border-radius:10px;padding:11px 14px;display:flex;gap:9px;align-items:flex-start;margin-bottom:14px;}
+.info-box.y{background:var(--ydim);border:1px solid rgba(245,200,66,.2);}
+.info-box.g{background:var(--gdim);border:1px solid rgba(0,226,122,.2);}
+.info-txt{font-size:11px;color:var(--t2);line-height:1.6;}
+
+/* ── FOOTER NOTE ── */
+.footer-note{text-align:center;font-size:10px;color:var(--t3);margin-top:18px;line-height:1.7;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--s1);border:1px solid var(--bd2);padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:900;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.7);display:flex;align-items:center;gap:7px;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── SKELETON PULSE (loading state) ── */
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:.8}}
+.skeleton{border-radius:6px;background:var(--s3);animation:pulse 1.4s ease-in-out infinite;}
+
+/* ── ENTRANCE ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.fade-up{animation:fadeUp .3s ease both;}
+.fade-up-1{animation-delay:.05s;}
+.fade-up-2{animation-delay:.1s;}
+.fade-up-3{animation-delay:.15s;}
+.fade-up-4{animation-delay:.2s;}
+.fade-up-5{animation-delay:.25s;}
+</style>
+</head>
+<body>
+<div class="bg-noise"></div>
+<div class="bg-glow"></div>
+
+<div class="wrap">
+
+  <!-- TOPBAR -->
+  <div class="topbar fade-up">
+    <div class="logo">StoreLink</div>
+    <a href="javascript:history.back()" class="back-link">← Back</a>
+  </div>
+
+  <!-- PLAN SWITCHER (visible when no plan is pre-selected) -->
+  <div class="plan-switcher fade-up fade-up-1" id="planSwitcher">
+    <button class="ps-btn" data-plan="pro" onclick="selectPlan('pro')">✅ Pro — ₦5,000/mo</button>
+    <button class="ps-btn" data-plan="business" onclick="selectPlan('business')">💎 Business — ₦12,000/mo</button>
+  </div>
+
+  <!-- PLAN CARD -->
+  <div class="plan-card fade-up fade-up-2" id="planCard" data-active="pro">
+    <div class="plan-card-inner">
+      <div class="plan-icon" id="planIcon">✅</div>
+      <div class="plan-info">
+        <div class="plan-name" id="planNameEl" data-plan="pro">Pro Plan</div>
+        <div class="plan-desc" id="planDescEl">Unlimited products · Full analytics · Broadcast · Pixels · Custom domain</div>
+        <div class="plan-feats" id="planFeatsEl"></div>
+      </div>
+      <div class="plan-price-block">
+        <div class="plan-price" id="planPriceEl" data-plan="pro">₦5,000</div>
+        <div class="plan-period">per month</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT DETAILS -->
+  <div class="section fade-up fade-up-3">
+    <div class="section-hd">
+      <span style="font-size:16px">🏦</span>
+      <div class="section-title" id="bankNameTitle">OPay Payment Details</div>
+      <span class="section-badge bg-pill">Instant</span>
+    </div>
+    <div class="section-body">
+      <div class="detail-row">
+        <div class="detail-lbl">Account Name</div>
+        <div class="detail-val" id="accName">Mandela</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-lbl">Account Number</div>
+        <div class="detail-val">
+          <span id="accNum">9038749015</span>
+          <button class="copy-btn" id="copyAccBtn" onclick="copyVal('accNum','copyAccBtn')">Copy</button>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-lbl">Bank</div>
+        <div class="detail-val" id="bankName">OPay Digital Bank</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-lbl">Amount</div>
+        <div class="detail-val green" id="amountDisplay">₦5,000</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COUPON CODE (hidden by admin toggle) -->
+  <div class="section fade-up fade-up-3" id="couponSection">
+    <div class="section-hd">
+      <span style="font-size:16px">🎟️</span>
+      <div class="section-title">Have a Coupon?</div>
+    </div>
+    <div class="section-body">
+      <div class="coupon-row">
+        <div class="coupon-input-wrap">
+          <input class="coupon-input" id="couponInput" placeholder="Enter code e.g. LAUNCH30" maxlength="20" autocomplete="off" oninput="resetCoupon()"/>
+          <button class="apply-btn" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div class="coupon-feedback" id="couponFeedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div class="section fade-up fade-up-4" id="summarySection">
+    <div class="section-hd">
+      <span style="font-size:16px">🧾</span>
+      <div class="section-title">Order Summary</div>
+    </div>
+    <div class="section-body" style="padding-bottom:6px;">
+      <div class="summary-row">
+        <div class="summary-lbl" id="summaryPlanName">Pro Plan (monthly)</div>
+        <div class="summary-val" id="summaryBasePrice">₦5,000</div>
+      </div>
+      <div id="discountLine" style="display:none">
+        <div class="discount-row">
+          <div class="discount-lbl" id="discountLabel">🎟️ Coupon applied</div>
+          <div class="discount-val" id="discountAmt">−₦0</div>
+        </div>
+      </div>
+      <div class="summary-row total">
+        <div class="summary-lbl">Total to Pay</div>
+        <div class="summary-val" id="summaryTotal">₦5,000</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO PAY STEPS -->
+  <div class="section fade-up fade-up-4">
+    <div class="section-hd">
+      <span style="font-size:16px">📋</span>
+      <div class="section-title">How to Complete Payment</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-txt">Open your <strong>banking app or OPay</strong> and transfer the exact amount shown above</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-txt">Use your <strong>store name or email</strong> as the payment narration / reference</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-txt">Click the button below to <strong>send your payment screenshot</strong> directly on WhatsApp</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-txt">Your plan will be upgraded within <strong>5–10 minutes</strong> of confirmation ⚡</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions fade-up fade-up-5">
+    <button class="wa-btn" onclick="sendWhatsApp()">
+      <span class="wa-btn-ic">💬</span>
+      <div>
+        <div>Send Payment Screenshot on WhatsApp</div>
+        <div class="wa-sub">Tap to open pre-filled message</div>
+      </div>
+    </button>
+    <button class="ghost-btn" onclick="copyPaymentDetails()">📋 Copy All Payment Details</button>
+  </div>
+
+  <div class="footer-note">
+    ⚡ Upgrades are processed manually and take 5–10 minutes.<br>
+    Support: <strong style="color:var(--t2)">support@storelink.ng</strong> · All payments are verified before activation.
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toastEl"><span id="toastIc"></span><span id="toastMsg"></span></div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   CONFIG — reads from admin localStorage (sl_admin_v2)
+   Falls back to defaults if admin data not found.
+══════════════════════════════════════════════════════ */
+
+const DEFAULTS = {
+  accountName:   'Mandela',
+  accountNumber: '9038749015',
+  bankName:      'OPay Digital Bank',
+  waNumber:      '2349038749015', // support WhatsApp — no +, no leading 0
+  couponEnabled: true,            // admin can disable coupon feature
+  coupons: {                      // coupon code : discount %
+    'LAUNCH30':  30,
+    'WELCOME20': 20,
+    'VIP50':     50,
+  }
+};
+
+const PLANS = {
+  pro: {
+    id: 'pro', icon: '✅', name: 'Pro Plan', price: 5000,
+    desc: 'Unlimited products · Full analytics · Broadcast · Pixels · Custom domain',
+    feats: ['1 store', 'Unlimited products', 'Analytics', 'Broadcast', 'Pixel tracking', 'Custom domain']
+  },
+  business: {
+    id: 'business', icon: '💎', name: 'Business Plan', price: 12000,
+    desc: 'Everything in Pro + 2 stores · Team accounts (3 members) · CSV export · Priority support',
+    feats: ['2 stores', 'Team accounts', 'Analytics export', 'Priority support', 'API access']
+  }
+};
+
+/* ── Read admin config ── */
+function readAdminConfig() {
+  try {
+    const raw = localStorage.getItem('sl_admin_v2');
+    if (!raw) return DEFAULTS;
+    const admin = JSON.parse(raw);
+
+    // Read payment settings from admin platform settings
+    const cfg = { ...DEFAULTS };
+
+    // Support WhatsApp from admin platform settings
+    if (admin.settings?.platSupportWA) {
+      cfg.waNumber = admin.settings.platSupportWA.replace(/\D/g, '');
+      if (cfg.waNumber.startsWith('0')) cfg.waNumber = '234' + cfg.waNumber.slice(1);
+    }
+
+    // Could extend: admin could store payment details in settings
+    // For now we fall back to defaults unless explicitly stored
+    if (admin.paymentDetails) {
+      cfg.accountName   = admin.paymentDetails.accountName   || cfg.accountName;
+      cfg.accountNumber = admin.paymentDetails.accountNumber || cfg.accountNumber;
+      cfg.bankName      = admin.paymentDetails.bankName      || cfg.bankName;
+    }
+
+    // Coupon toggle from admin feature flags
+    if (admin.featureFlags) {
+      const couponFlag = admin.featureFlags.find(f => f.id === 'coupon');
+      if (couponFlag) cfg.couponEnabled = couponFlag.enabled;
+    }
+
+    // Coupon codes if stored in admin
+    if (admin.coupons) cfg.coupons = admin.coupons;
+
+    return cfg;
+  } catch(e) {
+    return DEFAULTS;
+  }
+}
+
+/* ── Read seller info ── */
+function readSellerInfo() {
+  try {
+    const raw = localStorage.getItem('sl_biz_v1');
+    if (!raw) return {};
+    const d = JSON.parse(raw);
+    return {
+      storeName: d.settings?.storeName || '',
+      email: d.userEmail || '',
+      name: d.settings?.storeName || '',
+      plan: d.plan || 'free'
+    };
+  } catch(e) {
+    return {};
+  }
+}
+
+/* ── Read plan from URL or localStorage ── */
+function readPlanFromContext() {
+  // Priority 1: URL query string ?plan=pro or ?plan=business
+  const params = new URLSearchParams(window.location.search);
+  const urlPlan = params.get('plan');
+  if (urlPlan && PLANS[urlPlan]) return urlPlan;
+
+  // Priority 2: URL hash #pro or #business
+  const hash = window.location.hash.replace('#', '');
+  if (hash && PLANS[hash]) return hash;
+
+  // Priority 3: Saved in sessionStorage (e.g. set before redirect)
+  const ssPlan = sessionStorage.getItem('sl_upgrade_plan');
+  if (ssPlan && PLANS[ssPlan]) return ssPlan;
+
+  // Priority 4: Detect from seller's current plan — suggest the next tier
+  const seller = readSellerInfo();
+  if (seller.plan === 'pro') return 'business';
+  if (seller.plan === 'free') return 'pro';
+
+  // Default: pro
+  return 'pro';
+}
+
+/* ── State ── */
+let CONFIG = readAdminConfig();
+let activePlan = readPlanFromContext();
+let appliedCoupon = null; // { code, discount }
+const seller = readSellerInfo();
+
+/* ── Init ── */
+function init() {
+  // Hide coupon if disabled by admin
+  const couponSec = document.getElementById('couponSection');
+  if (!CONFIG.couponEnabled) couponSec.style.display = 'none';
+
+  // Set payment details from config
+  document.getElementById('accName').textContent     = CONFIG.accountName;
+  document.getElementById('accNum').textContent      = CONFIG.accountNumber;
+  document.getElementById('bankName').textContent    = CONFIG.bankName;
+  document.getElementById('bankNameTitle').textContent = CONFIG.bankName + ' Payment Details';
+
+  // Apply plan
+  selectPlan(activePlan);
+}
+
+/* ── Select plan ── */
+function selectPlan(planId) {
+  if (!PLANS[planId]) return;
+  activePlan = planId;
+  const plan = PLANS[planId];
+
+  // Update switcher buttons
+  document.querySelectorAll('.ps-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.plan === planId);
+  });
+
+  // Update plan card
+  const card = document.getElementById('planCard');
+  card.dataset.active = planId;
+
+  document.getElementById('planIcon').textContent          = plan.icon;
+  document.getElementById('planNameEl').textContent        = plan.name;
+  document.getElementById('planNameEl').dataset.plan       = planId;
+  document.getElementById('planDescEl').textContent        = plan.desc;
+  document.getElementById('planPriceEl').textContent       = '₦' + plan.price.toLocaleString('en-NG');
+  document.getElementById('planPriceEl').dataset.plan      = planId;
+
+  // Features
+  document.getElementById('planFeatsEl').innerHTML = plan.feats
+    .map(f => `<span class="plan-feat">${f}</span>`).join('');
+
+  // Reset coupon on plan change
+  appliedCoupon = null;
+  const couponInput = document.getElementById('couponInput');
+  if (couponInput) { couponInput.value = ''; couponInput.className = 'coupon-input'; }
+  document.getElementById('couponFeedback').textContent = '';
+  document.getElementById('couponFeedback').className = 'coupon-feedback';
+
+  updateSummary();
+}
+
+/* ── Coupon ── */
+function resetCoupon() {
+  appliedCoupon = null;
+  const fb = document.getElementById('couponFeedback');
+  fb.textContent = ''; fb.className = 'coupon-feedback';
+  const inp = document.getElementById('couponInput');
+  inp.className = 'coupon-input';
+  updateSummary();
+}
+
+function applyCoupon() {
+  if (!CONFIG.couponEnabled) { toast('Coupons are currently disabled','⚠️'); return; }
+  const code = (document.getElementById('couponInput').value || '').trim().toUpperCase();
+  if (!code) { toast('Enter a coupon code','⚠️'); return; }
+
+  const inp = document.getElementById('couponInput');
+  const fb  = document.getElementById('couponFeedback');
+
+  const discount = CONFIG.coupons[code];
+  if (discount !== undefined) {
+    appliedCoupon = { code, discount };
+    inp.className = 'coupon-input valid';
+    fb.className = 'coupon-feedback ok';
+    fb.innerHTML = `✓ ${discount}% discount applied — ${code}`;
+    toast(`Coupon applied: ${discount}% off`, '🎟️');
+  } else {
+    appliedCoupon = null;
+    inp.className = 'coupon-input invalid';
+    fb.className = 'coupon-feedback err';
+    fb.textContent = '✕ Invalid or expired coupon code';
+    toast('Invalid coupon code','⚠️');
+  }
+  updateSummary();
+}
+
+/* ── Summary ── */
+function updateSummary() {
+  const plan = PLANS[activePlan];
+  const base = plan.price;
+  const discPct = appliedCoupon ? appliedCoupon.discount : 0;
+  const discAmt = Math.round(base * discPct / 100);
+  const total   = base - discAmt;
+
+  document.getElementById('summaryPlanName').textContent = plan.name + ' (monthly)';
+  document.getElementById('summaryBasePrice').textContent = '₦' + base.toLocaleString('en-NG');
+  document.getElementById('amountDisplay').textContent    = '₦' + total.toLocaleString('en-NG');
+  document.getElementById('summaryTotal').textContent     = '₦' + total.toLocaleString('en-NG');
+
+  const discLine = document.getElementById('discountLine');
+  if (discAmt > 0) {
+    discLine.style.display = '';
+    document.getElementById('discountLabel').textContent = `🎟️ ${appliedCoupon.code} (${discPct}% off)`;
+    document.getElementById('discountAmt').textContent   = '−₦' + discAmt.toLocaleString('en-NG');
+  } else {
+    discLine.style.display = 'none';
+  }
+}
+
+/* ── Copy helpers ── */
+function copyVal(elId, btnId) {
+  const val = document.getElementById(elId)?.textContent?.trim() || '';
+  navigator.clipboard.writeText(val).catch(() => {});
+  const btn = document.getElementById(btnId);
+  const orig = btn.textContent;
+  btn.textContent = '✓ Copied'; btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+  toast('Copied!', '✓');
+}
+
+function copyPaymentDetails() {
+  const plan = PLANS[activePlan];
+  const discPct = appliedCoupon ? appliedCoupon.discount : 0;
+  const total = plan.price - Math.round(plan.price * discPct / 100);
+  const txt =
+    `StoreLink Payment Details\n` +
+    `─────────────────────────\n` +
+    `Plan:           ${plan.name}\n` +
+    `Bank:           ${CONFIG.bankName}\n` +
+    `Account Name:   ${CONFIG.accountName}\n` +
+    `Account Number: ${CONFIG.accountNumber}\n` +
+    `Amount:         ₦${total.toLocaleString('en-NG')}\n` +
+    (appliedCoupon ? `Coupon:         ${appliedCoupon.code} (${discPct}% off)\n` : '') +
+    `─────────────────────────\n` +
+    `Reference: Your store name or email`;
+  navigator.clipboard.writeText(txt).catch(() => {});
+  toast('Payment details copied!', '📋');
+}
+
+/* ── WhatsApp ── */
+function sendWhatsApp() {
+  const plan  = PLANS[activePlan];
+  const discPct = appliedCoupon ? appliedCoupon.discount : 0;
+  const discAmt = Math.round(plan.price * discPct / 100);
+  const total   = plan.price - discAmt;
+
+  const storeName = seller.storeName || 'My Store';
+  const email     = seller.email || '(not provided)';
+
+  const msg =
+    `*STORELINK PAYMENT CONFIRMATION* 🔥\n\n` +
+    `Hello! I just made a transfer for my plan upgrade.\n\n` +
+    `📦 *Plan:* ${plan.name}\n` +
+    `💰 *Amount Paid:* ₦${total.toLocaleString('en-NG')}\n` +
+    (appliedCoupon ? `🎟️ *Coupon Used:* ${appliedCoupon.code} (${discPct}% off)\n` : '') +
+    `\n🏦 *Transfer Details:*\n` +
+    `Bank: ${CONFIG.bankName}\n` +
+    `Account Name: ${CONFIG.accountName}\n` +
+    `Account Number: ${CONFIG.accountNumber}\n\n` +
+    `🏪 *Store Name:* ${storeName}\n` +
+    `📧 *Email:* ${email}\n\n` +
+    `📸 *(Screenshot of payment attached in next message)*\n\n` +
+    `Please verify and activate my upgrade. Thank you! 🙏`;
+
+  const waNum = CONFIG.waNumber.replace(/\D/g, '');
+  const url = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+  toast('WhatsApp opening — send your screenshot!', '💬');
+}
+
+/* ── Toast ── */
+function toast(msg, icon = '✅') {
+  const el = document.getElementById('toastEl');
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIc').textContent  = icon;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+init();
+</script>
+</body>
+</html>
