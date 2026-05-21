@@ -35,8 +35,9 @@ const UserSchema = new mongoose.Schema({
 pendingPlan:     { type: String, default: null },
 lastPaystackRef: { type: String, default: null },
 
-}, { timestamps: true, versionKey: false,  _id: false });
+}, { timestamps: true, versionKey: false, });
 
+// Hash password before save
 // Hash password before save
 // Hash password before save
 // Hash password before save
@@ -44,7 +45,7 @@ UserSchema.pre('save', function(next) {
   if (!this.isModified('password')) return next();
   
   const user = this;
-  bcrypt.hash(user.password, 12, function(err, hash) {
+  bcrypt.hash(user.password, 12, (err, hash) => {
     if (err) return next(err);
     user.password = hash;
     // Compute initials
