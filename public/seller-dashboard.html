@@ -1278,13 +1278,13 @@ async function init() {
   D._orderRevenue  = data.analytics?.totalRevenue || 0;
 
   // Fetch store public link
-  if (D.activeStoreId) {
-    const linkData = await API.get(`/stores/${D.activeStoreId}/link`);
-    if (linkData) D._storeLink = linkData.publicLink || '';
-    D.userEmail = data.user?.email || '';
-    D.userEmail = data.user?.email || '';
-    D.userEmail = data.user?.email || '';
-  }
+if (D.activeStoreId) {
+  const linkData = await API.get(`/stores/${D.activeStoreId}/link`);
+  if (linkData) D._storeLink = linkData.publicLink || '';
+}
+
+// Move this OUTSIDE the if block
+D.userEmail = data.user?.email || '';
 
   updateSidebarUI();
   renderOvChart();
@@ -2025,6 +2025,11 @@ async function renderOrderLog() {
     </div>`).join('');
 
   D._orderRevenue = data.totalRevenue || 0;
+  // Fetch user email from /me endpoint
+const userData = await API.get('/me');
+if (userData && userData.user) {
+  D.userEmail = userData.user.email;
+}
   D._orderCount   = total;
   updateOrderStats(data.totalRevenue, total);
   renderPager('orderPager', pg, Math.ceil(total / ps) || 1, p => { pages.orders = p; renderOrderLog(); }, total);
