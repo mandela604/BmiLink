@@ -1193,7 +1193,31 @@ router.get('/auth/me', protectAdmin, async (req, res) => {
 });
 
 
+// TEMPORARY: Reset super admin password
+router.get('/reset-super-admin-password', async (req, res) => {
+  try {
+    const admin = await Admin.findOne({ email: 'blessedmandela@gmail.com' });
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
 
+    const newHashedPassword = await bcrypt.hash('Mandela22!', 12);
+
+    admin.password = newHashedPassword;
+    await admin.save();
+
+    console.log('✅ Super Admin password has been reset successfully');
+    res.json({ 
+      success: true, 
+      message: 'Password reset successful',
+      email: admin.email,
+      newPassword: 'Mandela22!'
+    });
+  } catch (err) {
+    console.error('Reset error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // TEMPORARY — delete after first use
 router.get('/setup-first-admin', async (req, res) => {
