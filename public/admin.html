@@ -2335,7 +2335,14 @@ async function doAdminLogin() {
   errEl.style.display = 'none';
   if (!email || !password) { errEl.textContent = 'Enter email and password'; errEl.style.display = 'block'; return; }
   try {
+        console.log('📡 [FRONTEND] Sending POST request to /api/admin/auth/login');
+    console.log('📡 [FRONTEND] Request body:', { email, password: '***hidden***' });
     const r    = await fetch('/api/admin/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ email, password }) });
+    
+    
+        
+    console.log('📡 [FRONTEND] Response status:', r.status);
+    console.log('📡 [FRONTEND] Response headers:', [...r.headers.entries()]);
     const data = await r.json();
     if (!r.ok || !data.success) { errEl.textContent = data.error || data.message || 'Invalid credentials'; errEl.style.display = 'block'; return; }
     location.reload();

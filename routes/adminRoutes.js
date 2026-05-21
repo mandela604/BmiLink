@@ -1121,12 +1121,16 @@ router.post('/coupons/:id/toggle', protectAdmin, async (req, res, next) => {
 
 // POST /api/admin/auth/login
 router.post('/auth/login', async (req, res) => {
+    console.log('[ADMIN LOGIN] Request received');  // ← ADD THIS
+  console.log('[ADMIN LOGIN] Body:', req.body);
+  
   try {
     const { email, password } = req.body;
     if (!email || !password)
       return res.status(400).json({ success: false, message: 'Email and password required' });
 
     const admin = await Admin.findOne({ email: email.toLowerCase().trim() }).select('+password');
+       console.log('[ADMIN LOGIN] Found admin:', admin ? admin.email : 'NOT FOUND'); 
     if (!admin)
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
@@ -1135,6 +1139,8 @@ router.post('/auth/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
     const token = jwt.sign({ id: admin.id }, process.env.JWT_ADMIN_SECRET, { expiresIn: '7d' });
+      console.log('[ADMIN LOGIN] Token generated, JWT_ADMIN_SECRET exists:', !!process.env.JWT_ADMIN_SECRET);
+
 
     res.cookie('adminToken', token, {
       httpOnly: true,
@@ -1156,6 +1162,7 @@ router.post('/auth/login', async (req, res) => {
       },
     });
   } catch (err) {
+       console.error('[ADMIN LOGIN] ERROR:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
