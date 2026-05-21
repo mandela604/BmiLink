@@ -1199,17 +1199,19 @@ router.get('/auth/me', protectAdmin, async (req, res) => {
 router.get('/setup-first-admin', async (req, res) => {
   const bcrypt = require('bcryptjs');
   const { v4: uuidv4 } = require('uuid');
-  const existing = await Admin.findOne({ role: 'super_admin' });
-  if (existing) return res.json({ error: 'Admin already exists' });
+  
+  // Delete existing admin first
+  await Admin.deleteMany({ email: 'blessedmandela@gmail.com' });
+  
   const admin = await Admin.create({
     id: uuidv4(),
     name: 'Super Admin',
     email: 'blessedmandela@gmail.com',
-    password: await bcrypt.hash('Mandela22!', 12),
+    password: await bcrypt.hash('admin123', 12),  // SIMPLE PASSWORD
     role: 'super_admin',
     status: 'active',
   });
-  res.json({ success: true, id: admin.id });
+  res.json({ success: true, id: admin.id, password: 'admin123' });
 }); 
 
 
