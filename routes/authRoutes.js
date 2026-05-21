@@ -13,6 +13,8 @@ const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: 
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
+   console.log('[REGISTER] Request received');  // ← ADD THIS
+  console.log('[REGISTER] Body:', req.body);
   try {
     const { 
       name, email, password, waNumber, city, 
@@ -20,7 +22,11 @@ router.post('/register', async (req, res) => {
       plan = 'free'
     } = req.body;
 
+      console.log('[REGISTER] Extracted data:', { name, email, storeName });
+
     const existing = await User.findOne({ email });
+   console.log('[REGISTER] Existing user check:', existing); // ← ADD THIS
+
     if (existing) return res.status(400).json({ error: 'Email already registered' });
     
     if (!name || !email || !password || !storeName) {
@@ -88,6 +94,8 @@ router.post('/register', async (req, res) => {
       store 
     });
   } catch (err) { 
+     console.error('[REGISTER] ERROR:', err); // ← ADD THIS
+    console.error('[REGISTER] Stack:', err.stack);
     res.status(500).json({ error: err.message }); 
   }
 });
