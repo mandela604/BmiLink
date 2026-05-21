@@ -140,10 +140,41 @@ const trackLimiter = rateLimit({
 app.use('/api/dashboard/track/', trackLimiter);
 
 // ─── STATIC FILES ────────────────────────────────────────────────────────────
+// ─── STATIC FILES (move this BEFORE the SPA fallback) ───
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
+  index: false, // Don't automatically serve index.html
 }));
 
+// ─── API ROUTES ───
+app.use('/api', require('./routes'));
+
+// ─── HEALTH CHECK ───
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected', uptime: process.uptime() });
+});
+
+// ─── SPECIFIC HTML FILES FIRST ───
+app.get('/seller-dashboard.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'seller-dashboard.html'));
+});
+
+app.get('/auth-user.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'auth-user.html'));
+});
+
+app.get('/index.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ─── SPA FALLBACK - ONLY for non-file routes ───
+app.get('*', (req, res) => {
+  // Only send index.html for routes that don't match a real file
+  if (req.path.includes('.')) {
+    return res.status(404).send('File not found');
+  }
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 // ─── DATABASE ────────────────────────────────────────────────────────────────
 const MONGO_URI = process.env.MONGODB_URI;
 if (!MONGO_URI) {
@@ -184,26 +215,7 @@ mongoose.connection.on('disconnected', () => {
 
 connectMongo();
 
-// ─── API ROUTES ──────────────────────────────────────────────────────────────
-app.use('/api', require('./routes'));
 
-// ─── HEALTH CHECK ────────────────────────────────────────────────────────────
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    db:     mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    uptime: process.uptime(),
-  });
-});
-
-// ─── SPA FALLBACK ────────────────────────────────────────────────────────────
-app.get('/*', (req, res) => {
-  // Don't catch API misses with the SPA fallback
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({ error: 'API route not found' });
-  }
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 // ─── GLOBAL ERROR HANDLER ────────────────────────────────────────────────────
 // eslint-disable-next-line no-unused-vars
