@@ -11,6 +11,7 @@ const compression  = require('compression');
 
 const app = express();
 
+app.set('trust proxy', 1);
 // ─── CORS ────────────────────────────────────────────────────────────────────
 // Support multiple allowed origins (dev + prod) via comma-separated env var
 // ─── CORS ────────────────────────────────────────────────────────────────────

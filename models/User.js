@@ -39,16 +39,18 @@ lastPaystackRef: { type: String, default: null },
 
 // Hash password before save
 // Hash password before save
-UserSchema.pre('save', async function(next) {
-  try {
-    if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 12);
+// Hash password before save
+UserSchema.pre('save', function(next) {
+  if (!this.isModified('password')) return next();
+  
+  const user = this;
+  bcrypt.hash(user.password, 12, function(err, hash) {
+    if (err) return next(err);
+    user.password = hash;
     // Compute initials
-    this.initials = this.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    user.initials = user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
     next();
-  } catch (error) {
-    next(error);
-  }
+  });
 });
 
 // Compare password
