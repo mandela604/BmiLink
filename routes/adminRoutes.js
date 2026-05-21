@@ -306,6 +306,7 @@ router.get('/stores/:id', protectAdmin, async (req, res, next) => {
 
 
 // ====================== STORES ======================
+// ====================== STORES LIST ======================
 router.get('/stores', protectAdmin, async (req, res, next) => {
   try {
     const { status, search, page = 1, limit = 100 } = req.query;
@@ -321,17 +322,42 @@ router.get('/stores', protectAdmin, async (req, res, next) => {
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    const [stores, total] = await Promise.all([
-      Store.find(query)
-        .select('id name emoji ownerId ownerName status isLive verified visits products createdAt')
-        .skip(skip)
-        .limit(parseInt(limit))
-        .sort({ createdAt: -1 })
-        .lean(),
-      Store.countDocuments(query),
-    ]);
+    let stores = await Store.find(query)
+      .select('id name emoji ownerId ownerName status isLive verified totalVisits createdAt')
+      .skip(skip)
+      .limit(parseInt(limit))
+      .sort({ createdAt: -1 })
+      .lean();
 
-    res.json({ success: true, stores, total });
+    // Enrich each store with owner name and real product count
+    const enrichedStores = await Promise.all(
+      stores.map(async (store) => {
+        // Get owner name
+        if (!store.ownerName) {
+          const owner = await User.findOne({ id: store.ownerId }).select('name').lean();
+          store.ownerName = owner?.name || 'Unknown';
+        }
+
+        // Get real product count
+        const productCount = await Product.countDocuments({ 
+          storeId: store.id,
+          status: { $ne: 'hidden' }
+        });
+
+        return {
+          ...store,
+          products: productCount
+        };
+      })
+    );
+
+    const total = await Store.countDocuments(query);
+
+    res.json({ 
+      success: true, 
+      stores: enrichedStores, 
+      total 
+    });
   } catch (err) {
     next(err);
   }
