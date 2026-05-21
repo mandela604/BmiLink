@@ -44,12 +44,12 @@ const PLAN_LIMITS = {
 
 
   business: {
-    maxProducts: Infinity,
+    maxProducts: 400,
     maxImagesPerProduct: 5,
-    maxSpecsPerProduct: Infinity,
-    maxOrderLogs: Infinity,
-    maxCategories: Infinity,
-    maxContacts: Infinity,
+    maxSpecsPerProduct: 30,
+    maxOrderLogs: 800,
+    maxCategories: 30,
+    maxContacts: 800,
     maxStores: 2,
     maxTeamMembers: 3,
     canExportCSV: true,

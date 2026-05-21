@@ -414,14 +414,105 @@ router.delete('/stores/:id', protectAdmin, requireAdminRole('super_admin'), asyn
 
 
 // ====================== PLANS ======================
+// ====================== PLANS ======================
+// ====================== PLANS ======================
 router.get('/plans', protectAdmin, async (req, res, next) => {
   try {
-    const plans = await Plan.find().sort({ price: 1 }).lean();
+    let plans = await Plan.find().sort({ price: 1 }).lean();
+
+    if (plans.length === 0) {
+      const { v4: uuidv4 } = require('uuid');
+
+      const defaultPlans = [
+        {
+          id: uuidv4(),
+          key: 'free',
+          name: 'Free',
+          price: 0,
+          color: '#9499a8',
+          desc: 'Perfect for testing and small sellers',
+          limits: {
+            stores: 1, products: 10, categories: 5,
+            maxImagesPerProduct: 2, maxSpecsPerProduct: 6,
+            maxOrderLogs: 25, maxContacts: 25, maxTeamMembers: 0
+          },
+          feats: ['1 Store', 'Up to 10 Products', 'Basic Analytics', 'WhatsApp Orders'],
+          no: ['Custom Domain', 'Promo Banner', 'Team Members', 'CSV Export'],
+          canExportCSV: false,
+          canBroadcast: false,
+          canActivity: false,
+          canCartTracker: false,
+          canCreateStore: false,
+          canCustomDomain: false,
+          canPromoBanner: false,
+          canWAGroupCTA: false,
+          canTrackingPixels: false,
+          allowedPixels: []
+        },
+        {
+          id: uuidv4(),
+          key: 'pro',
+          name: 'Pro',
+          price: 5000,
+          color: '#00e27a',
+          desc: 'For serious sellers who want to grow',
+          limits: {
+            stores: 1, products: 120, categories: 15,
+            maxImagesPerProduct: 5, maxSpecsPerProduct: 12,
+            maxOrderLogs: 150, maxContacts: 150, maxTeamMembers: 1
+          },
+          feats: ['Unlimited Products', 'Custom Domain', 'Promo Banner', 'Analytics', '1 Team Member'],
+          no: ['Multiple Stores', 'Broadcast', 'TikTok Pixel'],
+          canExportCSV: false,
+          canBroadcast: false,
+          canActivity: true,
+          canCartTracker: true,
+          canCreateStore: false,
+          canCustomDomain: true,
+          canPromoBanner: true,
+          canWAGroupCTA: true,
+          canTrackingPixels: true,
+          allowedPixels: ['meta']
+        },
+        {
+          id: uuidv4(),
+          key: 'business',
+          name: 'Business',
+          price: 12000,
+          color: '#f5c842',
+          desc: 'For power sellers and agencies',
+          limits: {
+            stores: 2, products: 400, categories: 30,
+            maxImagesPerProduct: 5, maxSpecsPerProduct: 30,
+            maxOrderLogs: 800, maxContacts: 800, maxTeamMembers: 3
+          },
+          feats: ['2 Stores', 'Everything in Pro', '3 Team Members', 'CSV Export', 'All Pixels', 'Priority Support'],
+          no: [],
+          canExportCSV: true,
+          canBroadcast: false,
+          canActivity: true,
+          canCartTracker: true,
+          canCreateStore: true,
+          canCustomDomain: true,
+          canPromoBanner: true,
+          canWAGroupCTA: true,
+          canTrackingPixels: true,
+          allowedPixels: ['meta', 'tiktok', 'ga']
+        }
+      ];
+
+      await Plan.insertMany(defaultPlans);
+      console.log('✅ Default plans seeded successfully with UUID id and key');
+      
+      plans = await Plan.find().sort({ price: 1 }).lean();
+    }
+
     res.json({ success: true, data: plans });
   } catch (err) {
     next(err);
   }
 });
+
 
 router.put('/plans', protectAdmin, requireAdminRole('super_admin'), async (req, res, next) => {
   try {
