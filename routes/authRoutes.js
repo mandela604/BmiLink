@@ -40,15 +40,14 @@ router.post('/register', async (req, res) => {
     const role = isFirstUser ? 'admin' : 'seller';
     const finalPlan = isFirstUser ? 'business' : plan;
     
-    const salt = await bcrypt.genSalt(12);
-    const hashedPassword = await bcrypt.hash(password, salt);
+ 
     
     const userId = uuidv4();
     const user = await User.create({ 
       id: userId,
       name, 
       email, 
-      password: hashedPassword, 
+      password: password, 
       waNumber, 
       city, 
       role, 
@@ -203,8 +202,7 @@ router.post('/reset-password', async (req, res) => {
     const user = await User.findOne({ id: decoded.id });
     if (!user) return res.status(404).json({ error: 'Invalid token' });
     
-    const salt = await bcrypt.genSalt(12);
-    user.password = await bcrypt.hash(newPassword, salt);
+   
     await user.save();
     res.json({ success: true });
   } catch (err) { 
