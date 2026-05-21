@@ -161,6 +161,7 @@ for (let i = 0; i < 7; i++) {
 
     res.json({
       plan:         user.plan,
+      user: { email: user.email, name: user.name },
       expiryDate:   user.planExpiresAt ? user.planExpiresAt.toLocaleDateString('en-NG', { day:'numeric', month:'short', year:'numeric' }) : null,
       expiryDays:   user.planExpiresAt ? Math.max(0, Math.ceil((new Date(user.planExpiresAt) - Date.now()) / 86400000)) : null,
       activeStoreId: store.id,

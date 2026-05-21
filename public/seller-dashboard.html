@@ -1286,6 +1286,9 @@ if (D.activeStoreId) {
 // Move this OUTSIDE the if block
 D.userEmail = data.user?.email || '';
 
+// Re-run sidebar update now that email is available
+const sbUemail = document.getElementById('sbUemail');
+if (sbUemail) sbUemail.textContent = D.userEmail;
   updateSidebarUI();
   renderOvChart();
   renderTopProds();
