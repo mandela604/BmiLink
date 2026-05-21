@@ -258,12 +258,46 @@ router.delete('/users/:id', protectAdmin, requireAdminRole('super_admin'), async
 });
 
 
-// ====================== SINGLE STORE ======================
+// ====================== SINGLE STORE (Improved) ======================
 router.get('/stores/:id', protectAdmin, async (req, res, next) => {
   try {
     const store = await Store.findOne({ id: req.params.id }).lean();
-    if (!store) return res.status(404).json({ success: false, message: 'Store not found' });
-    res.json({ success: true, data: store });
+
+    if (!store) {
+      return res.status(404).json({ success: false, message: 'Store not found' });
+    }
+
+    // Get owner details
+    const owner = await User.findOne({ id: store.ownerId })
+      .select('name email waNumber')
+      .lean();
+
+    // Count actual products
+    const productCount = await Product.countDocuments({ 
+      storeId: store.id,
+      status: { $ne: 'hidden' }   // optional: exclude hidden products
+    });
+
+    // Get recent products (optional, for preview)
+    const recentProducts = await Product.find({ 
+      storeId: store.id 
+    })
+    .select('id name emoji price status')
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .lean();
+
+    res.json({
+      success: true,
+      data: {
+        ...store,
+        ownerName: owner?.name || 'Unknown',
+        ownerEmail: owner?.email || '',
+        ownerWA: owner?.waNumber || '',
+        products: productCount,           // ← Real count
+        recentProducts
+      }
+    });
   } catch (err) {
     next(err);
   }
@@ -1195,7 +1229,7 @@ router.get('/auth/me', protectAdmin, async (req, res) => {
 
 // TEMPORARY: Reset super admin password
 // TEMPORARY: Reset super admin password - FIXED
-router.get('/reset-super-admin-password', async (req, res) => {
+/*router.get('/reset-super-admin-password', async (req, res) => {
   try {
     const admin = await Admin.findOne({ email: 'blessedmandela@gmail.com' }).select('+password');
     if (!admin) {
@@ -1220,10 +1254,10 @@ router.get('/reset-super-admin-password', async (req, res) => {
     console.error('Reset error:', err);
     res.status(500).json({ error: err.message });
   }
-});
+}); */
 
 // TEMPORARY — delete after first use
-router.get('/setup-first-admin', async (req, res) => {
+/*router.get('/setup-first-admin', async (req, res) => {
   try {
     const existing = await Admin.findOne({ role: 'super_admin' });
     if (existing) {
@@ -1252,7 +1286,7 @@ router.get('/setup-first-admin', async (req, res) => {
     console.error('Setup error:', err);
     res.status(500).json({ error: err.message });
   }
-});
+}); */
 
 
 module.exports = router;
