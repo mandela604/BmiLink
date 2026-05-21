@@ -1194,24 +1194,27 @@ router.get('/auth/me', protectAdmin, async (req, res) => {
 
 
 // TEMPORARY: Reset super admin password
+// TEMPORARY: Reset super admin password - FIXED
 router.get('/reset-super-admin-password', async (req, res) => {
   try {
-    const admin = await Admin.findOne({ email: 'blessedmandela@gmail.com' });
+    const admin = await Admin.findOne({ email: 'blessedmandela@gmail.com' }).select('+password');
     if (!admin) {
       return res.status(404).json({ error: 'Admin not found' });
     }
 
+    // Important: Bypass pre-save hook by using updateOne
     const newHashedPassword = await bcrypt.hash('Mandela22!', 12);
 
-    admin.password = newHashedPassword;
-    await admin.save();
+    await Admin.updateOne(
+      { email: 'blessedmandela@gmail.com' },
+      { $set: { password: newHashedPassword, lastLogin: null } }
+    );
 
-    console.log('✅ Super Admin password has been reset successfully');
+    console.log('✅ Super Admin password reset successfully (single hash)');
     res.json({ 
       success: true, 
-      message: 'Password reset successful',
-      email: admin.email,
-      newPassword: 'Mandela22!'
+      message: 'Password reset successful - Use Mandela22!',
+      email: 'blessedmandela@gmail.com'
     });
   } catch (err) {
     console.error('Reset error:', err);
