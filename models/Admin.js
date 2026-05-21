@@ -13,13 +13,10 @@ const AdminSchema = new mongoose.Schema({
   lastLogin: { type: Date, default: null },
 }, { timestamps: true, versionKey: false });
 
-AdminSchema.index({ id: 1 });
-AdminSchema.index({ email: 1 }, { unique: true });
 
-AdminSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+AdminSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 12);
-  next();
 });
 
 AdminSchema.methods.comparePassword = function (candidate) {
