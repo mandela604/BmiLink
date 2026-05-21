@@ -1121,37 +1121,48 @@ router.post('/coupons/:id/toggle', protectAdmin, async (req, res, next) => {
 
 // POST /api/admin/auth/login
 router.post('/auth/login', async (req, res) => {
-    console.log('[ADMIN LOGIN] Request received');  // ← ADD THIS
-  console.log('[ADMIN LOGIN] Body:', req.body);
+  console.log('[ADMIN LOGIN] 1 - Request received');
+  console.log('[ADMIN LOGIN] 2 - Email:', req.body.email);
   
   try {
     const { email, password } = req.body;
-    if (!email || !password)
-      return res.status(400).json({ success: false, message: 'Email and password required' });
-
+    
+    console.log('[ADMIN LOGIN] 3 - Finding admin...');
     const admin = await Admin.findOne({ email: email.toLowerCase().trim() }).select('+password');
-       console.log('[ADMIN LOGIN] Found admin:', admin ? admin.email : 'NOT FOUND'); 
-    if (!admin)
+    console.log('[ADMIN LOGIN] 4 - Admin found:', admin ? 'YES' : 'NO');
+    
+    if (!admin) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
-
+    }
+    
+    console.log('[ADMIN LOGIN] 5 - Comparing password...');
     const isMatch = await admin.comparePassword(password);
-    if (!isMatch)
+    console.log('[ADMIN LOGIN] 6 - Password match result:', isMatch);
+    
+    if (!isMatch) {
+      console.log('[ADMIN LOGIN] 7 - Password mismatch');
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
-
+    }
+    
+    console.log('[ADMIN LOGIN] 8 - Generating token...');
+    console.log('[ADMIN LOGIN] 9 - JWT_ADMIN_SECRET exists?', !!process.env.JWT_ADMIN_SECRET);
+    
     const token = jwt.sign({ id: admin.id }, process.env.JWT_ADMIN_SECRET, { expiresIn: '7d' });
-      console.log('[ADMIN LOGIN] Token generated, JWT_ADMIN_SECRET exists:', !!process.env.JWT_ADMIN_SECRET);
-
-
-    res.cookie('adminToken', token, {
+    console.log('[ADMIN LOGIN] 10 - Token generated');
+    
+    console.log('[ADMIN LOGIN] 11 - Setting cookie...');
+    res.cookie('adminToken', token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-
+    
+    console.log('[ADMIN LOGIN] 12 - Saving admin...');
     admin.lastLogin = new Date();
     await admin.save();
-
+    
+    console.log('[ADMIN LOGIN] 13 - Sending response');
     res.json({
       success: true,
       admin: {
@@ -1162,10 +1173,13 @@ router.post('/auth/login', async (req, res) => {
       },
     });
   } catch (err) {
-       console.error('[ADMIN LOGIN] ERROR:', err);
+    console.error('[ADMIN LOGIN] ERROR at step:', err.message);
+    console.error('[ADMIN LOGIN] Full error:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
+
 
 // POST /api/admin/auth/logout
 router.post('/auth/logout', (req, res) => {
