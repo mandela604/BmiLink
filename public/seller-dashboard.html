@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#07080a">
 <title>StoreLink — Seller Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -414,7 +415,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100
 <!-- TOPBAR -->
 <header class="topbar">
   <button class="hamburger" id="HB" onclick="toggleSB()"><span></span><span></span><span></span></button>
-  <div class="tb-brand">StoreLink</div>
+  <div class="tb-brand">BMILink</div>
   <div class="tb-pg" id="topTitle">Overview</div>
   <div class="tb-r">
     <button class="store-switcher-btn" onclick="gateNav('stores','stores')" title="Switch store">
@@ -433,7 +434,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100
 <!-- SIDEBAR -->
 <aside class="sidebar" id="SB">
   <div class="sb-top">
-    <div class="sb-logo">StoreLink</div>
+    <div class="sb-logo">BMILink</div>
     <button class="sb-x" onclick="closeSB()">✕</button>
   </div>
   <div class="sb-plan-banner plan-biz" id="sbPlanBanner">
@@ -479,12 +480,12 @@ body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100
   </nav>
   <div class="sb-bottom">
     <div class="sb-link-row">
-      <span class="sb-link-txt" id="sbLinkTxt">storelink.ng/store/tunde-gadgets</span>
+      <span class="sb-link-txt" id="sbLinkTxt"></span>
       <button class="sb-link-copy" onclick="copyLink()">Copy</button>
     </div>
     <div class="sb-user">
       <div class="sb-uav" id="sbUav">TG</div>
-      <div><div class="sb-uname" id="sbUserName">Tunde Gadgets</div><div class="sb-uemail">tunde@gmail.com</div></div>
+      <div><div class="sb-uname" id="sbUserName"></div><div class="sb-uemail" id="sbUemail"></div></div>
     </div>
   </div>
 </aside>
@@ -509,7 +510,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100
       <a class="live-btn" href="storelink-store.html" target="_blank"><span class="ldot"></span>Live Store</a>
     </div>
   </div>
-  <div class="sync-bar" id="overviewSyncBar">🔄 <strong>Business Plan active</strong> — data syncs to localStorage and powers your store page.</div>
+  <div class="sync-bar" id="overviewSyncBar" style="display:none"></div>
   <div class="sg">
     <div class="sc" style="--c:var(--blue)"><div class="sib" style="background:var(--blue-dim)">👁️</div><div class="sv" id="svVisits">0</div><div class="sl">Store Visits (7d)</div><div class="schg cup">+18%</div></div>
     <div class="sc" style="--c:var(--green)"><div class="sib" style="background:var(--green-dim)">💬</div><div class="sv" id="svOrders">0</div><div class="sl">Order Taps (7d)</div><div class="schg cup">+24%</div></div>
@@ -932,6 +933,7 @@ let D = {
   _orderRevenue: 0,
   _orderCount: 0,
   _storeLink: '',
+  userEmail: '',
 };
 
 /* ════════════════════════════════════════════════════════════
@@ -1140,6 +1142,7 @@ function updateSidebarUI() {
 
   // User info
   const sbUserName = document.getElementById('sbUserName'); if (sbUserName) sbUserName.textContent = s.storeName || store.name || 'My Store';
+  const sbUemail = document.getElementById('sbUemail'); if (sbUemail) sbUemail.textContent = D.userEmail || '';
   const sbUav      = document.getElementById('sbUav');
   if (sbUav) {
     const initials = (s.storeName || store.name || 'S').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -1278,6 +1281,9 @@ async function init() {
   if (D.activeStoreId) {
     const linkData = await API.get(`/stores/${D.activeStoreId}/link`);
     if (linkData) D._storeLink = linkData.publicLink || '';
+    D.userEmail = data.user?.email || '';
+    D.userEmail = data.user?.email || '';
+    D.userEmail = data.user?.email || '';
   }
 
   updateSidebarUI();
