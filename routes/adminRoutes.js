@@ -1151,7 +1151,7 @@ router.post('/auth/login', async (req, res) => {
     console.log('[ADMIN LOGIN] 10 - Token generated');
     
     console.log('[ADMIN LOGIN] 11 - Setting cookie...');
-    res.cookie('adminToken', token', {
+    res.cookie('adminToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
