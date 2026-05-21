@@ -503,11 +503,7 @@ async function createAccount() {
     }
 
     if (result.success) {
-      // Store user info (token is in HTTP-only cookie, can't read from JS)
-      try {
-        localStorage.setItem('sl_user', JSON.stringify(result.user));
-        localStorage.setItem('sl_store', JSON.stringify(result.store));
-      } catch(e) {}
+     
 
       // Show success
       document.getElementById('step2').style.display = 'none';
@@ -552,10 +548,8 @@ async function loginUser() {
     }
 
     if (result.success) {
-      try {
-        localStorage.setItem('sl_user', JSON.stringify(result.user));
-      } catch(e) {}
-      window.location.href = 'storelink-dashboard.html';
+
+      window.location.href = 'seller-dashboard.html';
     } else {
       showErr('loginErr', result.error || 'Login failed');
     }
@@ -614,7 +608,7 @@ async function loadStats() {
 }
 
 function goToDashboard() {
-  window.location.href = 'storelink-dashboard.html';
+  window.location.href = 'seller-dashboard.html';
 }
 
 // Enter key support
