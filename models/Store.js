@@ -112,7 +112,7 @@ StoreSchema.index({ status: 1, isVerified: 1 });
 StoreSchema.index({ plan: 1, status: 1 });
 
 // ── Auto-generate slug from name on first save ───────────────────────────────
-StoreSchema.pre('validate', function (next) {
+StoreSchema.pre('validate', function () {
   if (this.isNew && !this.slug && this.name) {
     this.slug = this.name
       .toLowerCase()
@@ -123,7 +123,6 @@ StoreSchema.pre('validate', function (next) {
       .replace(/^-|-$/g, '')           // trim leading/trailing hyphens
       .slice(0, 50);
   }
-  next();
 });
 
 // ── Virtual: effective plan (override beats subscription) ────────────────────
