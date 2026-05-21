@@ -546,10 +546,8 @@ async function loginUser() {
       showErr('loginErr', result.error || 'Invalid email or password');
       return;
     }
-
-    if (result.success) {
-
-      window.location.href = 'seller-dashboard.html';
+if (result.success) {
+      window.location.href = '/seller-dashboard.html';
     } else {
       showErr('loginErr', result.error || 'Login failed');
     }
@@ -608,7 +606,7 @@ async function loadStats() {
 }
 
 function goToDashboard() {
-  window.location.href = 'seller-dashboard.html';
+  window.location.href = '/seller-dashboard.html';
 }
 
 // Enter key support
