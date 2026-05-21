@@ -41,11 +41,10 @@ lastPaystackRef: { type: String, default: null },
 // Hash password before save
 // Hash password before save
 // Hash password before save
-UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+UserSchema.pre('save', async function() {
+  if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 12);
   this.initials = this.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  next();
 });
 
 // Compare password
