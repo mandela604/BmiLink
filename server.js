@@ -68,6 +68,8 @@ app.use(
                 "'self'",
                 'http://localhost:5000',
                  'https://bmilink-1.onrender.com',
+                  'https://bmilink.com',               
+                'https://www.bmilink.com',
                 'https://www.facebook.com',
                 'https://analytics.tiktok.com',
                 'https://www.google-analytics.com',
@@ -166,6 +168,35 @@ app.get('/auth-user.html', (req, res) => {
 app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+
+// ====================== SUBDOMAIN HANDLING ======================
+//
+app.use(async (req, res, next) => {
+  const hostname = req.hostname.toLowerCase();
+  const baseDomain = process.env.BASE_DOMAIN || 'bmilink.com';
+
+  // Skip API, static files, health check, etc.
+  if (req.path.startsWith('/api') || 
+      req.path.startsWith('/health') || 
+      req.path.includes('.')) {
+    return next();
+  }
+
+  // Check if it's a subdomain (e.g. tunde.bmilink.com or tunde.bmilink-1.onrender.com)
+  if (hostname.endsWith(`.${baseDomain}`) || hostname.includes('.onrender.com')) {
+    const slug = hostname.split('.')[0];   // "tunde-gadgets"
+
+    if (slug && slug !== 'www' && slug !== 'bmilink' && slug.length > 2) {
+      // Forward to store route
+      req.params.slug = slug;
+      return require('./routes/storeRoutes')(req, res, next);   // or your store router
+    }
+  }
+
+  next();
+});
+
 
 // ─── SPA FALLBACK - ONLY for non-file routes ───
 app.get('*', (req, res) => {
