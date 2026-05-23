@@ -175,25 +175,27 @@ app.get('/index.html', (req, res) => {
 
 // ====================== SUBDOMAIN HANDLING ======================
 //
-app.use(async (req, res, next) => {
+// ====================== SUBDOMAIN HANDLING ======================
+app.use((req, res, next) => {
   const hostname = req.hostname.toLowerCase();
   const baseDomain = process.env.BASE_DOMAIN || 'bmilink.com';
 
-  // Skip API, static files, health check, etc.
-  if (req.path.startsWith('/api') || 
-      req.path.startsWith('/health') || 
+  if (req.path.startsWith('/api') ||
+      req.path.startsWith('/health') ||
       req.path.includes('.')) {
     return next();
   }
 
-  // Check if it's a subdomain (e.g. tunde.bmilink.com or tunde.bmilink-1.onrender.com)
-  if (hostname.endsWith(`.${baseDomain}`) || hostname.includes('.onrender.com')) {
-    const slug = hostname.split('.')[0];   // "tunde-gadgets"
+  const isSubdomain =
+    (hostname.endsWith(`.${baseDomain}`) && !hostname.startsWith('www.')) ||
+    (hostname.includes('.onrender.com') &&
+     hostname.split('.')[0] !== 'bmilink-1' &&
+     hostname.split('.')[0] !== 'www');
 
-    if (slug && slug !== 'www' && slug !== 'bmilink' && slug.length > 2) {
-      // Forward to store route
-      req.params.slug = slug;
-      return require('./routes/storeRoutes')(req, res, next);   // or your store router
+  if (isSubdomain) {
+    const slug = hostname.split('.')[0];
+    if (slug && slug.length > 2) {
+      return res.sendFile(path.join(__dirname, 'public', 'store.html'));
     }
   }
 
