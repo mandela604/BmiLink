@@ -1250,8 +1250,7 @@ function renderPager(containerId, currentPage, totalPages, onPageChange, totalIt
 ════════════════════════════════════════════════════════════ */
 async function init() {
   // Verify session is valid
-  const authRes = await fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' });
-  if (!authRes.ok) { redirectToLogin(); return; }
+await fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' });
 
   // Load all dashboard data
   const data = await API.get('/store/dashboard');

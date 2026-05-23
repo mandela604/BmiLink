@@ -21,12 +21,19 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL 
   .filter(Boolean);
 
 app.use(cors({
-  origin(origin, cb) {
-    // Allow server-to-server / curl (no origin header) in dev
-    if (!origin && process.env.NODE_ENV !== 'production') return cb(null, true);
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    cb(new Error(`CORS: origin ${origin} not allowed`));
-  },
+origin(origin, cb) {
+  if (!origin) return cb(null, true);
+  const allowed = allowedOrigins.some(o => {
+    if (o === origin) return true;
+    if (o.startsWith('https://*.')) {
+      const base = o.replace('https://*.', '');
+      return origin.endsWith('.' + base) || origin === 'https://' + base;
+    }
+    return false;
+  });
+  if (allowed) return cb(null, true);
+  cb(new Error(`CORS: origin ${origin} not allowed`));
+},
   credentials: true,
   methods:     ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -120,13 +127,9 @@ app.use((req, res, next) => {
   const origin  = req.headers.origin;
   const referer = req.headers.referer;
   const source  = origin || (referer ? new URL(referer).origin : null);
-  if (!source) {
-    // No origin header — allow in dev, block in prod
-    if (process.env.NODE_ENV === 'production') {
-      return res.status(403).json({ error: 'CSRF check failed: missing origin' });
-    }
-    return next();
-  }
+ if (!source) {
+  return next();
+}
   if (allowedOrigins.includes(source)) return next();
   return res.status(403).json({ error: 'CSRF check failed: origin not allowed' });
 });
