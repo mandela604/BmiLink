@@ -492,10 +492,12 @@ function resolveSlug() {
 /* ── API ── */
 async function apiFetch(path, opts = {}) {
   const res = await fetch(API_BASE + path, {
-   console.log('[apiFetch]', path, res.status);
     headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
     ...opts,
   });
+
+   console.log('[apiFetch]', path, res.status);
+   
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw Object.assign(new Error(err.error || res.statusText), { status: res.status });
