@@ -127,10 +127,13 @@ app.use((req, res, next) => {
   const origin  = req.headers.origin;
   const referer = req.headers.referer;
   const source  = origin || (referer ? new URL(referer).origin : null);
- if (!source) {
-  return next();
-}
-  if (allowedOrigins.includes(source)) return next();
+  if (!source) return next();
+
+  const baseDomain = process.env.BASE_DOMAIN || 'bmilink.com';
+  const isAllowed = allowedOrigins.includes(source) || 
+                    source.endsWith('.' + baseDomain);
+  
+  if (isAllowed) return next();
   return res.status(403).json({ error: 'CSRF check failed: origin not allowed' });
 });
 
