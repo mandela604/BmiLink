@@ -7,7 +7,8 @@ const ActivitySchema = new mongoose.Schema({
   type: { type: String, enum: ['visit', 'order_tap', 'cart'], required: true },
   productId: { type: String, default: null },
   productName: { type: String, default: null },
-  cartItems: [{ type: String }],
+  userAgent: { type: String, default: null },
+  items: { type: Array, default: null },
   ipHash: { type: String, default: null },
 }, { timestamps: true });
 
