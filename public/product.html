@@ -563,7 +563,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100
   <div class="footer-name" id="footerName">🛍️ Store</div>
   <div class="footer-desc" id="footerDesc"></div>
   <button class="footer-wa" onclick="contactWA()">💬 Chat on WhatsApp</button>
-  <div class="footer-brand">Powered by <a href="#">StoreLink</a></div>
+  <div class="footer-brand">Powered by <a href="#">BMILink</a></div>
 </footer>
 
 <div class="toast" id="toastEl"><span id="toastIc"></span><span id="toastMsg"></span></div>
@@ -970,7 +970,9 @@ function renderSellerCard() {
   document.getElementById('sellerAvi').textContent       = s.storeEmoji || '🛍️';
   document.getElementById('sellerName').textContent      = s.storeName  || 'Store';
   document.getElementById('sellerSub').textContent       = [s.city, s.tagline].filter(Boolean).join(' · ') || '';
-  document.getElementById('sellerPlanBadge').textContent = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
+  document.getElementById('sellerPlanBadge').style.display = 'none';
+if (s.verified) document.querySelector('.seller-meta .seller-badge:first-child').style.display = '';
+else document.querySelector('.seller-meta .seller-badge:first-child').style.display = 'none';
 }
 
 /* ════════════════════════════════════════════════════════════
