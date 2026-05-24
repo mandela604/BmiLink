@@ -890,7 +890,8 @@ function changeQty(dir) {
 function orderFromModal() {
   if (!currentProduct) return;
   const p = currentProduct;
-  openWA('Hello! I\'d like to order:\n\n📦 *' + p.name + '* × ' + modalQty + '\n💰 Total: ₦' + fmt(p.price * modalQty) + '\n\nPlease confirm availability and delivery. Thank you! 🙏');
+  const link = window.location.origin + '/product.html?store=' + STORE_SLUG + '&id=' + p.id;
+openWA('Hello! I\'d like to order:\n\n📦 *' + p.name + '* × ' + modalQty + '\n💰 Total: ₦' + fmt(p.price * modalQty) + '\n🔗 ' + link + '\n\nPlease confirm availability and delivery. Thank you! 🙏');
 }
 
 function addToCartFromModal() {
@@ -946,7 +947,7 @@ function orderCartOnWA() {
   let msg = 'Hello! I\'d like to order:\n\n'; let total = 0;
   entries.forEach(([id, qty]) => {
     const p = PRODUCTS.find(x => String(x.id) === String(id));
-    if (p) { msg += '📦 *' + p.name + '* × ' + qty + ' — ₦' + fmt(p.price * qty) + '\n'; total += p.price * qty; }
+    if (p) { const link = window.location.origin + '/product.html?store=' + STORE_SLUG + '&id=' + id; msg += '📦 *' + p.name + '* × ' + qty + ' — ₦' + fmt(p.price * qty) + '\n🔗 ' + link + '\n'; total += p.price * qty; }
   });
   msg += '\n💰 *Total: ₦' + fmt(total) + '*\n\nPlease confirm delivery details. Thank you! 🙏';
   track('cart');
