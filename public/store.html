@@ -497,7 +497,7 @@ async function apiFetch(path, opts = {}) {
   });
 
    console.log('[apiFetch]', path, res.status);
-   
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw Object.assign(new Error(err.error || res.statusText), { status: res.status });
@@ -529,7 +529,7 @@ async function init() {
     STORE_CFG = storeData;
 
     const [prodData, catData] = await Promise.all([
-      apiFetch('/api/stores/' + STORE_SLUG + '/products?limit=200'),
+      apiFetch('/api/stores/' + STORE_SLUG + '/products?limit=50'),
       apiFetch('/api/stores/' + STORE_SLUG + '/categories'),
     ]);
 
