@@ -186,11 +186,9 @@ app.use((req, res, next) => {
     return next();
   }
 
-  const isSubdomain =
-    (hostname.endsWith(`.${baseDomain}`) && !hostname.startsWith('www.')) ||
-    (hostname.includes('.onrender.com') &&
-     hostname.split('.')[0] !== 'bmilink-1' &&
-     hostname.split('.')[0] !== 'www');
+const isSubdomain =
+  hostname.endsWith(`.${baseDomain}`) &&
+  !hostname.startsWith('www.');
 
   if (isSubdomain) {
     const slug = hostname.split('.')[0];
