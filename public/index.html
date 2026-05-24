@@ -610,7 +610,7 @@ footer{
 
 <!-- ════ NAV ════ -->
 <nav>
-  <a class="nav-logo" href="#">Store<span>Link</span></a>
+  <a class="nav-logo" href="#">Bmi<span>Link</span></a>
   <div class="nav-links">
     <a href="#features">Features</a>
     <a href="#how">How It Works</a>
@@ -753,7 +753,7 @@ footer{
       <button class="hero-btn-primary" style="margin-top:20px;font-size:13px;padding:12px 24px" onclick="handlePlanGatedCTA('domain')">Connect Your Domain →</button>
     </div>
     <div class="domain-demo">
-      <div class="domain-url-row"><div class="domain-dot"></div>bmilink.com<div class="domain-slash">/</div><span class="domain-store">store/tunde</span></div>
+      <div class="domain-url-row"><div class="domain-dot"></div>tunde.<span style="color:var(--g);font-weight:700">bmilink.com</span></div>
       <div class="domain-arrow">↓</div>
       <div class="domain-custom"><div class="domain-dot"></div><span style="color:var(--g);font-weight:700">tundegadgets.com</span></div>
       <div style="font-size:11px;color:var(--t2);margin-top:12px;line-height:1.6">Same store, your domain. SSL included. No hosting fees.</div>
@@ -833,7 +833,7 @@ footer{
     <a href="#">Privacy</a>
     <a href="#">Terms</a>
   </div>
-  <div class="ft-copy">© 2025 StoreLink. Built for Nigerian sellers 🇳🇬</div>
+  <div class="ft-copy">© 2026 Bmilink. Built for Nigerian sellers 🇳🇬</div>
 </footer>
 
 <!-- PLAN GATE MODAL -->
@@ -1020,27 +1020,20 @@ function fmtCount(n) {
   if (n >= 1000) return Math.floor(n/100)*100/1000 + 'k+';
   return n.toLocaleString()+'+';
 }
-function updateUserCounts(stats) {
- // New - Nice marketing number + real count fallback
-function updateUserCounts(stats) {
-  let displayCount = 20; // Nice round marketing number
 
-  if (stats && stats.totalUsers > 50) {
-    displayCount = stats.totalUsers; // Use real number when it's decent
+function updateUserCounts(stats) {
+  let count = 20;               
+
+  if (stats && stats.totalUsers > 30) {
+    count = stats.totalUsers;        // Use real number when it's bigger
   }
 
-  const c = fmtCount(displayCount);
-  
-  document.getElementById('heroUserCount').textContent = c;
-  document.getElementById('ctaUserCount').textContent = c;
-  
-  const tag = document.getElementById('liveTagText');
-  if (tag) tag.textContent = `Trusted by ${c} sellers`;
-}
-  const els = ['heroUserCount','ctaUserCount'];
-  els.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = c; });
-  const tag = document.getElementById('liveTagText');
-  if(tag) tag.textContent = `Trusted by ${c} sellers`;
+  const display = count.toLocaleString() + '+';
+
+  // Update all 3 places
+  document.getElementById('liveTagText').textContent = `Trusted by ${display} sellers`;
+  document.getElementById('heroUserCount').textContent = display;
+  document.getElementById('ctaUserCount').textContent = display;
 }
 
 /* ════════════════════════════════════════
