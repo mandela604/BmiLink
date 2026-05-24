@@ -529,9 +529,9 @@ async function init() {
       apiFetch('/api/stores/' + STORE_SLUG + '/categories'),
     ]);
 
-    PRODUCTS   = prodData.products || prodData || [];
+    PRODUCTS   = prodData.data || [];
     loadCartFromStorage();
-    CATEGORIES = [{ id: 'all', name: 'All', emoji: '✨' }, ...(catData.categories || catData || [])];
+    CATEGORIES = catData.data || [{ id: 'all', name: 'All', emoji: '✨' }];
 
     applyStoreSettings();
     applyPlanGating();
