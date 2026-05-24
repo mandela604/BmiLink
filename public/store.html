@@ -524,7 +524,6 @@ async function init() {
 
   try {
     const storeData = await apiFetch('/api/stores/' + STORE_SLUG);
-    console.log('[1] storeData:', storeData);
     STORE_ID  = storeData.id;
     STORE_CFG = storeData;
 
@@ -533,13 +532,12 @@ async function init() {
       apiFetch('/api/stores/' + STORE_SLUG + '/categories'),
     ]);
 
-       console.log('[2] prodData:', prodData);
-    console.log('[3] catData:', catData);
+       
 
     PRODUCTS   = prodData.data || [];
     loadCartFromStorage();
     CATEGORIES = catData.data || [{ id: 'all', name: 'All', emoji: '✨' }];
-        console.log('[4] PRODUCTS count:', PRODUCTS.length, '| CATEGORIES:', CATEGORIES); 
+
     applyStoreSettings();
     applyPlanGating();
     applyPromo();
@@ -783,13 +781,18 @@ function openModal(id) {
   document.getElementById('modalDesc').textContent = p.desc || '';
 
   const vfpBtn = document.getElementById('viewFullPageBtn');
-  if (planAtLeast('pro')) {
+    vfpBtn.style.display = 'flex';
+    vfpBtn.href = 'product.html?store=' + STORE_SLUG + '&id=' + p.id;
+    document.getElementById('vfpBadge').textContent = '';
+
+
+  /*if (planAtLeast('pro')) {
     vfpBtn.style.display = 'flex';
     vfpBtn.href = 'product.html?store=' + STORE_SLUG + '&id=' + p.id;
     document.getElementById('vfpBadge').textContent = STORE_CFG.plan === 'business' ? 'Business' : 'Pro';
   } else {
     vfpBtn.style.display = 'none';
-  }
+  } */
 
   const cartBtn  = document.getElementById('cartActionBtn');
   const orderBtn = document.getElementById('orderActionBtn');
