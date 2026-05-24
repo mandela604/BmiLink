@@ -186,13 +186,12 @@ app.use((req, res, next) => {
     return next();
   }
 
-const isSubdomain =
-  hostname.endsWith(`.${baseDomain}`) &&
-  !hostname.startsWith('www.');
+const isSubdomain = hostname.endsWith(`.${baseDomain}`) && 
+                     !['www', 'bmilink'].includes(hostname.split('.')[0]);
 
   if (isSubdomain) {
     const slug = hostname.split('.')[0];
-    if (slug && slug.length > 2 && slug !== 'bmilink' && slug !== 'www') {
+   if (slug && slug.length > 2) {
       return res.sendFile(path.join(__dirname, 'public', 'store.html'));
     }
   }
