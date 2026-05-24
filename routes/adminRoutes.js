@@ -620,7 +620,7 @@ router.put('/verifications/:id', protectAdmin, async (req, res, next) => {
 
     if (!verif) return res.status(404).json({ success: false, message: 'Verification not found' });
 
-    await Store.findOneAndUpdate({ id: verif.storeId }, { verified: status === 'approved' });
+    await Store.findOneAndUpdate({ id: verif.storeId }, { isVerified: status === 'approved' });
 
     logAction(req.admin, status === 'approved' ? 'Verification Approved' : 'Verification Rejected', verif.storeName, reason || '', req.ip);
     res.json({ success: true, data: verif });
@@ -1403,7 +1403,9 @@ router.get('/auth/me', protectAdmin, async (req, res) => {
     console.error('Setup error:', err);
     res.status(500).json({ error: err.message });
   }
-}); */
+});
+
+https://bmilink.com/api/admin/setup-first-admin,*/
 
 
 module.exports = router;

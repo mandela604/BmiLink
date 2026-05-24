@@ -311,7 +311,7 @@ body.modal-open{overflow:hidden;}
   <div class="hero-meta">
     <div class="hero-badge">📦 <strong id="heroProdCount">0</strong> products listed</div>
     <div class="hero-badge">🚀 <strong>Fast</strong> delivery</div>
-    <div class="hero-badge">✅ <strong>Verified</strong> seller</div>
+   <div class="hero-badge">✅ <strong>Verified</strong> seller</div>
   </div>
 </section>
 
@@ -541,6 +541,7 @@ async function init() {
     applyStoreSettings();
     applyPlanGating();
     applyPromo();
+    await loadAdminBanner();
     renderFilterBar();
     renderProducts();
     renderCart();
@@ -565,6 +566,7 @@ function showFatalError(msg) {
 
 /* ── APPLY STORE SETTINGS ── */
 function applyStoreSettings() {
+  document.getElementById('verifiedBadge').style.display = STORE_CFG.verified ? '' : 'none';
   const s     = STORE_CFG.settings || {};
   const name  = s.storeName  || STORE_CFG.name  || 'Our Store';
   const emoji = s.storeEmoji || STORE_CFG.emoji  || '🛍️';
@@ -997,6 +999,27 @@ function loadCartFromStorage() {
 /* ── UTILS ── */
 function fmt(n)     { return Number(n || 0).toLocaleString(); }
 function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+
+async function loadAdminBanner() {
+  try {
+    const res = await fetch('/api/admin/promo-banners');
+    const data = await res.json();
+    const banner = (data.data || []).find(b => 
+      b.status === 'active' && 
+      (b.target === 'all' || b.target === 'free') &&
+      (b.location === 'store_page' || b.location === 'both')
+    );
+    if (!banner) return;
+    document.getElementById('promoIcon').textContent  = banner.ic || '🔥';
+    document.getElementById('promoLabel').textContent = banner.label || '';
+    document.getElementById('promoTitle').textContent = banner.title || '';
+    document.getElementById('promoSub').textContent   = banner.sub || '';
+    document.getElementById('promoCta').textContent   = banner.cta || 'Shop now';
+    document.getElementById('promoBanner').classList.remove('hidden-banner');
+  } catch(e) {}
+}
+
 
 /* ── KEYBOARD + TOUCH ── */
 document.addEventListener('keydown', e => {
