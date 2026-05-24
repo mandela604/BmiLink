@@ -180,18 +180,19 @@ app.use((req, res, next) => {
   const hostname = req.hostname.toLowerCase();
   const baseDomain = process.env.BASE_DOMAIN || 'bmilink.com';
 
-  if (req.path.startsWith('/api') ||
-      req.path.startsWith('/health') ||
+  // Skip API routes, health, files with extensions, etc.
+  if (req.path.startsWith('/api') || 
+      req.path.startsWith('/health') || 
       req.path.includes('.')) {
     return next();
   }
 
-const isSubdomain = hostname.endsWith(`.${baseDomain}`) && 
-                     !['www', 'bmilink'].includes(hostname.split('.')[0]);
-
-  if (isSubdomain) {
+  // Check for valid subdomain
+  if (hostname.endsWith(`.${baseDomain}`)) {
     const slug = hostname.split('.')[0];
-   if (slug && slug.length > 2) {
+
+    // Don't treat these as store subdomains
+    if (slug && slug.length > 2 && !['www', 'bmilink', 'admin'].includes(slug)) {
       return res.sendFile(path.join(__dirname, 'public', 'store.html'));
     }
   }
