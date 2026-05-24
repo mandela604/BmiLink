@@ -492,6 +492,7 @@ function resolveSlug() {
 /* ── API ── */
 async function apiFetch(path, opts = {}) {
   const res = await fetch(API_BASE + path, {
+   console.log('[apiFetch]', path, res.status);
     headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
     ...opts,
   });
@@ -521,6 +522,7 @@ async function init() {
 
   try {
     const storeData = await apiFetch('/api/stores/' + STORE_SLUG);
+    console.log('[1] storeData:', storeData);
     STORE_ID  = storeData.id;
     STORE_CFG = storeData;
 
@@ -529,10 +531,13 @@ async function init() {
       apiFetch('/api/stores/' + STORE_SLUG + '/categories'),
     ]);
 
+       console.log('[2] prodData:', prodData);
+    console.log('[3] catData:', catData);
+
     PRODUCTS   = prodData.data || [];
     loadCartFromStorage();
     CATEGORIES = catData.data || [{ id: 'all', name: 'All', emoji: '✨' }];
-
+        console.log('[4] PRODUCTS count:', PRODUCTS.length, '| CATEGORIES:', CATEGORIES); 
     applyStoreSettings();
     applyPlanGating();
     applyPromo();
