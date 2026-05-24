@@ -824,7 +824,7 @@ footer{
 
 <!-- FOOTER -->
 <footer>
-  <div class="ft-logo">StoreLink</div>
+  <div class="ft-logo">BmiLink</div>
   <div class="ft-links">
     <a href="#features">Features</a>
     <a href="#pricing">Pricing</a>
@@ -856,13 +856,12 @@ footer{
   </div>
 </div>
 
-<!-- DEV PLAN SWITCHER (remove in production — replace with real auth) -->
+<!--  PLAN SWITCHER -->
 <div class="dev-switcher">
-  <div class="dev-label">Simulate Plan</div>
   <div class="dev-btns">
-    <button class="dev-btn" id="devFree" onclick="setPlan('free')">Free</button>
-    <button class="dev-btn" id="devPro" onclick="setPlan('pro')">Pro</button>
-    <button class="dev-btn active-biz" id="devBiz" onclick="setPlan('business')">Biz</button>
+    <button class="dev-btn" id="devFree" onclick="scrollToPlan('free')">Free</button>
+    <button class="dev-btn" id="devPro" onclick="scrollToPlan('pro')">Pro</button>
+    <button class="dev-btn active-biz" id="devBiz" onclick="scrollToPlan('business')">Biz</button>
   </div>
 </div>
 
@@ -1021,20 +1020,24 @@ function fmtCount(n) {
   return n.toLocaleString()+'+';
 }
 
+/* ════════════════════════════════════════
+   RENDER USER COUNT
+════════════════════════════════════════ */
 function updateUserCounts(stats) {
-  let count = 20;               
+  let count = 20;   // ← This is what controls the number
 
+  // Use real number only when we have many users
   if (stats && stats.totalUsers > 30) {
-    count = stats.totalUsers;        // Use real number when it's bigger
+    count = stats.totalUsers;
   }
 
   const display = count.toLocaleString() + '+';
 
-  // Update all 3 places
   document.getElementById('liveTagText').textContent = `Trusted by ${display} sellers`;
   document.getElementById('heroUserCount').textContent = display;
   document.getElementById('ctaUserCount').textContent = display;
 }
+
 
 /* ════════════════════════════════════════
    RENDER FEATURES GRID
@@ -1138,6 +1141,29 @@ function setPlan(plan) {
   renderPlans();
 }
 
+
+
+function scrollToPlan(planId) {
+  // Remove active styles from all buttons
+  document.querySelectorAll('.dev-btn').forEach(b => {
+    b.classList.remove('active', 'active-biz');
+  });
+
+  // Highlight the clicked button
+  const btn = document.getElementById('dev' + planId.charAt(0).toUpperCase() + planId.slice(1));
+  if (btn) {
+    if (planId === 'business') btn.classList.add('active-biz');
+    else btn.classList.add('active');
+  }
+
+  // Scroll smoothly to the plan card
+  const planCards = document.querySelectorAll('.plan-card');
+  planCards.forEach(card => {
+    if (card.textContent.toLowerCase().includes(planId)) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+}
 /* ════════════════════════════════════════
    MISC
 ════════════════════════════════════════ */
