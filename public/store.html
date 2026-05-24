@@ -1003,7 +1003,7 @@ function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,
 
 async function loadAdminBanner() {
   try {
-    const res = await fetch('/api/admin/promo-banners');
+    const res = await fetch('/api/admin/promo-banners/public');
     const data = await res.json();
     const banner = (data.data || []).find(b => 
       b.status === 'active' && 

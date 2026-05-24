@@ -528,6 +528,17 @@ router.put('/plans', protectAdmin, requireAdminRole('super_admin'), async (req, 
 });
 
 // ====================== PROMO BANNERS ======================
+// PUBLIC — no auth, only active banners
+router.get('/promo-banners/public', async (req, res, next) => {
+  try {
+    const banners = await PromoBanner.find({ status: 'active' }).sort({ createdAt: -1 }).lean();
+    res.json({ success: true, data: banners });
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 router.get('/promo-banners', protectAdmin, async (req, res, next) => {
   try {
     const banners = await PromoBanner.find().sort({ createdAt: -1 }).lean();
