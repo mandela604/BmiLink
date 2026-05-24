@@ -1040,11 +1040,12 @@ function orderNow() {
   const p   = PRODUCT;
   const s   = SETTINGS;
   // Use custom order message from settings if set, else default
-  let msg   = (s.orderMsg || "Hello! I'd like to order:\n\n📦 *[Product Name]*\n💰 Price: [Price]\n\nPlease confirm availability. Thank you! 🙏")
+const link = window.location.href;
+let msg = (s.orderMsg || "Hello! I'd like to order:\n\n📦 *[Product Name]* × [Qty]\n💰 Total: ₦[Price]\n🔗 [Link]\n\nPlease confirm availability and delivery. Thank you! 🙏")
     .replace('[Product Name]', p.name)
-    .replace('[Price]', `₦${(p.price * qty).toLocaleString()}`);
-  // Append quantity note if >1
-  if (qty > 1) msg += `\n\nQuantity: ${qty}`;
+    .replace('[Qty]', qty)
+    .replace('[Price]', (p.price * qty).toLocaleString())
+    .replace('[Link]', link);
 
   // Fire analytics (non-blocking)
   apiPost(`${API_BASE}/analytics/order-tap`, { productId: PRODUCT_ID, storeSlug: STORE_SLUG });
