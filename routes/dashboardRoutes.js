@@ -174,6 +174,7 @@ for (let i = 0; i < 7; i++) {
       orderLog,
       contacts,
       team,
+        recentActivity,
       analytics: {
         visits7,
         orders7,
