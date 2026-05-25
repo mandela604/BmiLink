@@ -1268,6 +1268,20 @@ await fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' });
   D.contacts       = data.contacts      || [];
   D.team           = data.team          || [];
   D.analytics      = data.analytics     || { visits7: [], orders7: [], totalVisits: 0, totalOrders: 0 };
+  
+  // DEBUG - remove after fixing
+  console.log('=== DASHBOARD DATA FROM BACKEND ===');
+  console.log('Full response:', JSON.stringify(data, null, 2));
+  console.log('analytics:', data.analytics);
+  console.log('visits7:', data.analytics?.visits7);
+  console.log('orders7:', data.analytics?.orders7);
+  console.log('cartSessions:', data.analytics?.cartSessions);
+  console.log('products:', data.products?.length, 'items, first:', data.products?.[0]);
+  console.log('products clicks sample:', data.products?.map(p => ({name: p.name, clicks: p.clicks})));
+  console.log('recentActivity:', data.recentActivity);
+  console.log('planLimits:', data.planLimits);
+  console.log('features:', data.features);
+  console.log('===================================');
   // FIX: recentActivity now comes from backend, no longer an empty array
   D.feed           = data.recentActivity || [];
   D.limits         = data.planLimits    || {};
@@ -1296,6 +1310,15 @@ if (sbUemail) sbUemail.textContent = D.userEmail;
   renderFilterBar();
   renderCatGrid();
   updateOverviewStats();
+  // DEBUG
+  console.log('=== COMPUTED STATS ===');
+  const _v7 = (D.analytics.visits7 || []).reduce((s,v)=>s+v,0);
+  const _o7 = (D.analytics.orders7 || []).reduce((s,v)=>s+v,0);
+  console.log('visits7 sum:', _v7, 'raw array:', D.analytics.visits7);
+  console.log('orders7 sum:', _o7, 'raw array:', D.analytics.orders7);
+  console.log('cartSessions:', D.analytics.cartSessions);
+  console.log('active products count:', D.products.filter(p=>p.status==='active').length);
+  console.log('=====================');
   buildEmojiGrid('prodEmojiGrid', 'prodEmoji');
   buildEmojiGrid('catEmojiGrid', 'catEmoji');
   fillCatSelect();
