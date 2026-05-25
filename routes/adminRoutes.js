@@ -52,7 +52,7 @@ router.get('/dashboard', protectAdmin, async (req, res, next) => {
       summary: {
         totalUsers: users.length,
         activeUsers: users.filter(u => u.status === 'active').length,
-        liveStores: stores.filter(s => s.isLive).length,
+        liveStores: stores.filter(s => s.status === 'live').length,
         openTickets: tickets.filter(t => t.status !== 'resolved').length,
         pendingVerifications: verifications.filter(v => v.status === 'pending').length,
         mrr,
@@ -944,7 +944,7 @@ router.get('/analytics', protectAdmin, async (req, res, next) => {
         totalStores: stores.length,
         liveStores: stores.filter(s => s.status === 'live').length,
         verifiedStores: stores.filter(s => s.verified).length,
-        totalVisits: stores.reduce((sum, s) => sum + (s.visits || 0), 0),
+        totalVisits: stores.reduce((sum, s) => sum + (s.totalVisits || 0), 0),
         currentMRR,
         growthRate
       },

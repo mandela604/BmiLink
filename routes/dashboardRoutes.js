@@ -159,6 +159,8 @@ for (let i = 0; i < 7; i++) {
     const user = await User.findOne({ id: req.user.id })
       .select('name email waNumber plan planExpiresAt pendingPlan');
 
+     const recentActivity = await Activity.find({ storeId: store.id }).sort({ createdAt: -1 }).limit(10);
+    const cartSessions   = await CartSession.countDocuments({ storeId: store.id });
     res.json({
       plan:         user.plan,
       user: { email: user.email, name: user.name },
@@ -172,15 +174,15 @@ for (let i = 0; i < 7; i++) {
       orderLog,
       contacts,
       team,
-      recentActivity: await Activity.find({ storeId: store.id }).sort({ createdAt: -1 }).limit(10),
       analytics: {
         visits7,
         orders7,
-        totalVisits:  visits7.reduce((a,b) => a+b, 0),
-        totalOrders:  orders7.reduce((a,b) => a+b, 0),
-        totalRevenue: revenueAgg[0]?.sum || 0,
+        totalVisits:   visits7.reduce((a,b) => a+b, 0),
+        totalOrders:   orders7.reduce((a,b) => a+b, 0),
+        totalRevenue:  revenueAgg[0]?.sum || 0,
+        cartSessions,
       },
-      planLimits: limits,
+     planLimits: limits,
       features: {
         canExportCSV:      limits.canExportCSV,
         canBroadcast:      limits.canBroadcast,
@@ -304,6 +306,7 @@ router.get('/overview/stats', protect, async (req, res) => {
     const [productCount, cartCount] = await Promise.all([
       Product.countDocuments({ storeId: store.id, status: 'active' }),
       CartSession.countDocuments({ storeId: store.id }),
+      Store.countDocuments({ status: 'live' })
     ]);
 
     // 7-day visit & order-tap arrays
@@ -330,6 +333,7 @@ router.get('/overview/stats', protect, async (req, res) => {
       orderTaps7d:    orders7.reduce((a, b) => a + b, 0),
       activeProducts: productCount,
       cartSessions:   cartCount,
+      liveStores: liveStoresCount,
       chartData:      { visits: visits7, orders: orders7 },
     });
   } catch (err) {
@@ -1501,7 +1505,7 @@ router.post('/stores', protect, requirePlan('business'), storeCreateValidators, 
       waNumber:  req.body.waNumber || null,
       slug:      finalSlug,
       ownerId:   req.user.id,
-      isActive:  false,
+      status:   'live',
     });
 
     res.status(201).json(store);

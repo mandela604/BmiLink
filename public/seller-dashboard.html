@@ -1343,7 +1343,7 @@ function updateOverviewStats() {
   if (el('svOrders')) el('svOrders').textContent = o7;
   if (el('svProds'))  el('svProds').textContent  = D.products.filter(p => p.status === 'active').length;
   // FIX: cart count comes from analytics, not D.cartEvents (which was always empty)
-  if (el('svCarts'))  el('svCarts').textContent  = 0; // refreshed when cart-tracker page is visited
+  if (el('svCarts'))  el('svCarts').textContent  = a.cartSessions || 0;
 }
 
 function renderTopProds() {
@@ -2027,11 +2027,6 @@ async function renderOrderLog() {
     </div>`).join('');
 
   D._orderRevenue = data.totalRevenue || 0;
-  // Fetch user email from /me endpoint
-const userData = await API.get('/me');
-if (userData && userData.user) {
-  D.userEmail = userData.user.email;
-}
   D._orderCount   = total;
   updateOrderStats(data.totalRevenue, total);
   renderPager('orderPager', pg, Math.ceil(total / ps) || 1, p => { pages.orders = p; renderOrderLog(); }, total);
