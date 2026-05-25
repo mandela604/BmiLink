@@ -12,6 +12,16 @@ const compression  = require('compression');
 const app = express();
 
 app.set('trust proxy', 1);
+
+
+app.get('/debug-host', (req, res) => {
+  res.json({
+    hostname: req.hostname,
+    originalUrl: req.originalUrl,
+    subdomains: req.subdomains,
+    fullUrl: req.protocol + '://' + req.get('host')
+  });
+});
 // ─── CORS ────────────────────────────────────────────────────────────────────
 // Support multiple allowed origins (dev + prod) via comma-separated env var
 // ─── CORS ────────────────────────────────────────────────────────────────────
@@ -101,6 +111,8 @@ const authLimiter = rateLimit({
   legacyHeaders:   false,
   message: { error: 'Too many attempts — please try again in 15 minutes' },
 });
+
+
 app.use('/api/auth/login',    authLimiter);
 app.use('/api/auth/register', authLimiter);
 app.use('/api/auth/forgot-password', rateLimit({
@@ -183,19 +195,15 @@ app.use((req, res, next) => {
   const hostname = req.hostname.toLowerCase();
   const baseDomain = process.env.BASE_DOMAIN || 'bmilink.com';
 
-  // Skip API routes, health, files with extensions, etc.
-  if (req.path.startsWith('/api') || 
-      req.path.startsWith('/health') || 
-      req.path.includes('.')) {
+  if (req.path.startsWith('/api') || req.path.includes('.')) {
     return next();
   }
 
-  // Check for valid subdomain
   if (hostname.endsWith(`.${baseDomain}`)) {
-    const slug = hostname.split('.')[0];
+    const slug = hostname.replace(`.${baseDomain}`, '');  // Better than split('.')[0]
 
-    // Don't treat these as store subdomains
     if (slug && slug.length > 2 && !['www', 'bmilink', 'admin'].includes(slug)) {
+      console.log(`[Subdomain] Serving store for: ${slug}`);
       return res.sendFile(path.join(__dirname, 'public', 'store.html'));
     }
   }
