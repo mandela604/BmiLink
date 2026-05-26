@@ -1311,14 +1311,8 @@ if (sbUemail) sbUemail.textContent = D.userEmail;
   renderCatGrid();
   updateOverviewStats();
   // DEBUG
-  console.log('=== COMPUTED STATS ===');
   const _v7 = (D.analytics.visits7 || []).reduce((s,v)=>s+v,0);
   const _o7 = (D.analytics.orders7 || []).reduce((s,v)=>s+v,0);
-  console.log('visits7 sum:', _v7, 'raw array:', D.analytics.visits7);
-  console.log('orders7 sum:', _o7, 'raw array:', D.analytics.orders7);
-  console.log('cartSessions:', D.analytics.cartSessions);
-  console.log('active products count:', D.products.filter(p=>p.status==='active').length);
-  console.log('=====================');
   buildEmojiGrid('prodEmojiGrid', 'prodEmoji');
   buildEmojiGrid('catEmojiGrid', 'catEmoji');
   fillCatSelect();
@@ -1358,16 +1352,20 @@ function renderBigChart() {
    OVERVIEW
 ════════════════════════════════════════════════════════════ */
 function updateOverviewStats() {
-  const a  = D.analytics;
+  const a  = D.analytics || {};
   const v7 = (a.visits7  || []).reduce((s, v) => s + v, 0);
   const o7 = (a.orders7  || []).reduce((s, v) => s + v, 0);
+
   const el = id => document.getElementById(id);
-  if (el('svVisits')) el('svVisits').textContent = v7;
-  if (el('svOrders')) el('svOrders').textContent = o7;
+
+  if (el('svVisits')) el('svVisits').textContent = v7.toLocaleString();
+  if (el('svOrders')) el('svOrders').textContent = o7.toLocaleString();
   if (el('svProds'))  el('svProds').textContent  = D.products.filter(p => p.status === 'active').length;
-  // FIX: cart count comes from analytics, not D.cartEvents (which was always empty)
-  if (el('svCarts'))  el('svCarts').textContent  = a.cartSessions || 0;
+  
+  // Cart Sessions — fallback to total from analytics
+  if (el('svCarts'))  el('svCarts').textContent  = (a.cartSessions || a.totalCartSessions || 0).toLocaleString();
 }
+
 
 function renderTopProds() {
   const sorted = [...D.products].sort((a, b) => (b.clicks || 0) - (a.clicks || 0)).slice(0, 5);

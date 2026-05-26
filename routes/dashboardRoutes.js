@@ -2319,49 +2319,7 @@ router.get('/platform/settings', async (req, res) => {
 
 
 
-// ====================== ACTIVITY TRACKING (Public store) ======================
-// POST /api/dashboard/track/activity
-router.post(
-  '/track/activity',
-  [
-    body('storeId').isString().trim().notEmpty().withMessage('storeId required'),
-    body('type').isIn(['visit', 'order_tap', 'cart']).withMessage('Invalid activity type'),
-    body('productId').optional().isString().trim(),
-    body('items').optional().isArray(),
-  ],
-  async (req, res) => {
-    if (!validate(req, res)) return;
-    try {
-      const { storeId, type, productId, items } = req.body;
 
-      // Verify store exists
-      const store = await Store.findOne({ id: storeId });
-      if (!store) return res.status(404).json({ error: 'Store not found' });
-
-      // Create activity record
-      const activity = await Activity.create({
-        storeId,
-        type,
-        productId: productId || null,
-        items: items || null,
-        ipHash: hashIP(req.ip || req.socket.remoteAddress),
-        userAgent: req.headers['user-agent'] || null,
-      });
-
-      // If order_tap, increment product click count
-      if (type === 'order_tap' && productId) {
-        await Product.findOneAndUpdate(
-          { id: productId, storeId },
-          { $inc: { clicks: 1 } }
-        );
-      }
-
-      res.status(201).json({ success: true, activity });
-    } catch (err) {
-      errRes(res, err);
-    }
-  }
-);
 
 
 module.exports = router;

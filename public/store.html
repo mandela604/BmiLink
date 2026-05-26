@@ -505,17 +505,46 @@ async function apiFetch(path, opts = {}) {
   return res.json();
 }
 
+
+
 /* ── ACTIVITY TRACKING ── */
-function track(type, productId = null) {
-  if (!STORE_ID) return;
-  const body = { storeId: STORE_ID, type };
-  if (productId) body.productId = productId;
-  fetch(API_BASE + '/api/dashboard/track/activity', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  }).catch(() => {});
+async function track(type, productId = null) {
+  if (!STORE_SLUG) return;
+
+  let endpoint = '/api/analytics/view';
+  const body = { storeSlug: STORE_SLUG };
+
+  if (type === 'order_tap') {
+    endpoint = '/api/analytics/order-tap';
+    body.productId = productId;
+    body.actionType = 'single_product';
+  } 
+  else if (type === 'cart') {
+    endpoint = '/api/cart/session';           // ← Use dedicated cart session route
+    body.action = 'cart_used';
+    if (productId) body.productId = productId;
+  } 
+  else if (productId) {
+    endpoint = '/api/analytics/view';
+    body.productId = productId;
+  } 
+  else {
+    endpoint = '/api/analytics/view';
+    body.productId = 'store_visit';
+  }
+
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    console.log(`[Track Success] ${type}`);
+  } catch (e) {
+    console.log(`[Track Failed] ${type}`);
+  }
 }
+
 
 /* ── INIT ── */
 async function init() {
@@ -571,7 +600,9 @@ function applyStoreSettings() {
   const name  = s.storeName  || STORE_CFG.name  || 'Our Store';
   const emoji = s.storeEmoji || STORE_CFG.emoji  || '🛍️';
 
-  document.getElementById('storeName').textContent        = name;
+  let fullName = s.storeName || STORE_CFG.name || 'Our Store';
+let truncated = fullName.length > 10 ? fullName.slice(0, 10) + '...' : fullName;
+document.getElementById('storeName').textContent = truncated;
   document.getElementById('storeLogoIcon').textContent    = emoji;
   document.getElementById('footerName').textContent       = emoji + ' ' + name;
   document.getElementById('footerDesc').textContent       = s.heroSub || STORE_CFG.description || '';
@@ -752,7 +783,7 @@ function openModal(id) {
   currentProduct = p; currentSlide = 0; modalQty = 1;
   document.getElementById('qtyVal').textContent = 1;
   setHash(id);
-  track('order_tap', p.id);
+ track('view', p.id);
 
   const hasDisc  = p.originalPrice && p.originalPrice > p.price;
   const discount = hasDisc ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
@@ -894,12 +925,14 @@ function orderFromModal() {
   const p = currentProduct;
   const link = window.location.origin + '/product.html?store=' + STORE_SLUG + '&id=' + p.id;
 openWA('Hello! I\'d like to order:\n\n📦 *' + p.name + '* × ' + modalQty + '\n💰 Total: ₦' + fmt(p.price * modalQty) + '\n🔗 ' + link + '\n\nPlease confirm availability and delivery. Thank you! 🙏');
+track('order_tap', p.id);
 }
 
 function addToCartFromModal() {
   if (!currentProduct || currentProduct.status === 'soldout') return;
   cart[currentProduct.id] = (cart[currentProduct.id] || 0) + modalQty;
-  renderCart(); showToast('Added to cart ×' + modalQty, '🛒'); closeModal();
+  renderCart(); showToast('Added to cart ×' + modalQty, '🛒');
+  track('cart', currentProduct.id); closeModal();
 }
 
 function quickAddCart(e, id) {
@@ -908,6 +941,7 @@ function quickAddCart(e, id) {
   if (!p || p.status === 'soldout') return;
   cart[id] = (cart[id] || 0) + 1;
   renderCart(); showToast(p.name + ' added!', '🛒');
+  track('cart', id);
 }
 
 function renderCart() {

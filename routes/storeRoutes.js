@@ -7,6 +7,7 @@ const Store = require('../models/Store');
 const Product = require('../models/Product');
 const Activity = require('../models/Activity');
 const Order = require('../models/Order'); 
+const CartSession = require('../models/CartSession');
 const Settings = require('../models/Settings');
 const { hashIP } = require('../utils/helpers');
 
@@ -205,40 +206,52 @@ router.get('/:slug/categories', async (req, res, next) => {
 
 
 // 7. POST /api/analytics/view  (Product View / Visit)
+// 7. POST /api/analytics/view  (Product View / Visit + Store Visit)
 router.post('/analytics/view', [
   body('productId').notEmpty(),
   body('storeSlug').optional(),
   validateRequest
 ], async (req, res) => {
   try {
-    const { productId } = req.body;
-    const product = await Product.findOne({ id: productId }).select('storeId');
-    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    const { productId, storeSlug } = req.body;
 
-    // Non-blocking analytics
+    let storeId = null;
+
+    if (storeSlug) {
+      const store = await Store.findOne({ slug: storeSlug });
+      if (store) storeId = store.id;
+    }
+
+    const product = await Product.findOne({ id: productId }).select('storeId');
+    if (!product && !storeId) return res.status(404).json({ success: false, message: 'Not found' });
+
+    const finalStoreId = storeId || product?.storeId;
+
     Promise.all([
-      Product.updateOne({ id: productId }, { $inc: { clicks: 1 } }),
+      product ? Product.updateOne({ id: productId }, { $inc: { clicks: 1 } }) : null,
       Activity.create({
-        storeId: product.storeId,
-        type: 'visit',
-        productId,
+        storeId: finalStoreId,
+        type: productId === 'store_visit' ? 'store_visit' : 'visit',
+        productId: productId !== 'store_visit' ? productId : null,
         ipHash: hashIP(req.ip)
       })
     ]).catch(() => {});
 
     res.json({ success: true });
   } catch (err) {
-    res.json({ success: true }); // Never break frontend
+    res.json({ success: true });
   }
 });
 
 // 8. POST /api/analytics/order-tap
+// 8. POST /api/analytics/order-tap
 router.post('/analytics/order-tap', [
   body('productId').notEmpty(),
+  body('storeSlug').optional(),
   validateRequest
 ], async (req, res) => {
   try {
-    const { productId } = req.body;
+    const { productId, storeSlug } = req.body;
     const product = await Product.findOne({ id: productId }).select('storeId name');
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
 
@@ -258,6 +271,7 @@ router.post('/analytics/order-tap', [
     res.json({ success: true });
   }
 });
+
 
 // 9. POST /api/orders
 router.post('/orders', async (req, res, next) => {
@@ -295,11 +309,26 @@ router.get('/orders/track/:orderId', async (req, res, next) => {
 });
 
 // 11. POST /api/cart/session (Optional - for cart persistence)
+// 11. POST /api/cart/session — Track Cart Usage
 router.post('/cart/session', async (req, res) => {
   try {
-    // You can save cart to Redis or DB session if needed
-    res.json({ success: true, sessionId: 'cart_' + Date.now() });
+    const { storeSlug, action, itemCount } = req.body;
+
+    const store = await Store.findOne({ slug: storeSlug });
+    if (!store) return res.json({ success: true });
+
+    // Save cart session
+    await CartSession.create({
+      storeId: store.id,
+      action: action || 'cart_used',
+      itemCount: itemCount || 0,
+      ipHash: hashIP(req.ip),
+      sessionId: 'cart_' + Date.now()
+    });
+
+    res.json({ success: true });
   } catch (err) {
+    console.error(err);
     res.json({ success: true });
   }
 });
