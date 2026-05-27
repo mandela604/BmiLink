@@ -536,18 +536,15 @@ async function track(type, productId = null) {
     // ADD THESE CONSOLE LOGS:
   console.log('🔍 TRACKING:', { type, productId, endpoint, body });
 
-  try {
-    await fetch(endpoint, {
+    try {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-     console.log(`✅ [Track Success] ${type} - Status:`, response.status);
-    console.log(`[Track Success] ${type}`);
+    console.log(`✅ [Track Success] ${type} - Status:`, response.status);
   } catch (e) {
-    console.log(`[Track Failed] ${type}`);
     console.log(`❌ [Track Failed] ${type} - Error:`, e);
-
   }
 }
 
