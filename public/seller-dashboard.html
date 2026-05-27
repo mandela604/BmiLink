@@ -1254,6 +1254,15 @@ await fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' });
 
   // Load all dashboard data
   const data = await API.get('/store/dashboard');
+
+  console.log('=== STORE DASHBOARD ANALYTICS ===');
+console.log('analytics.visits7:', data.analytics?.visits7);
+console.log('analytics.orders7:', data.analytics?.orders7);
+console.log('analytics.totalVisits:', data.analytics?.totalVisits);
+console.log('analytics.totalOrders:', data.analytics?.totalOrders);
+console.log('analytics.cartSessions:', data.analytics?.cartSessions);
+console.log('================================');
+
   if (!data) { redirectToLogin(); return; }
 
   D.plan           = data.plan          || 'free';
@@ -1397,6 +1406,18 @@ function renderRecentFeed() {
 ════════════════════════════════════════════════════════════ */
 async function loadAnalytics() {
   const data = await API.get('/analytics');
+  console.log('=== ANALYTICS API RESPONSE ===');
+  console.log('Full response:', data);
+  console.log('totalVisits:', data?.totalVisits);
+  console.log('totalOrders:', data?.totalOrders);
+  console.log('conversionRate:', data?.conversionRate);
+  console.log('cartConversionRate:', data?.cartConversionRate);
+  console.log('topProductName:', data?.topProductName);
+  console.log('totalRevenue:', data?.totalRevenue);
+  console.log('trend:', data?.trend);
+  console.log('================================');
+
+ 
   if (!data) return;
 
   const el = id => document.getElementById(id);
@@ -1537,6 +1558,14 @@ async function renderCartPage() {
 async function loadCartData() {
   const ps   = PG_SIZE.cart, pg = pages.cart;
   const data = await API.get(`/cart-tracker?filter=${cartFilter}&page=${pg}&limit=${ps}`);
+    console.log('=== CART TRACKER API RESPONSE ===');
+  console.log('Full response:', data);
+  console.log('stats:', data?.stats);
+  console.log('sessions count:', data?.sessions?.length);
+  console.log('total:', data?.total);
+  console.log('================================');
+
+  
   if (!data) return;
 
   const s = data.stats || {};
