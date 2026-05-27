@@ -208,66 +208,85 @@ router.get('/:slug/categories', async (req, res, next) => {
 // 7. POST /api/analytics/view  (Product View / Visit)
 // 7. POST /api/analytics/view  (Product View / Visit + Store Visit)
 router.post('/analytics/view', [
-  body('productId').notEmpty(),
+  body('productId').optional(),
   body('storeSlug').optional(),
   validateRequest
 ], async (req, res) => {
   try {
     const { productId, storeSlug } = req.body;
-
+    
+    // Determine if this is a store visit or product view
+    const isStoreVisit = !productId || productId === 'store_visit';
+    
     let storeId = null;
-
     if (storeSlug) {
       const store = await Store.findOne({ slug: storeSlug });
       if (store) storeId = store.id;
     }
-
-    const product = await Product.findOne({ id: productId }).select('storeId');
-    if (!product && !storeId) return res.status(404).json({ success: false, message: 'Not found' });
-
-    const finalStoreId = storeId || product?.storeId;
-
+    
+    // If product view, get store from product
+    let finalStoreId = storeId;
+    if (!isStoreVisit && productId) {
+      const product = await Product.findOne({ id: productId }).select('storeId');
+      if (product) finalStoreId = product.storeId;
+    }
+    
+    if (!finalStoreId) return res.json({ success: true });
+    
     Promise.all([
-      product ? Product.updateOne({ id: productId }, { $inc: { clicks: 1 } }) : null,
+      !isStoreVisit && productId ? Product.updateOne({ id: productId }, { $inc: { clicks: 1 } }) : null,
       Activity.create({
         storeId: finalStoreId,
-        type: productId === 'store_visit' ? 'store_visit' : 'visit',
-        productId: productId !== 'store_visit' ? productId : null,
+        type: isStoreVisit ? 'visit' : 'order_tap',
+        productId: isStoreVisit ? null : productId,
         ipHash: hashIP(req.ip)
       })
-    ]).catch(() => {});
-
+    ]).catch(err => console.error('Tracking error:', err));
+    
     res.json({ success: true });
   } catch (err) {
+    console.error('Analytics error:', err);
     res.json({ success: true });
   }
 });
 
+
+
 // 8. POST /api/analytics/order-tap
 // 8. POST /api/analytics/order-tap
 router.post('/analytics/order-tap', [
-  body('productId').notEmpty(),
+  body('productId').optional(),
   body('storeSlug').optional(),
   validateRequest
 ], async (req, res) => {
   try {
     const { productId, storeSlug } = req.body;
+    
+    let storeId = null;
+    if (storeSlug) {
+      const store = await Store.findOne({ slug: storeSlug });
+      if (store) storeId = store.id;
+    }
+    
     const product = await Product.findOne({ id: productId }).select('storeId name');
-    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-
+    const finalStoreId = storeId || product?.storeId;
+    
+    if (!finalStoreId) return res.json({ success: true });
+    
     Promise.all([
-      Product.updateOne({ id: productId }, { $inc: { clicks: 1 } }),
+      product ? Product.updateOne({ id: productId }, { $inc: { clicks: 1 } }) : null,
       Activity.create({
-        storeId: product.storeId,
+        storeId: finalStoreId,
         type: 'order_tap',
-        productId,
-        productName: product.name,
+        productId: productId || null,
+        productName: product?.name,
         ipHash: hashIP(req.ip)
       })
-    ]).catch(() => {});
-
+    ]).catch(err => console.error('Order tap error:', err));
+    
     res.json({ success: true });
   } catch (err) {
+    console.error('Order tap error:', err);
     res.json({ success: true });
   }
 });
