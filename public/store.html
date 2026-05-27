@@ -533,15 +533,21 @@ async function track(type, productId = null) {
     body.productId = 'store_visit';
   }
 
+    // ADD THESE CONSOLE LOGS:
+  console.log('🔍 TRACKING:', { type, productId, endpoint, body });
+
   try {
     await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
+     console.log(`✅ [Track Success] ${type} - Status:`, response.status);
     console.log(`[Track Success] ${type}`);
   } catch (e) {
     console.log(`[Track Failed] ${type}`);
+    console.log(`❌ [Track Failed] ${type} - Error:`, e);
+
   }
 }
 
@@ -575,6 +581,7 @@ async function init() {
     renderProducts();
     renderCart();
     handleHashOnLoad();
+    console.log('📢 Sending track: visit (store load)');
     track('visit');
 
   } catch (err) {
@@ -783,6 +790,7 @@ function openModal(id) {
   currentProduct = p; currentSlide = 0; modalQty = 1;
   document.getElementById('qtyVal').textContent = 1;
   setHash(id);
+  console.log('📢 Sending track: view for product', p.id);
  track('view', p.id);
 
   const hasDisc  = p.originalPrice && p.originalPrice > p.price;
@@ -925,6 +933,7 @@ function orderFromModal() {
   const p = currentProduct;
   const link = window.location.origin + '/product.html?store=' + STORE_SLUG + '&id=' + p.id;
 openWA('Hello! I\'d like to order:\n\n📦 *' + p.name + '* × ' + modalQty + '\n💰 Total: ₦' + fmt(p.price * modalQty) + '\n🔗 ' + link + '\n\nPlease confirm availability and delivery. Thank you! 🙏');
+console.log('📢 Sending track: order_tap for product', p.id);
 track('order_tap', p.id);
 }
 
@@ -932,6 +941,8 @@ function addToCartFromModal() {
   if (!currentProduct || currentProduct.status === 'soldout') return;
   cart[currentProduct.id] = (cart[currentProduct.id] || 0) + modalQty;
   renderCart(); showToast('Added to cart ×' + modalQty, '🛒');
+ console.log('📢 Sending track: cart for product', currentProduct.id);
+
   track('cart', currentProduct.id); closeModal();
 }
 
