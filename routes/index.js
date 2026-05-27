@@ -52,7 +52,7 @@ if (event.event === 'charge.success') {
     { plan: newPlan, planExpiresAt: expiresAt, pendingPlan: null, lastPaystackRef: ref }
   );
 }
-
+    
     res.sendStatus(200);
   } catch (err) {
     console.error('Webhook error:', err);

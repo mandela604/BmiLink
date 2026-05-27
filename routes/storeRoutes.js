@@ -207,6 +207,7 @@ router.get('/:slug/categories', async (req, res, next) => {
 
 // 7. POST /api/analytics/view  (Product View / Visit)
 // 7. POST /api/analytics/view  (Product View / Visit + Store Visit)
+// 7. POST /api/stores/analytics/view
 router.post('/analytics/view', [
   body('productId').optional(),
   body('storeSlug').optional(),
@@ -215,7 +216,6 @@ router.post('/analytics/view', [
   try {
     const { productId, storeSlug } = req.body;
     
-    // Determine if this is a store visit or product view
     const isStoreVisit = !productId || productId === 'store_visit';
     
     let storeId = null;
@@ -224,32 +224,44 @@ router.post('/analytics/view', [
       if (store) storeId = store.id;
     }
     
-    // If product view, get store from product
     let finalStoreId = storeId;
+    let finalProductId = null;
+
     if (!isStoreVisit && productId) {
       const product = await Product.findOne({ id: productId }).select('storeId');
-      if (product) finalStoreId = product.storeId;
+      if (product) {
+        finalStoreId = product.storeId;
+        finalProductId = productId;
+      }
     }
-    
-    if (!finalStoreId) return res.json({ success: true });
-    
-    Promise.all([
-      !isStoreVisit && productId ? Product.updateOne({ id: productId }, { $inc: { clicks: 1 } }) : null,
+
+    if (!finalStoreId) {
+      return res.json({ success: true });
+    }
+
+    await Promise.all([
+      // Only increment clicks for actual product views
+      finalProductId ? Product.updateOne({ id: finalProductId }, { $inc: { clicks: 1 } }) : null,
+      
       Activity.create({
         storeId: finalStoreId,
-        type: isStoreVisit ? 'visit' : 'order_tap',
-        productId: isStoreVisit ? null : productId,
+        type: isStoreVisit ? 'visit' : 'view',           // ← FIXED
+        productId: finalProductId,
         ipHash: hashIP(req.ip)
       })
-    ]).catch(err => console.error('Tracking error:', err));
-    
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Analytics error:', err);
-    res.json({ success: true });
-  }
-});
+    ]);
 
+    console.log(`[Analytics] Recorded ${isStoreVisit ? 'store visit' : 'product view'} for store ${finalStoreId}`);
+    res.json({ success: true });
+
+  } catch (err) {
+  console.error('=== TRACKING ERROR ===');
+  console.error(err);
+  console.error('Request body:', req.body);
+  console.error('IP:', req.ip);
+  res.json({ success: true, debug: 'error_logged' });
+}
+});
 
 
 // 8. POST /api/analytics/order-tap
@@ -285,10 +297,13 @@ router.post('/analytics/order-tap', [
     ]).catch(err => console.error('Order tap error:', err));
     
     res.json({ success: true });
-  } catch (err) {
-    console.error('Order tap error:', err);
-    res.json({ success: true });
-  }
+} catch (err) {
+  console.error('=== TRACKING ERROR ===');
+  console.error(err);
+  console.error('Request body:', req.body);
+  console.error('IP:', req.ip);
+  res.json({ success: true, debug: 'error_logged' });
+}
 });
 
 

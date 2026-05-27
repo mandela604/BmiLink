@@ -136,17 +136,31 @@ sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
 sevenDaysAgo.setHours(0, 0, 0, 0);
 
 const actAgg = await Activity.aggregate([
-  { $match: { storeId: store.id, createdAt: { $gte: sevenDaysAgo }, type: { $in: ['visit', 'order_tap'] } } },
-  { $group: { _id: { day: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, type: '$type' }, count: { $sum: 1 } } }
+  { 
+    $match: { 
+      storeId: store.id, 
+      createdAt: { $gte: sevenDaysAgo }, 
+      type: { $in: ['visit', 'view', 'order_tap'] }   // ← added 'view'
+    } 
+  },
+  { 
+    $group: { 
+      _id: { 
+        day: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, 
+        type: '$type' 
+      }, 
+      count: { $sum: 1 } 
+    } 
+  }
 ]);
-
+ 
 const visits7 = Array(7).fill(0);
 const orders7 = Array(7).fill(0);
 for (let i = 0; i < 7; i++) {
   const day = new Date(sevenDaysAgo); day.setDate(day.getDate() + i);
   const key = day.toISOString().slice(0, 10);
-  const v = actAgg.find(a => a._id.day === key && a._id.type === 'visit');
-  const o = actAgg.find(a => a._id.day === key && a._id.type === 'order_tap');
+const v = actAgg.find(a => a._id.day === key && (a._id.type === 'visit' || a._id.type === 'view'));
+const o = actAgg.find(a => a._id.day === key && a._id.type === 'order_tap');
   visits7[i] = v?.count || 0;
   orders7[i] = o?.count || 0;
 }
