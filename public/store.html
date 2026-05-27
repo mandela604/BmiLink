@@ -511,25 +511,25 @@ async function apiFetch(path, opts = {}) {
 async function track(type, productId = null) {
   if (!STORE_SLUG) return;
 
-  let endpoint = '/api/analytics/view';
+  let endpoint = '/api/stores/analytics/view';
   const body = { storeSlug: STORE_SLUG };
 
   if (type === 'order_tap') {
-    endpoint = '/api/analytics/order-tap';
+    endpoint = '/api/stores/analytics/order-tap';
     body.productId = productId;
     body.actionType = 'single_product';
   } 
   else if (type === 'cart') {
-    endpoint = '/api/cart/session';           // ← Use dedicated cart session route
+    endpoint = '/api/stores/cart/session';           // ← Use dedicated cart session route
     body.action = 'cart_used';
     if (productId) body.productId = productId;
   } 
   else if (productId) {
-    endpoint = '/api/analytics/view';
+    endpoint = '/api/stores/analytics/view';
     body.productId = productId;
   } 
   else {
-    endpoint = '/api/analytics/view';
+    endpoint = '/api/stores/analytics/view';
     body.productId = 'store_visit';
   }
 
