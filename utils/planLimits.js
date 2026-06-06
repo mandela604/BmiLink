@@ -1,8 +1,8 @@
 // utils/planLimits.js
 const PLAN_LIMITS = {
   free: {
-    maxProducts: 10,
-    maxImagesPerProduct: 2,
+   maxProducts: 30,
+    maxImagesPerProduct: 3,
     maxSpecsPerProduct: 6,
     maxOrderLogs: 25,
     maxCategories: 5,
